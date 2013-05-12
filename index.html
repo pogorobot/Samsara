@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="lib/crafty.js"></script>
+<script src="src/game.js"></script>
+<script src="src/components.js"></script>
+<script src="src/scenes.js"></script>
+<script>
+window.addEventListener('load', Game.start);
+</script>
+<style type="text/css" media="screen">
+	body { 
+		background: black; 
+		text-align: center;
+		color: #DDD;
+		font-family: Arial;
+	}
+	
+	.controls {
+		color: #BBB;
+	}
+	
+	#cr-stage { margin: 20px auto 0; }
+	
+	.bottom {
+		font-size: 12px;
+		color: #888;
+		margin-top: 50px;
+	}
+	
+	.bottom a {
+		color: #AAA;
+	}
+</style>
+</head>
+<body>
+	<h2>Slaughter the Villagers!</h2>
+	
+	<p>A knock at the door means the Reckoning has come!</p>
+	
+	<p class="controls">Use WASD or the arrow keys to hunt your prey!</p>
+	
+	<div id="cr-stage"></div>
+	
+	<p class="bottom">Be sure to leave no survivors!</p>
+</body>
+</html>
