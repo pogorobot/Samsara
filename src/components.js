@@ -57,7 +57,13 @@ Crafty.c('Enemy', {
 });
 
 Crafty.c('Fleeing', {
-
+	
+	originalSpeed: Math.random() + 0.5,
+	speed: this.originalSpeed,
+	dx: 0,
+	dy: 0,
+	fleeingFrom: Crafty('Hero'),
+	
 	init: function() {
 		this.requires('Collision, Collectible')
 		this.bind('EnterFrame', this.flee);
@@ -65,12 +71,35 @@ Crafty.c('Fleeing', {
 	},
 	
 	flee: function() {
-		this.y += Math.random() + 0.5;
+		this.fleeingFrom = Crafty('Hero');
+		this.speed = this.originalSpeed;
+		this.dy = this.speed / 2;
+		if (this.fleeingFrom.y > this.y) {
+			this.dy = -this.dy;
+		}
+		this.dx = this.speed / 2;
+		if (this.fleeingFrom.x > this.x) {
+			this.dx = -this.dx;
+		}
+		this.y += this.dy;
+		this.x += this.dx;
 		return this;
 	},
 	
 	stopMovement: function() {
-		this.unbind('EnterFrame', this.flee);
+		if (this.dx || this.dy) {
+			this.x -= this.dx;
+			if (this.hit('Solid') != false) {
+				this.x += this.dx;
+				this.y -= this.dy;
+				if (this.hit('Solid') != false) {
+					this.x -= this.dx;
+					this.y -= this.dy;
+				}
+			}
+		} else {
+			this.speed = 0;
+		}
 		return this;
 	}
 });
