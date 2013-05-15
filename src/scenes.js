@@ -12,6 +12,7 @@ Crafty.scene('Game', function() {
 	this.occupied[this.player.at().x][this.player.at().y] = true;
 	
 	// Place a tree at every edge square on our grid of 16x16 tiles
+	var max_enemies = 13;
 	for (var x = 0; x < Game.map_grid.width; x++) {
 		for (var y = 0; y < Game.map_grid.height; y++) {
 			var at_edge = x == 0 || x == Game.map_grid.width - 1 || y == 0 || y == Game.map_grid.height - 1;
@@ -25,7 +26,7 @@ Crafty.scene('Game', function() {
 				var bush_or_rock = (Math.random() > 0.3) ? 'Bush' : 'Rock';
 				Crafty.e(bush_or_rock).at(x, y);
 				this.occupied[x][y] = true;
-			} else if (Math.random() < 0.03 && !this.occupied[x][y]) {
+			} else if (Math.random() < 0.03 && !this.occupied[x][y] && Crafty('Enemy').length < max_enemies) {
 				Crafty.e('Enemy').at(x, y);
 				this.occupied[x][y] = true;
 			}
@@ -33,7 +34,7 @@ Crafty.scene('Game', function() {
 	}
 	
 	// Generate up to five villages on the map in random locations
-	var max_villages = 5;
+	var max_villages = 13;
 	for (var x = 0; x < Game.map_grid.width; x++) {
 		for (var y = 0; y < Game.map_grid.height; y++) {
 			if (Math.random() < 0.02) {

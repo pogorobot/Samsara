@@ -58,7 +58,7 @@ Crafty.c('Enemy', {
 
 Crafty.c('Fleeing', {
 	
-	originalSpeed: Math.random() + 0.6,
+	originalSpeed: 1,
 	speed: this.originalSpeed,
 	dx: 0,
 	dy: 0,
