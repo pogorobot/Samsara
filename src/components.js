@@ -58,14 +58,15 @@ Crafty.c('Enemy', {
 
 Crafty.c('Fleeing', {
 	
-	originalSpeed: Math.random() + 0.5,
+	originalSpeed: Math.random() + 0.6,
 	speed: this.originalSpeed,
 	dx: 0,
 	dy: 0,
 	fleeingFrom: Crafty('Hero'),
 	
 	init: function() {
-		this.requires('Collision, Collectible')
+		//this.requires('Collision, Collectible')
+		this.requires('Collision');
 		this.bind('EnterFrame', this.flee);
 		this.onHit('Solid', this.stopMovement);
 	},
@@ -74,11 +75,11 @@ Crafty.c('Fleeing', {
 		this.fleeingFrom = Crafty('Hero');
 		this.speed = this.originalSpeed;
 		this.dy = this.speed / 2;
-		if (this.fleeingFrom.y > this.y) {
+		if (this.fleeingFrom.y < this.y) {
 			this.dy = -this.dy;
 		}
 		this.dx = this.speed / 2;
-		if (this.fleeingFrom.x > this.x) {
+		if (this.fleeingFrom.x < this.x) {
 			this.dx = -this.dx;
 		}
 		this.y += this.dy;
@@ -109,7 +110,7 @@ Crafty.c('Fleeing', {
 Crafty.c('Hero', {
 	init: function() {
 		var speed = 2;
-		this.requires('Actor, Fourway, Collision, spr_player, SpriteAnimation')
+		this.requires('Actor, Solid, Fourway, Collision, spr_player, SpriteAnimation')
 			.fourway(speed)
 			.onHit('Collectible', this.visitVillage)
 			.stopOnSolids()
@@ -118,7 +119,7 @@ Crafty.c('Hero', {
 			.animate('PlayerMovingDown',  0, 2, 2)
 			.animate('PlayerMovingLeft',  0, 3, 2);
 		
-		var animation_speed = 7;
+		var animation_speed = 4;
 		this.bind('NewDirection', function(data) {
 			if (data.x > 0) {
 				this.animate('PlayerMovingRight', animation_speed, -1);

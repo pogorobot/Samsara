@@ -47,7 +47,7 @@ Crafty.scene('Game', function() {
 	Crafty.audio.play('ring');
 	
 	this.show_victory = this.bind('VillageVisited', function() {
-		if (!Crafty('Village').length && !Crafty('Enemy').length) {
+		if (!Crafty('Collectible').length) {
 			Crafty.scene('Victory');
 		}
 	});
@@ -88,6 +88,7 @@ Crafty.scene('Loading', function() {
 	
 	Crafty.load([
 		'assets/16x16_forest_2.gif', 
+		'assets/burningHouse.gif',
 		'assets/hunter.png',
 		'assets/door_knock_3x.mp3',
 		'assets/door_knock_3x.ogg',
@@ -107,7 +108,8 @@ Crafty.scene('Loading', function() {
 		// to remind us that they simply cause the entity to be drawn
 		// with a particular sprite.
 		
-		Crafty.sprite(16, 'assets/16x16_forest_2.gif', {
+		//Crafty.sprite(16, 'assets/16x16_forest_2.gif', {
+		Crafty.sprite(16, 'assets/burningHouse.gif', {
 			spr_tree:    [0, 0],
 			spr_bush:    [1, 0],
 			spr_village: [0, 1],
