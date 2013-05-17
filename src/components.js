@@ -50,9 +50,28 @@ Crafty.c('Rock', {
 
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('Actor, Solid, spr_player, SpriteAnimation, Fleeing');
+		this.requires('Actor, Solid, spr_player, SpriteAnimation, Fleeing, Collectible');
 		this.animate('PlayerMovingDown', 0, 2, 2);
 		this.animate('PlayerMovingDown', 7, -1);
+	},
+});
+
+Crafty.c('Sword', {
+	init: function() {
+		this.requires('Actor, spr_sword, Collision');
+		this.onHit('Collectible', this.stab);
+		//setTimeout(function() { this.destroy(); }, 3000);
+	},
+	wieldedBy: function(wielder) {
+		this.bind('EnterFrame', function() {
+			this.attr({ x: wielder.x + Game.map_grid.tile.width / 2, y: wielder.y - Game.map_grid.tile.height });
+		});
+		return this;
+	},
+	stab: function(data)
+	{
+		villlage = data[0].obj;
+		villlage.collect();
 	},
 });
 
@@ -112,7 +131,7 @@ Crafty.c('Hero', {
 		var speed = 2;
 		this.requires('Actor, Solid, Fourway, Collision, spr_player, SpriteAnimation')
 			.fourway(speed)
-			.onHit('Collectible', this.visitVillage)
+			//.onHit('Collectible', this.visitVillage)
 			.stopOnSolids()
 			.animate('PlayerMovingUp',    0, 0, 2)
 			.animate('PlayerMovingRight', 0, 1, 2)
@@ -132,6 +151,9 @@ Crafty.c('Hero', {
 			} else {
 				this.stop();
 			}
+		});
+		this.bind('KeyDown', function() {
+			Crafty.e('Sword').wieldedBy(this);
 		});
 	},
 	

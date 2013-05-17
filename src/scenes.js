@@ -8,7 +8,7 @@ Crafty.scene('Game', function() {
 			this.occupied[i][y] = false;
 		}
 	}
-	this.player = Crafty.e('Hero').at(5, 5);
+	this.player = Crafty.e('Hero').at(Crafty.math.randomInt(1, Game.map_grid.width - 1), Crafty.math.randomInt(1, Game.map_grid.height - 1));
 	this.occupied[this.player.at().x][this.player.at().y] = true;
 	
 	// Place a tree at every edge square on our grid of 16x16 tiles
@@ -44,6 +44,7 @@ Crafty.scene('Game', function() {
 			}
 		}
 	}
+	Crafty.e('Sword').wieldedBy(Crafty('Hero'));
 	
 	Crafty.audio.play('ring');
 	
@@ -54,6 +55,7 @@ Crafty.scene('Game', function() {
 	});
 }, function() {
 	this.unbind('VillageVisited', this.show_victory);
+	this.unbind('KeyDown', this.stab);
 });
 
 Crafty.scene('Victory', function() {
@@ -116,6 +118,7 @@ Crafty.scene('Loading', function() {
 			spr_village: [0, 1],
 			spr_rock:    [1, 1]
 		});
+		Crafty.sprite(16, 'assets/sword.gif', { spr_sword: [0, 0] });
 		
 		// Define the PC's sprite to be the first sprite in the third row of the 
 		// animation sprite map
