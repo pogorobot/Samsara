@@ -57,21 +57,28 @@ Crafty.c('Enemy', {
 });
 
 Crafty.c('Sword', {
+	wielder: Crafty('Hero'),
 	init: function() {
 		this.requires('Actor, spr_sword, Collision');
 		this.onHit('Collectible', this.stab);
-		//setTimeout(function() { this.destroy(); }, 3000);
 	},
 	wieldedBy: function(wielder) {
+		this.wielder = wielder;
 		this.bind('EnterFrame', function() {
-			this.attr({ x: wielder.x + Game.map_grid.tile.width / 2, y: wielder.y - Game.map_grid.tile.height });
+			this.attr({ x: wielder.x, y: wielder.y - Game.map_grid.tile.height});
 		});
+		this.origin(Game.map_grid.tile.width / 2, Game.map_grid.tile.height * 3 / 2);
 		return this;
 	},
 	stab: function(data)
 	{
 		villlage = data[0].obj;
 		villlage.collect();
+	},
+	sheathe: function()
+	{
+		this.wielder.swordOut = false;
+		this.destroy();
 	},
 });
 
@@ -127,9 +134,12 @@ Crafty.c('Fleeing', {
 
 
 Crafty.c('Hero', {
+	swordOut: true,
 	init: function() {
 		var speed = 2;
-		this.requires('Actor, Solid, Fourway, Collision, spr_player, SpriteAnimation')
+		
+		var sword = Crafty.e('Sword').wieldedBy(this);
+		this.requires('Actor, Solid, Fourway, Collision, spr_player, SpriteAnimation, Keyboard')
 			.fourway(speed)
 			//.onHit('Collectible', this.visitVillage)
 			.stopOnSolids()
@@ -138,22 +148,34 @@ Crafty.c('Hero', {
 			.animate('PlayerMovingDown',  0, 2, 2)
 			.animate('PlayerMovingLeft',  0, 3, 2);
 		
+		this.bind('KeyDown', function() {
+			if (this.isDown('SPACE')) {
+				if (this.swordOut) {
+					sword.sheathe();
+				}
+				else {
+					sword = Crafty.e('Sword').wieldedBy(this);
+					this.swordOut = true;
+				}
+			}
+		});
 		var animation_speed = 4;
 		this.bind('NewDirection', function(data) {
 			if (data.x > 0) {
 				this.animate('PlayerMovingRight', animation_speed, -1);
+				sword.rotation = 90;
 			} else if (data.x < 0) {
 				this.animate('PlayerMovingLeft', animation_speed, -1);
+				sword.rotation = 270;
 			} else if (data.y > 0) {
 				this.animate('PlayerMovingDown', animation_speed, -1);
+				sword.rotation = 180;
 			} else if (data.y < 0) {
 				this.animate('PlayerMovingUp', animation_speed, -1);
+				sword.rotation = 0;
 			} else {
 				this.stop();
 			}
-		});
-		this.bind('KeyDown', function() {
-			Crafty.e('Sword').wieldedBy(this);
 		});
 	},
 	

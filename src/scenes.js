@@ -1,7 +1,7 @@
 Crafty.scene('Game', function() {
 	
-	// A 2D array to keep track of all occupied tiles
 	this.occupied = new Array(Game.map_grid.width);
+	// A 2D array to keep track of all occupied tiles
 	for (var i = 0; i < Game.map_grid.width; i++) {
 		this.occupied[i] = new Array(Game.map_grid.height);
 		for (var y = 0; y < Game.map_grid.height; y++) {
@@ -44,7 +44,6 @@ Crafty.scene('Game', function() {
 			}
 		}
 	}
-	Crafty.e('Sword').wieldedBy(Crafty('Hero'));
 	
 	Crafty.audio.play('ring');
 	
@@ -138,7 +137,7 @@ Crafty.scene('Loading', function() {
 				'assets/candy_dish_lid.ogg',
 				'assets/candy_dish_lid.aac']
 		});
-		
+		setTimeout(function() { Crafty('Sword').sheathe(); }, 10000);
 	}),
 	this.begin = this.bind('KeyDown', function() {
 		Crafty.scene('Game');
