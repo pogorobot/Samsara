@@ -1,0 +1,70 @@
+Swing a sword:
+	/a Sword-swing animation
+	/p trigger animation on key
+	/d control scheme (generalize) (regular attacks, special attacks)
+	/d fuss with timings, variables
+Health:
+	/a Heart sprite
+	/a Empty heart sprite
+	/d Interface (health bar)
+	/p on hit, enemies reduce heart
+	/p Give enemies health?
+	/a Hurt animation
+	/p on death, change scene
+Scrollable Map:
+	/p remove or move tree-edges
+	/p draw terrain when in range
+	/p offscreen enemy-generators?
+	/p gates to new scenes
+Knockback:
+	/d Algorithm (on hurt, push?)
+	/p implement above
+Heroes:
+	Jade (Lifestealer):
+		/a Sprites, animation
+		/p Life drain
+		/d Special attack (beckon?)
+	Griffith (Warg):
+		/a sprites, animation
+		/p Pounce
+	Diana (Sniper):
+	Ian (Whisperer):
+	Serena (Water Dancer):
+	Kendry (Sage):
+	Alys (Witch):
+Map:
+	/d placement (interface)
+	/p minimap - pixel per tile?
+	/a attractive colors (see World)
+World:
+	/p scrollable map
+	/a terrain
+	/d terrain types
+	/d layout
+	/d changing (permanence)
+Traps:
+
+Monologue:
+	Jade:
+		/a writing
+		/p programming
+		/d triggers
+	
+Enemies:
+	/a sprites (infinite)
+	/d behavior
+	/p health
+	/p attacks
+	
+Bosses:
+	Smiler:
+	Raven:
+	Charon:
+	Cheshire:
+	Jeff:
+	Nightmare:
+	Prince Konrad:
+	Count:
+	Fish:
+	Lion:
+	Dark Lord:
