@@ -68,6 +68,7 @@ Crafty.c('Sword', {
 			this.attr({ x: wielder.x, y: wielder.y - Game.map_grid.tile.height});
 		});
 		this.origin(Game.map_grid.tile.width / 2, Game.map_grid.tile.height * 3 / 2);
+		this.rotation = wielder.swordRotation;
 		return this;
 	},
 	stab: function(data)
@@ -135,6 +136,7 @@ Crafty.c('Fleeing', {
 
 Crafty.c('Hero', {
 	swordOut: true,
+	swordRotation: 0,
 	init: function() {
 		var speed = 2;
 		
@@ -163,19 +165,20 @@ Crafty.c('Hero', {
 		this.bind('NewDirection', function(data) {
 			if (data.x > 0) {
 				this.animate('PlayerMovingRight', animation_speed, -1);
-				sword.rotation = 90;
+				this.swordRotation = 90;
 			} else if (data.x < 0) {
 				this.animate('PlayerMovingLeft', animation_speed, -1);
-				sword.rotation = 270;
+				this.swordRotation = 270;
 			} else if (data.y > 0) {
 				this.animate('PlayerMovingDown', animation_speed, -1);
-				sword.rotation = 180;
+				this.swordRotation = 180;
 			} else if (data.y < 0) {
 				this.animate('PlayerMovingUp', animation_speed, -1);
-				sword.rotation = 0;
+				this.swordRotation = 0;
 			} else {
 				this.stop();
 			}
+			sword.rotation = this.swordRotation;
 		});
 	},
 	

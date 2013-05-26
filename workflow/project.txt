@@ -11,11 +11,10 @@ Health:
 	/p Give enemies health?
 	/a Hurt animation
 	/p on death, change scene
-Scrollable Map:
-	/p remove or move tree-edges
-	/p draw terrain when in range
-	/p offscreen enemy-generators?
-	/p gates to new scenes
+Multiple Screens (MegaMap):
+	/d Okay so the goal is to move between different screens
+	/d You can do that
+	/d the scrolling thing ain't gonna work though =/
 Knockback:
 	/d Algorithm (on hurt, push?)
 	/p implement above
