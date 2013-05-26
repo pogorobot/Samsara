@@ -50,9 +50,8 @@ Crafty.c('Rock', {
 
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('Actor, Solid, spr_player, SpriteAnimation, Fleeing, Collectible');
-		this.animate('PlayerMovingDown', 0, 2, 2);
-		this.animate('PlayerMovingDown', 7, -1);
+		this.requires('Actor, Solid, Fleeing, Collectible')
+			
 	},
 });
 
@@ -87,30 +86,61 @@ Crafty.c('Fleeing', {
 	
 	originalSpeed: 1,
 	speed: this.originalSpeed,
+	animation_speed: 2,
 	dx: 0,
 	dy: 0,
 	fleeingFrom: Crafty('Hero'),
 	
 	init: function() {
-		//this.requires('Collision, Collectible')
-		this.requires('Collision');
+		this.requires('Collision, spr_player, SpriteAnimation');
 		this.bind('EnterFrame', this.flee);
 		this.onHit('Solid', this.stopMovement);
+		this.animate('PlayerMovingUp',    0, 0, 2)
+			.animate('PlayerMovingRight', 0, 1, 2)
+			.animate('PlayerMovingDown',  0, 2, 2)
+			.animate('PlayerMovingLeft',  0, 3, 2);
 	},
 	
 	flee: function() {
+		var newDx = this.dx;
+		var newDy = this.dy;
 		this.fleeingFrom = Crafty('Hero');
 		this.speed = this.originalSpeed;
-		this.dy = this.speed / 2;
+		newDy = this.speed / 2;
 		if (this.fleeingFrom.y < this.y) {
-			this.dy = -this.dy;
+			newDy = -newDy;
 		}
-		this.dx = this.speed / 2;
+		else if (this.fleeingFrom.y == this.y) {
+			newDy = 0;
+		}
+		newDx = this.speed / 2;
 		if (this.fleeingFrom.x < this.x) {
-			this.dx = -this.dx;
+			newDx = -newDx;
 		}
-		this.y += this.dy;
-		this.x += this.dx;
+		else if (this.fleeingFrom.x == this.x) {
+			newDx = 0;
+		}
+		this.y += newDy;
+		this.x += newDx;
+		if (newDy != this.dy || newDx != this.dx) {
+			this.dy = newDy;
+			this.dx = newDx;
+			if (this.dx > 0) {
+				this.animate('PlayerMovingRight', this.animation_speed, -1);
+			}
+			else if (this.dx < 0) {
+				this.animate('PlayerMovingLeft', this.animation_speed, -1);
+			}
+			else if (this.dy > 0) {
+				this.animate('PlayerMovingDown', this.animation_speed, -1);
+			}
+			else if (this.dy < 0) {
+				this.animate('PlayerMovingUp', this.animation_speed, -1);
+			}
+			else {
+				this.stop();
+			}
+		}
 		return this;
 	},
 	
