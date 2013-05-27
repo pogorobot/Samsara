@@ -107,14 +107,14 @@ Crafty.c('Fleeing', {
 		this.fleeingFrom = Crafty('Hero');
 		this.speed = this.originalSpeed;
 		newDy = this.speed / 2;
-		if (this.fleeingFrom.y < this.y) {
+		if (this.fleeingFrom.y > this.y) {
 			newDy = -newDy;
 		}
 		else if (this.fleeingFrom.y == this.y) {
 			newDy = 0;
 		}
 		newDx = this.speed / 2;
-		if (this.fleeingFrom.x < this.x) {
+		if (this.fleeingFrom.x > this.x) {
 			newDx = -newDx;
 		}
 		else if (this.fleeingFrom.x == this.x) {
@@ -166,7 +166,7 @@ Crafty.c('Fleeing', {
 
 Crafty.c('Hero', {
 	swordOut: true,
-	swordRotation: 0,
+	swordRotation: 180,
 	init: function() {
 		var speed = 2;
 		

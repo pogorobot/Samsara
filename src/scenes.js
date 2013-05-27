@@ -137,7 +137,6 @@ Crafty.scene('Loading', function() {
 				'assets/candy_dish_lid.ogg',
 				'assets/candy_dish_lid.aac']
 		});
-		setTimeout(function() { Crafty('Sword').sheathe(); }, 10000);
 	}),
 	this.begin = this.bind('KeyDown', function() {
 		Crafty.scene('Game');
