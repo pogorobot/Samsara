@@ -5,12 +5,15 @@ Swing a sword:
 	/d fuss with timings, variables
 Health:
 	CHECK /a Heart sprite
-	/a Empty heart sprite
-	/d Interface (health bar)
-	/p on hit, enemies reduce heart
+	CHECK /a Empty heart sprite
+	CHECK /d Interface (health bar) - put seven hearts at the top of the screen
+	CHECK /p put seven hearts at the top of the screen
+	CHECK	/p Heart component
+	CHECK	/p place them
+	CHECK /p on hit, enemies reduce heart
 	/p Give enemies health?
 	/a Hurt animation
-	/p on death, change scene
+	CHECK /p on death, change scene
 Multiple Screens (MegaMap):
 	/d Okay so the goal is to move between different screens
 	/d You can do that

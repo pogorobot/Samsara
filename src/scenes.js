@@ -33,6 +33,7 @@ Crafty.scene('Game', function() {
 		}
 	}
 	
+	
 	// Generate up to five villages on the map in random locations
 	var max_villages = 13;
 	for (var x = 0; x < Game.map_grid.width; x++) {
@@ -52,9 +53,14 @@ Crafty.scene('Game', function() {
 			Crafty.scene('Victory');
 		}
 	});
+	
+	this.show_defeat = this.bind('LostHeart', function() {
+		if (!Crafty('Heart').length) {
+			Crafty.scene('Defeat');
+		}
+	});
 }, function() {
 	this.unbind('VillageVisited', this.show_victory);
-	this.unbind('KeyDown', this.stab);
 });
 
 Crafty.scene('Victory', function() {
@@ -64,6 +70,26 @@ Crafty.scene('Victory', function() {
 		.css($text_css);
 	
 	Crafty.audio.play('applause');
+	
+	var delay = true;
+	setTimeout(function() { delay = false; }, 1000);
+		
+	this.restart_game = this.bind('KeyDown', function() {
+		if (!delay) {
+			Crafty.scene('Game');
+		}
+	});
+}, function() {
+	this.unbind('KeyDown', this.restart_game);
+});
+
+Crafty.scene('Defeat', function() {
+	Crafty.e('2D, DOM, Text')
+		.attr({ x: 0, y: Game.height()/2 - 24, w: Game.width() })
+		.text('YOU HAVE DIED')
+		.css($text_css);
+	
+	Crafty.audio.play('knock');
 	
 	var delay = true;
 	setTimeout(function() { delay = false; }, 5000);
@@ -118,6 +144,11 @@ Crafty.scene('Loading', function() {
 			spr_rock:    [1, 1]
 		});
 		Crafty.sprite(16, 'assets/sword.gif', { spr_sword: [0, 0] });
+		Crafty.sprite(16, 'assets/16x16_hearts.gif', {
+			spr_heart:      [0, 0],
+			spr_emptyHeart: [1, 0],
+			spr_halfHeart:  [2, 0]
+		});
 		
 		// Define the PC's sprite to be the first sprite in the third row of the 
 		// animation sprite map

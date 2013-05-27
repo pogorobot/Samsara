@@ -50,8 +50,19 @@ Crafty.c('Rock', {
 
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('Actor, Solid, Fleeing, Collectible')
-			
+		this.requires('Actor, HurtsToTouch, Solid, Swarming, Collectible')
+	},
+});
+
+Crafty.c('HurtsToTouch', {
+	init: function() {
+		this.requires('Actor, Solid, Collision');
+		this.onHit('Hero', this.touch);
+	},
+	
+	touch: function(data) {
+		bigShot = data[0].obj;
+		bigShot.loseHeart();
 	},
 });
 
@@ -82,7 +93,26 @@ Crafty.c('Sword', {
 	},
 });
 
-Crafty.c('Fleeing', {
+Crafty.c('Heart', {
+	init: function() {
+		this.requires('Actor, spr_heart');
+	},
+	
+	hurt: function() {
+		this.destroy();
+	},
+});
+
+Crafty.c('Swarming', {
+	init: function() {
+		this.requires('SwarmingOrFleeingBasics, HurtsToTouch');
+		this.onHit('Hero', this.touch);
+		this.onHit('Solid', this.stopMovement);
+		this.bind('EnterFrame', this.swarm);
+	},
+});
+
+Crafty.c('SwarmingOrFleeingBasics', {
 	
 	originalSpeed: 1,
 	speed: this.originalSpeed,
@@ -93,8 +123,6 @@ Crafty.c('Fleeing', {
 	
 	init: function() {
 		this.requires('Collision, spr_player, SpriteAnimation');
-		this.bind('EnterFrame', this.flee);
-		this.onHit('Solid', this.stopMovement);
 		this.animate('PlayerMovingUp',    0, 0, 2)
 			.animate('PlayerMovingRight', 0, 1, 2)
 			.animate('PlayerMovingDown',  0, 2, 2)
@@ -159,7 +187,59 @@ Crafty.c('Fleeing', {
 			this.speed = 0;
 		}
 		return this;
-	}
+	},
+	
+	swarm: function() {
+		var newDx = this.dx;
+		var newDy = this.dy;
+		this.fleeingFrom = Crafty('Hero');
+		this.speed = this.originalSpeed;
+		newDy = this.speed / 2;
+		if (this.fleeingFrom.y < this.y) {
+			newDy = -newDy;
+		}
+		else if (this.fleeingFrom.y == this.y) {
+			newDy = 0;
+		}
+		newDx = this.speed / 2;
+		if (this.fleeingFrom.x < this.x) {
+			newDx = -newDx;
+		}
+		else if (this.fleeingFrom.x == this.x) {
+			newDx = 0;
+		}
+		this.y += newDy;
+		this.x += newDx;
+		if (newDy != this.dy || newDx != this.dx) {
+			this.dy = newDy;
+			this.dx = newDx;
+			if (this.dx > 0) {
+				this.animate('PlayerMovingRight', this.animation_speed, -1);
+			}
+			else if (this.dx < 0) {
+				this.animate('PlayerMovingLeft', this.animation_speed, -1);
+			}
+			else if (this.dy > 0) {
+				this.animate('PlayerMovingDown', this.animation_speed, -1);
+			}
+			else if (this.dy < 0) {
+				this.animate('PlayerMovingUp', this.animation_speed, -1);
+			}
+			else {
+				this.stop();
+			}
+		}
+		return this;
+	},
+});
+
+Crafty.c('Fleeing', {
+	
+	init: function() {
+		this.requires('SwarmingOrFleeingBasics');
+		this.onHit('Solid', this.stopMovement);
+		this.bind('EnterFrame', this.flee);
+	},
 });
 
 
@@ -167,6 +247,7 @@ Crafty.c('Fleeing', {
 Crafty.c('Hero', {
 	swordOut: true,
 	swordRotation: 180,
+	healthBar: [],
 	init: function() {
 		var speed = 2;
 		
@@ -210,9 +291,21 @@ Crafty.c('Hero', {
 			}
 			sword.rotation = this.swordRotation;
 		});
+		
+		var startPlacingHearts = Game.map_grid.width / 2 - 4;
+		for (var i = 0; i < 7; i++) {
+			this.healthBar[i] = (Crafty.e('Heart').at(startPlacingHearts + i, 1));
+		}
+	},
+	
+	loseHeart: function() {
+		this.healthBar[this.healthBar.length - 1].destroy();
+		this.healthBar.length -= 1;
+		Crafty.trigger('LostHeart', this);
 	},
 	
 	stopOnSolids: function() {
+		this.onHit('HurtsToTouch', this.loseHeart);
 		this.onHit('Solid', this.stopMovement);
 		return this;
 	},
