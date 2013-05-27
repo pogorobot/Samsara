@@ -106,9 +106,9 @@ Crafty.c('Heart', {
 Crafty.c('Swarming', {
 	init: function() {
 		this.requires('SwarmingOrFleeingBasics, HurtsToTouch');
+		this.bind('EnterFrame', this.swarm);
 		this.onHit('Hero', this.touch);
 		this.onHit('Solid', this.stopMovement);
-		this.bind('EnterFrame', this.swarm);
 	},
 });
 
@@ -237,8 +237,8 @@ Crafty.c('Fleeing', {
 	
 	init: function() {
 		this.requires('SwarmingOrFleeingBasics');
-		this.onHit('Solid', this.stopMovement);
 		this.bind('EnterFrame', this.flee);
+		this.onHit('Solid', this.stopMovement);
 	},
 });
 
