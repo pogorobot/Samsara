@@ -12,7 +12,7 @@ Health:
 	CHECK	/p place them
 	CHECK /p on hit, enemies reduce heart
 	/p Give enemies health?
-	/a Hurt animation
+	CHECK ISH /a Hurt animation
 	CHECK /p on death, change scene
 Multiple Screens (MegaMap):
 	/d Okay so the goal is to move between different screens

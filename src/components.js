@@ -31,7 +31,7 @@ Crafty.c('Actor', {
 // A Tree is just an Actor with a certain color
 Crafty.c('Tree', {
 	init: function() {
-		this.requires('Actor, Solid, spr_tree');
+		this.requires('Actor, Solid, spr_tree, StopsBullets');
 	},
 });
 
@@ -44,13 +44,31 @@ Crafty.c('Bush', {
 
 Crafty.c('Rock', {
 	init: function() {
-		this.requires('Actor, Solid, spr_rock');
+		this.requires('Actor, Solid, spr_rock, StopsBullets');
 	},
 });
 
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('Actor, HurtsToTouch, Solid, Swarming, Collectible')
+		this.requires('Actor, HurtsToTouch, Solid, Swarming, Collectible, Chance')
+		this.bind('EnterFrame', this.shootRandomly);
+	},
+	shoot: function() {
+		var hero = Crafty('Hero');
+		var distance = Crafty.math.distance(this.x, this.y, hero.x, hero.y);
+		var speed = 1;
+		var dy = speed * (hero.y - this.y) / distance;
+		var dx = speed * (hero.x - this.x) / distance;
+		var bullet = Crafty.e('Bullet').setPos(this.x + Game.map_grid.tile.width * 1.5, this.y).setAngle(dx, dy);
+	},
+	shootRandomly: function() {
+		if (this.chance(0.1)) this.shoot();
+	},
+});
+
+Crafty.c('Chance', {
+	chance: function(percent) {
+		return Crafty.math.randomInt(0, 99) < percent;
 	},
 });
 
@@ -62,6 +80,7 @@ Crafty.c('HurtsToTouch', {
 	
 	touch: function(data) {
 		bigShot = data[0].obj;
+		//bigShot.getPushed(bigShot.x - this.x, bigShot.y - this.y);
 		bigShot.loseHeart();
 	},
 });
@@ -242,6 +261,29 @@ Crafty.c('Fleeing', {
 	},
 });
 
+Crafty.c('Bullet', {
+	dy: 0,
+	dx: 0,
+	init: function() {
+		this.requires('Actor, Collision, spr_bullet, HurtsToTouch');
+		this.bind('EnterFrame', function() {
+			this.x += this.dx;
+			this.y += this.dy;
+		});
+		this.onHit('StopsBullets', function() { this.destroy(); });
+	},
+	setAngle: function(dx, dy) {
+		this.dy = dy;
+		this.dx = dx;
+		return this;
+	},
+	setPos: function (x, y) {
+		this.x = x;
+		this.y = y;
+		return this;
+	},
+});
+
 
 
 Crafty.c('Hero', {
@@ -308,6 +350,12 @@ Crafty.c('Hero', {
 		this.invulnerable = true;
 		this.alpha = 0.5;
 		this.timeout(function() { this.invulnerable = false; this.alpha = 1; }, 500);
+	},
+	
+	getPushed: function(x, y) {
+		if (this.invulnerable) return;
+		this.x += x;
+		this.y += y;
 	},
 	
 	stopOnSolids: function() {
