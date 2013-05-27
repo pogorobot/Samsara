@@ -248,6 +248,8 @@ Crafty.c('Hero', {
 	swordOut: true,
 	swordRotation: 180,
 	healthBar: [],
+	maxHealth: 7,
+	invulnerable: 0,
 	init: function() {
 		var speed = 2;
 		
@@ -293,15 +295,19 @@ Crafty.c('Hero', {
 		});
 		
 		var startPlacingHearts = Game.map_grid.width / 2 - 4;
-		for (var i = 0; i < 7; i++) {
+		for (var i = 0; i < this.maxHealth; i++) {
 			this.healthBar[i] = (Crafty.e('Heart').at(startPlacingHearts + i, 1));
 		}
 	},
 	
 	loseHeart: function() {
+		if (this.invulnerable) return;
 		this.healthBar[this.healthBar.length - 1].destroy();
 		this.healthBar.length -= 1;
 		Crafty.trigger('LostHeart', this);
+		this.invulnerable = true;
+		this.alpha = 0.5;
+		this.timeout(function() { this.invulnerable = false; this.alpha = 1; }, 500);
 	},
 	
 	stopOnSolids: function() {
