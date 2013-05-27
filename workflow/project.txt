@@ -4,7 +4,7 @@ Swing a sword:
 	/d control scheme (generalize) (regular attacks, special attacks)
 	/d fuss with timings, variables
 Health:
-	/a Heart sprite
+	CHECK /a Heart sprite
 	/a Empty heart sprite
 	/d Interface (health bar)
 	/p on hit, enemies reduce heart
