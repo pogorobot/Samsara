@@ -3,17 +3,6 @@ Swing a sword:
 	/p trigger animation on key
 	/d control scheme (generalize) (regular attacks, special attacks)
 	/d fuss with timings, variables
-Health:
-	CHECK /a Heart sprite
-	CHECK /a Empty heart sprite
-	CHECK /d Interface (health bar) - put seven hearts at the top of the screen
-	CHECK /p put seven hearts at the top of the screen
-	CHECK	/p Heart component
-	CHECK	/p place them
-	CHECK /p on hit, enemies reduce heart
-	/p Give enemies health?
-	CHECK ISH /a Hurt animation
-	CHECK /p on death, change scene
 Multiple Screens (MegaMap):
 	/d Okay so the goal is to move between different screens
 	/d You can do that

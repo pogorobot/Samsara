@@ -50,7 +50,7 @@ Crafty.c('Rock', {
 
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('Actor, HurtsToTouch, Solid, Swarming, Collectible, Chance')
+		this.requires('Actor, HurtsToTouch, Solid, Fleeing, Collectible, Chance')
 		this.bind('EnterFrame', this.shootRandomly);
 	},
 	shoot: function() {
@@ -59,7 +59,21 @@ Crafty.c('Enemy', {
 		var speed = 1;
 		var dy = speed * (hero.y - this.y) / distance;
 		var dx = speed * (hero.x - this.x) / distance;
-		var bullet = Crafty.e('Bullet').setPos(this.x + Game.map_grid.tile.width * 1.5, this.y).setAngle(dx, dy);
+		var shootX = this.x;
+		var shootY = this.y;
+		if (dx > 0) {
+			shootX += Game.map_grid.tile.width;
+		}
+		else if (dx < 0) {
+			shootX -= Game.map_grid.tile.width;
+		}
+		else if (dy > 0) {
+			shootY += Game.map_grid.tile.height;
+		}
+		else {
+			shootY -= Game.map_grid.tile.height;
+		}
+		var bullet = Crafty.e('Bullet').setPos(shootX, shootY).setAngle(dx, dy);
 	},
 	shootRandomly: function() {
 		if (this.chance(0.1)) this.shoot();
@@ -74,7 +88,7 @@ Crafty.c('Chance', {
 
 Crafty.c('HurtsToTouch', {
 	init: function() {
-		this.requires('Actor, Solid, Collision');
+		this.requires('Actor, Collision');
 		this.onHit('Hero', this.touch);
 	},
 	
@@ -85,11 +99,32 @@ Crafty.c('HurtsToTouch', {
 	},
 });
 
+Crafty.c('DeflectsBullets', {
+	init: function() {
+		this.requires('Actor, Collision');
+		this.onHit('Bullet', this.bounce);
+	},
+	bounce: function(data) {
+		var lucky = data[0].obj;
+		if (this.rotation % 180 == 90) {
+			lucky.bounceVertically();
+		}
+		else {
+			lucky.bounceHorizontally();
+		}
+	},
+});
+
 Crafty.c('Sword', {
 	wielder: Crafty('Hero'),
 	init: function() {
-		this.requires('Actor, spr_sword, Collision');
+		this.requires('Actor, spr_sword, Collision, SpriteAnimation, DeflectsBullets');
+		this.animate('SwordSwinging',    0, 0, 4)
 		this.onHit('Collectible', this.stab);
+	},
+	swing: function() {
+		this.animate('SwordSwinging', 8, 0);
+		//this.sheathe();
 	},
 	wieldedBy: function(wielder) {
 		this.wielder = wielder;
@@ -98,6 +133,12 @@ Crafty.c('Sword', {
 		});
 		this.origin(Game.map_grid.tile.width / 2, Game.map_grid.tile.height * 3 / 2);
 		this.rotation = wielder.swordRotation;
+		this.swing();
+		this.bind('AnimationEnd', function() {
+			if (!this.isPlaying('SwordSwingint')) {
+				this.sheathe();
+			}
+		});
 		return this;
 	},
 	stab: function(data)
@@ -264,6 +305,7 @@ Crafty.c('Fleeing', {
 Crafty.c('Bullet', {
 	dy: 0,
 	dx: 0,
+	bounced: 0,
 	init: function() {
 		this.requires('Actor, Collision, spr_bullet, HurtsToTouch');
 		this.bind('EnterFrame', function() {
@@ -281,6 +323,21 @@ Crafty.c('Bullet', {
 		this.x = x;
 		this.y = y;
 		return this;
+	},
+	//as if bouncing off a horizontal surface
+	bounceHorizontally: function() {
+		if (this.bounced) return; //only bounce once
+		this.dy *= -1;
+		this.bounced = true;
+	},
+	bounceVertically: function() {
+		if (this.bounced) return; //only bounces once
+		this.dx *= -1;
+		this.bounced = true;
+	},
+	shove: function(shoveX, shoveY) {
+		this.dx += shoveX;
+		this.dy += shoveY;
 	},
 });
 

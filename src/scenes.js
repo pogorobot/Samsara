@@ -143,7 +143,7 @@ Crafty.scene('Loading', function() {
 			spr_village: [0, 1],
 			spr_rock:    [1, 1]
 		});
-		Crafty.sprite(16, 'assets/sword.gif', { spr_sword: [0, 0] });
+		Crafty.sprite(16, 'assets/swordSwing.gif', { spr_sword: [3, 0] });
 		Crafty.sprite(16, 'assets/16x16_hearts.gif', {
 			spr_heart:      [0, 0],
 			spr_emptyHeart: [1, 0],
