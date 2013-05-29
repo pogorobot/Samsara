@@ -75,6 +75,9 @@ Crafty.c('Enemy', {
 		}
 		var bullet = Crafty.e('Bullet').setPos(shootX, shootY).setAngle(dx, dy);
 	},
+	loseHeart: function() {
+		this.destroy();
+	},
 	shootRandomly: function() {
 		if (this.chance(0.1)) this.shoot();
 	},
@@ -90,6 +93,7 @@ Crafty.c('HurtsToTouch', {
 	init: function() {
 		this.requires('Actor, Collision');
 		this.onHit('Hero', this.touch);
+		this.onHit('Enemy', this.touch);
 	},
 	
 	touch: function(data) {
@@ -106,12 +110,8 @@ Crafty.c('DeflectsBullets', {
 	},
 	bounce: function(data) {
 		var lucky = data[0].obj;
-		if (this.rotation % 180 == 90) {
-			lucky.bounceVertically();
-		}
-		else {
-			lucky.bounceHorizontally();
-		}
+		var force = 0.5 //amount to push per frame once bounced
+		lucky.bounce(this.rotation, force);
 	},
 });
 
@@ -323,6 +323,34 @@ Crafty.c('Bullet', {
 		this.x = x;
 		this.y = y;
 		return this;
+	},
+	bounce: function(rotation, force) { //in degrees, from vertical
+		if (this.bounced) return;
+		this.bounced = true;
+		if (rotation == 0) { //bouncing up
+			if (this.dy > 0) { //headed down
+				this.dy *= -1;
+			}
+			this.dy -= force;
+		}
+		else if (rotation == 90) { //bouncing right
+			if (this.dx < 0) { //headed left
+				this.dx *= -1;
+			}
+			this.dx += force;
+		}
+		else if (rotation == 180) { //bouncing down
+			if (this.dy < 0) {
+				this.dy *= -1;
+			}
+			this.dy += force;
+		}
+		else { //bouncing left (or something weird!)
+			if (this.x > 0) {
+				this.dx *= -1;
+			}
+			this.dx -= force;
+		}
 	},
 	//as if bouncing off a horizontal surface
 	bounceHorizontally: function() {
