@@ -79,13 +79,13 @@ Crafty.c('Enemy', {
 		this.destroy();
 	},
 	shootRandomly: function() {
-		if (this.chance(0.1)) this.shoot();
+		if (this.chance(0.5)) this.shoot();
 	},
 });
 
 Crafty.c('Chance', {
 	chance: function(percent) {
-		return Crafty.math.randomInt(0, 99) < percent;
+		return Math.random() * 100 < percent;
 	},
 });
 
