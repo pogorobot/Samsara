@@ -44,10 +44,11 @@ Crafty.scene('Loading', function() {
 		//Crafty.sprite(16, 'assets/16x16_forest_2.gif', { 
 		Crafty.sprite(16, 'assets/burningHouse.gif', { //Same as forest_2 but with the house on fire
 			spr_tree:    [0, 0],
-			spr_bush:    [1, 0],
+			//spr_bush:    [1, 0],
 			spr_village: [0, 1],
 			spr_rock:    [1, 1]
 		});
+		Crafty.sprite(16, 'assets/IceRockMap.gif', {spr_bush: [1, 0]});
 		Crafty.sprite(16, 'assets/swordSwing.gif', { spr_sword: [3, 0] }); //Static sword, not currently in use //I lied
 		//Geez, so don't remove this, because if it can't find a sprite asset Crafty's error message is STUPID.
 		//If you see an error on line 7009, it is probably due to a sprite not existing, FYI.
