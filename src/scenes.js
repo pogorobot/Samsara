@@ -116,7 +116,7 @@ Crafty.scene('Game', function() {
 	this.occupied[this.player.at().x][this.player.at().y] = true;
 	
 	// Place a tree at every edge square on our grid of 16x16 tiles
-	var max_enemies = 23;
+	var max_enemies = 0;
 	for (var x = 0; x < Game.map_grid.width; x++) {
 		for (var y = 0; y < Game.map_grid.height; y++) {
 			var at_edge = x == 0 || x == Game.map_grid.width - 1 || y == 0 || y == Game.map_grid.height - 1;

@@ -1,6 +1,8 @@
 //The Grid component allows an element to be located
 //on a grid of tiles
 Crafty.c('Grid', {
+	tileX: 0,
+	tileY: 0,
 	init: function() {
 		this.attr({
 			w: Game.map_grid.tile.width,
@@ -10,11 +12,13 @@ Crafty.c('Grid', {
 	
 	// Locate this entity at the given position on the grid
 	at: function(x, y) {
+		//at() means you're asking
 		if (x === undefined && y === undefined) {
-			return { x: this.x/Game.map_grid.tile.width, y: this.y/Game.map_grid.tile.height }
+			return { x: this.x/this.w, y: this.y/this.h }
 		}
+		//at(here) means you're telling
 		else {
-			this.attr({ x: x * Game.map_grid.tile.width, y: y * Game.map_grid.tile.height });
+			this.attr({ x: x * this.w, y: y * this.h, tileX: x, tileY: y });
 			return this;
 		}
 	}
@@ -28,26 +32,31 @@ Crafty.c('Actor', {
 	},
 });
 
-// A Tree is just an Actor with a certain color
+// A Tree is just an Actor with a certain sprite (that is solid and stops bullets)
 Crafty.c('Tree', {
 	init: function() {
 		this.requires('Actor, Solid, spr_tree, StopsBullets');
 	},
 });
 
-// A Bush is just an Actor with a certain color
+// A Bush is just an Actor with a certain sprite (that is solid)
 Crafty.c('Bush', {
 	init: function() {
 		this.requires('Actor, Solid, spr_bush');
 	},
 });
 
+//A Rock is a Solid Actor that stops bullets
 Crafty.c('Rock', {
 	init: function() {
 		this.requires('Actor, Solid, spr_rock, StopsBullets');
 	},
 });
 
+
+//Enemy Component
+//---------------
+//Current spec: Runs away from the hero, shooting plasma balls at 'em.
 Crafty.c('Enemy', {
 	init: function() {
 		this.requires('Actor, HurtsToTouch, Solid, Fleeing, Collectible, Chance')
@@ -75,8 +84,10 @@ Crafty.c('Enemy', {
 		}
 		var bullet = Crafty.e('Bullet').setPos(shootX, shootY).setAngle(dx, dy);
 	},
+	//What happens when you get hit with something that hurts (e.g., bullets)
+	//Currently nothing
 	loseHeart: function() {
-		this.destroy();
+		//this.destroy();
 	},
 	shootRandomly: function() {
 		if (this.chance(0.5)) this.shoot();
@@ -465,9 +476,21 @@ Crafty.c('Hero', {
 // A village is a tile on the grid that the PC must visit in order to win the game
 Crafty.c('Village', {
 	init: function() {
-		this.requires('Actor, Solid, spr_village, Collectible');
+		this.requires('Actor, Solid, spr_village, Collectible, SpawnPoint');
 	},
-	
+});
+
+Crafty.c('SpawnPoint', {
+	probability: 0.2,
+	init: function() {
+		this.requires('Actor, Chance');
+		this.bind('EnterFrame', this.thinkAboutSpawning);
+	},
+	thinkAboutSpawning: function() {
+		if (this.chance(this.probability)) {
+			Crafty.e('Enemy').at(this.tileX,this.tileY+1);
+		}
+	},
 });
 
 Crafty.c('Collectible', {
