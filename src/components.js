@@ -53,44 +53,63 @@ Crafty.c('Rock', {
 	},
 });
 
-
-//Enemy Component
-//---------------
-//Current spec: Runs away from the hero, shooting plasma balls at 'em.
-Crafty.c('Enemy', {
+Crafty.c('ShootsAtPlayer', {
 	init: function() {
-		this.requires('Actor, HurtsToTouch, Solid, Fleeing, Collectible, Chance')
+		this.requires('Actor');
 		this.bind('EnterFrame', this.shootRandomly);
 	},
 	shoot: function() {
 		var hero = Crafty('Hero');
 		var distance = Crafty.math.distance(this.x, this.y, hero.x, hero.y);
-		var speed = 1;
+		//the speed of the projectile in px per frame
+		var speed = 1.5;
+		//how that translates to vert and horizontal speeds
 		var dy = speed * (hero.y - this.y) / distance;
 		var dx = speed * (hero.x - this.x) / distance;
+		//here we decide where to start the projectile
 		var shootX = this.x;
 		var shootY = this.y;
 		if (dx > 0) {
-			shootX += Game.map_grid.tile.width;
+			shootX += this.w;
 		}
 		else if (dx < 0) {
-			shootX -= Game.map_grid.tile.width;
+			shootX -= this.w;
 		}
 		else if (dy > 0) {
-			shootY += Game.map_grid.tile.height;
+			shootY += this.h;
 		}
 		else {
-			shootY -= Game.map_grid.tile.height;
+			shootY -= this.h;
 		}
-		var bullet = Crafty.e('Bullet').setPos(shootX, shootY).setAngle(dx, dy);
+		//now that we have our position and direction, spawn a bullet
+		Crafty.e('Bullet').setPos(shootX, shootY).setAngle(dx, dy);
+	},
+	shootRandomly: function() {
+		if (this.chance(0.5)) this.shoot();
+	},
+});
+
+
+//Enemy Component
+//---------------
+//Current spec: Runs away from the hero, shooting plasma balls at 'em.
+//Other components currently perform literally all the logic of that.
+Crafty.c('Enemy', {
+	init: function() {
+		this.requires('Actor, HurtsToTouch, Solid, Fleeing, ShootsAtPlayer, Collectible, Chance')
 	},
 	//What happens when you get hit with something that hurts (e.g., bullets)
 	//Currently nothing
 	loseHeart: function() {
 		//this.destroy();
 	},
-	shootRandomly: function() {
-		if (this.chance(0.5)) this.shoot();
+});
+
+Crafty.c('ChargingEnemy', {
+	init: function() {
+		this.requires('Actor, HurtsToTouch, Solid, Swarming, ShootsAtPlayer, Collectible, Chance')
+	},
+	loseHeart: function() {
 	},
 });
 
@@ -194,12 +213,16 @@ Crafty.c('SwarmingOrFleeingBasics', {
 	
 	init: function() {
 		this.requires('Collision, spr_player, SpriteAnimation');
+		//For the uninitiated: .animate comes from the SpriteAnimation component. Here we're defining reels
+		//.animate with four arguments defines reels, and .animate with three arguments plays them. Obviously.
+		//Here we're saying the 'PlayerMovingUp' reel should be the two frames starting at 0,0 in our sprite component (spr_player)
 		this.animate('PlayerMovingUp',    0, 0, 2)
 			.animate('PlayerMovingRight', 0, 1, 2)
 			.animate('PlayerMovingDown',  0, 2, 2)
 			.animate('PlayerMovingLeft',  0, 3, 2);
 	},
 	
+	//oh GLUB the redundancy between this and swarm(). MUST FIX
 	flee: function() {
 		var newDx = this.dx;
 		var newDy = this.dy;
@@ -243,20 +266,26 @@ Crafty.c('SwarmingOrFleeingBasics', {
 		return this;
 	},
 	
+	//So you ran into a wall.
+	//Maybe all is not lost?
+	//Here we cancel out only that part of the movement that actually keeps us touching solids
 	stopMovement: function() {
 		if (this.dx || this.dy) {
+			//First try undoing the x move we did
 			this.x -= this.dx;
-			if (this.hit('Solid') != false) {
+			if (this.hit('Solid') != false) { //didn't work (we're still touching a solid)
+				//redo the x move and try undoing the y
 				this.x += this.dx;
 				this.y -= this.dy;
 				if (this.hit('Solid') != false) {
+					//also didn't work, crap
 					this.x -= this.dx;
-					this.y -= this.dy;
 				}
 			}
-		} else {
-			this.speed = 0;
-		}
+		} //else {
+			//this.speed = 0;
+		//}
+		
 		return this;
 	},
 	
@@ -488,7 +517,12 @@ Crafty.c('SpawnPoint', {
 	},
 	thinkAboutSpawning: function() {
 		if (this.chance(this.probability)) {
-			Crafty.e('Enemy').at(this.tileX,this.tileY+1);
+			if (this.chance(50)) {
+				Crafty.e('Enemy').at(this.tileX,this.tileY+1);
+			}
+			else {
+				Crafty.e('ChargingEnemy').at(this.tileX, this.tileY+1);
+			}
 		}
 	},
 });
