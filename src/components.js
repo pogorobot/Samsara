@@ -234,6 +234,10 @@ Crafty.c('SwarmingOrFleeingBasics', {
 		//how that translates to vert and horizontal speeds
 		newDy = this.speed * (this.fleeingFrom.y - this.y) / distance;
 		newDx = this.speed * (this.fleeingFrom.x - this.x) / distance;
+		if (this.fleeing) {
+			newDy = -newDy;
+			newDx = -newDx;
+		}
 		
 		//Do the moving
 		this.y += newDy;

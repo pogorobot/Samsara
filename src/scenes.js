@@ -147,7 +147,8 @@ Crafty.scene('Game', function() {
 	for (var x = 0; x < Game.map_grid.width; x++) {
 		for (var y = 0; y < Game.map_grid.height; y++) {
 			if (Math.random() < 0.02) {
-				if (Crafty('Village').length < max_villages && !this.occupied[x][y]) {
+				//Spawn one as long as you haven't hit the max, the square isn't occupied, and the square it would spawn enemies at isn't occupied
+				if (Crafty('Village').length < max_villages && !this.occupied[x][y] && !this.occupied[x][y+1]) {
 					Crafty.e('Village').at(x, y);
 				}
 			}
