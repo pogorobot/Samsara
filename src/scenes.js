@@ -23,6 +23,7 @@ Crafty.scene('Loading', function() {
 		'assets/swordSwing.gif',			//Ha ha whoops I drew a bunch of sprites but forgot to preload them
 		'assets/8x8_bullet.gif',
 		'assets/16x16_hearts.gif',			//There, fixed.
+		'assets/skeleton.png',
 		'assets/door_knock_3x.mp3',			//I'm not sure why all the audio files are in three formats??
 		'assets/door_knock_3x.ogg',			//That's how they did it in the tutorial =/
 		'assets/door_knock_3x.aac',			//Seems kind of silly tbh

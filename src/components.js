@@ -440,8 +440,16 @@ Crafty.c('Hero', {
 	
 	loseHeart: function() {
 		if (this.invulnerable) return;
-		this.healthBar[this.healthBar.length - 1].destroy();
-		this.healthBar.length -= 1;
+		var heartToLose = this.healthBar[this.healthBar.length - 1];
+		if (Crafty('HalfHeart').length) {
+			heartToLose = Crafty('HalfHeart');
+			Crafty.e('BrokenHeart').at(heartToLose.tileX, heartToLose.tileY);
+		}
+		else {
+			this.healthBar.length -= 1;
+			Crafty.e('HalfHeart').at(heartToLose.tileX, heartToLose.tileY);
+		}
+		heartToLose.destroy();
 		Crafty.trigger('LostHeart', this);
 		this.invulnerable = true;
 		this.alpha = 0.5;
@@ -471,6 +479,18 @@ Crafty.c('Hero', {
 		villlage = data[0].obj;
 		villlage.collect();
 	},
+});
+
+Crafty.c('BrokenHeart', {
+	init: function() {
+		this.requires('Actor, spr_emptyHeart');
+	}
+});
+
+Crafty.c('HalfHeart', {
+	init: function() {
+		this.requires('Actor, spr_halfHeart');
+	}
 });
 
 // A village is a tile on the grid that the PC must visit in order to win the game
