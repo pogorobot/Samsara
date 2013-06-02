@@ -226,41 +226,38 @@ Crafty.c('SwarmingOrFleeingBasics', {
 	move: function() {
 		var newDx = this.dx;
 		var newDy = this.dy;
-		this.fleeingFrom = Crafty('Hero');
+		this.fleeingFrom = Crafty('Hero'); //Remember what we're headed toward, or away from
 		this.speed = this.originalSpeed;
-		newDy = this.speed / 2;
-		if (this.fleeingFrom.y > this.y ^ !this.fleeing) {
-			newDy = -newDy;
-		}
-		else if (this.fleeingFrom.y == this.y) {
-			newDy = 0;
-		}
-		newDx = this.speed / 2;
-		if (this.fleeingFrom.x > this.x ^ !this.fleeing) {
-			newDx = -newDx;
-		}
-		else if (this.fleeingFrom.x == this.x) {
-			newDx = 0;
-		}
+		
+		//Figure out where we're moving
+		var distance = Crafty.math.distance(this.x, this.y, this.fleeingFrom.x, this.fleeingFrom.y);
+		//how that translates to vert and horizontal speeds
+		newDy = this.speed * (this.fleeingFrom.y - this.y) / distance;
+		newDx = this.speed * (this.fleeingFrom.x - this.x) / distance;
+		
+		//Do the moving
 		this.y += newDy;
 		this.x += newDx;
+		
+		//Animate the moving
 		if (newDy != this.dy || newDx != this.dx) {
 			this.dy = newDy;
 			this.dx = newDx;
-			if (this.dx > 0) {
-				this.animate('PlayerMovingRight', this.animation_speed, -1);
-			}
-			else if (this.dx < 0) {
-				this.animate('PlayerMovingLeft', this.animation_speed, -1);
-			}
-			else if (this.dy > 0) {
-				this.animate('PlayerMovingDown', this.animation_speed, -1);
-			}
-			else if (this.dy < 0) {
-				this.animate('PlayerMovingUp', this.animation_speed, -1);
+			if (Math.abs(newDy) > Math.abs(newDx)) {
+				if (newDy > 0) {
+					this.animate('PlayerMovingDown', this.animation_speed, -1);
+				}
+				else {
+					this.animate('PlayerMovingUp', this.animation_speed, -1);
+				}
 			}
 			else {
-				this.stop();
+				if (newDx > 0) {
+					this.animate('PlayerMovingRight', this.animation_speed, -1);
+				}
+				else {
+					this.animate('PlayerMovingLeft', this.animation_speed, -1);
+				}
 			}
 		}
 		return this;
