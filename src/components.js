@@ -42,7 +42,7 @@ Crafty.c('Enemy', {
 	},
 });
 
-
+//Just like a regular old enemy but heads toward the hero instead of fleeing
 Crafty.c('ChargingEnemy', {
 	init: function() {
 		this.requires('Actor, HurtsToTouch, Solid, Swarming, Collectible, Chance, ShootsAtPlayer')
@@ -51,35 +51,48 @@ Crafty.c('ChargingEnemy', {
 	},
 });
 
-
+//Hero Component
+//--------------
+//Here you have it: The player's avatar
+//Needs to have its behavior devolved to separate components for superior abstaction
+//Is currently kind of a mess of everything I wanted to be able to do
 Crafty.c('Hero', {
-	swordOut: true,
-	swordRotation: 180,
-	healthBar: [],
-	maxHealth: 4,
-	invulnerable: 0,
+	swordOut: false, 		//So we don't swing our sword if we're already swinging our sword
+	swordRotation: 180, 	//To keep track of where the sword should swing
+	healthBar: [],			//Holds the Heart components that show up atop the screen
+	maxHealth: 3,			//In full Hearts
+	invulnerable: false,	//So we don't take damage just after taking damage
 	init: function() {
 		var speed = 2;
 		
-		var sword = Crafty.e('Sword').wieldedBy(this);
+		//Requirements:   Actor (exists on a grid), Solid (enemies don't walk through  you), 
+						//Fourway, Collision, Keyboard (various interface functionality), 
+						//spr_player, SpriteAnimation (for your appearance)
 		this.requires('Actor, Solid, Fourway, Collision, spr_player, SpriteAnimation, Keyboard')
-			.fourway(speed)
-			//.onHit('Collectible', this.visitVillage)
-			.stopOnSolids()
-			.animate('PlayerMovingUp',    0, 0, 2)
-			.animate('PlayerMovingRight', 0, 1, 2)
+			.fourway(speed)			//Crafty method to grant keyboard control
+			.animate('PlayerMovingUp',    0, 0, 2)	//Define various animations
+			.animate('PlayerMovingRight', 0, 1, 2)	//arguments are: reel name, row and column on spritesheet, duration
 			.animate('PlayerMovingDown',  0, 2, 2)
 			.animate('PlayerMovingLeft',  0, 3, 2);
+			
+		this.onHit('HurtsToTouch', this.loseHeart); //If you cut me, do I not bleed?
+		this.onHit('Solid', this.stopMovement);		//If I walk into a wall, do I not stop moving?
+													//Note: Do not reverse the order of those.
 		
+		//Define what happens when we swing a sword
+		var sword; //We'll want to keep track of it so we can rotate it when we change direction
 		this.bind('KeyDown', function() {
 			if (this.isDown('SPACE')) {
 				if (!this.swordOut) {
-					sword = Crafty.e('Sword').wieldedBy(this);
+					sword = Crafty.e('Sword').wieldedBy(this); //We create a new one wtih every swing (Sword destroys itself when the animation ends)
 					this.swordOut = true;
 				}
 			}
 		});
-		var animation_speed = 4;
+		
+		//Define what happens when we change direction
+		//(i.e., change our animation and rotate our sword)
+		var animation_speed = 4; //More properly, animation_duration... (ie, the two frames of animation will run for four frames)
 		this.bind('NewDirection', function(data) {
 			if (data.x > 0) {
 				this.animate('PlayerMovingRight', animation_speed, -1);
@@ -94,57 +107,55 @@ Crafty.c('Hero', {
 				this.animate('PlayerMovingUp', animation_speed, -1);
 				this.swordRotation = 0;
 			} else {
-				this.stop();
+				this.stop(); //Don't animate if we're not moving
 			}
-			sword.rotation = this.swordRotation;
+			sword.rotation = this.swordRotation; //If we already have a sword onscreen, rotate it (otherwise does nothing)
 		});
 		
-		var startPlacingHearts = Game.map_grid.width / 2 - 4;
+		//Put a health bar onscreen
+		var xOfFirstHeart = Game.map_grid.width / 2 - this.maxHealth / 2;
 		for (var i = 0; i < this.maxHealth; i++) {
-			this.healthBar[i] = (Crafty.e('Heart').at(startPlacingHearts + i, 1));
+			this.healthBar[i] = (Crafty.e('Heart').at(xOfFirstHeart + i, 1));
 		}
 	},
 	
+	//When we get hurt
 	loseHeart: function() {
-		if (this.invulnerable) return;
-		var heartToLose = this.healthBar[this.healthBar.length - 1];
+		if (this.invulnerable) return; //If we're invulnerable, pain don't hurt
+		var heartToLose;
+		//If we have a fractional heart,
 		if (Crafty('HalfHeart').length) {
-			heartToLose = Crafty('HalfHeart');
-			Crafty.e('BrokenHeart').at(heartToLose.tileX, heartToLose.tileY);
+			heartToLose = Crafty('HalfHeart'); //The halfheart will be gone
+			Crafty.e('BrokenHeart').at(heartToLose.tileX, heartToLose.tileY); //and replace it with an empty one
 		}
 		else {
-			this.healthBar.length -= 1;
-			Crafty.e('HalfHeart').at(heartToLose.tileX, heartToLose.tileY);
+			heartToLose = this.healthBar[this.healthBar.length - 1]; //The last heart will be fractional'd
+			this.healthBar.length -= 1; //Take it out of the health bar as well as the game
+			Crafty.e('HalfHeart').at(heartToLose.tileX, heartToLose.tileY); //Put a fractional heart in its place
 		}
-		heartToLose.destroy();
-		Crafty.trigger('LostHeart', this);
-		this.invulnerable = true;
-		this.alpha = 0.5;
+		heartToLose.destroy(); //Delete whichever object we've designated
+		Crafty.trigger('LostHeart', this); //Trigger an event so the game knows we may have just died
+		this.invulnerable = true;			//Trigger invulnerability so we just get hurt once
+		this.alpha = 0.4;					//Trigger a visual representation of invulnerability
+		//Wait half a second, then go back to normal
 		this.timeout(function() { this.invulnerable = false; this.alpha = 1; }, 500);
 	},
 	
+	//Not currently in use (didn't work)
 	getPushed: function(x, y) {
 		if (this.invulnerable) return;
 		this.x += x;
 		this.y += y;
 	},
 	
-	stopOnSolids: function() {
-		this.onHit('HurtsToTouch', this.loseHeart);
-		this.onHit('Solid', this.stopMovement);
-		return this;
-	},
-	
+	//Gets called when you touch something solid
+	//These _properties are part of the Fourway component
 	stopMovement: function() {
 		this._speed = 0;
 		if (this._movement) {
 			this.x -= this._movement.x;
 			this.y -= this._movement.y;
 		}
-	},
-	visitVillage: function(data) {
-		villlage = data[0].obj;
-		villlage.collect();
 	},
 });
 
@@ -467,7 +478,6 @@ Crafty.c('Swarming', {
 
 
 Crafty.c('Fleeing', {
-	
 	init: function() {
 		this.requires('SwarmingOrFleeingBasics');
 		this.bind('EnterFrame', this.flee);
@@ -477,7 +487,7 @@ Crafty.c('Fleeing', {
 
 //This component randomly spawns new enemies
 Crafty.c('SpawnPoint', {
-	probability: 0.3,
+	probability: 0.2,
 	init: function() {
 		this.requires('Actor, Chance');
 		this.bind('EnterFrame', this.thinkAboutSpawning);
