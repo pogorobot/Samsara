@@ -144,7 +144,7 @@ Crafty.scene('Game', function() {
 	
 	// Generate a lucky number of villages on the map in random locations
 	// Or, to be precise, give every location a small chance of spawning a village (until you run out)
-	var max_villages = 13;
+	var max_villages = 10;
 	for (var x = 0; x < Game.map_grid.width; x++) {
 		for (var y = 0; y < Game.map_grid.height; y++) {
 			if (Math.random() < 0.02) {
@@ -167,7 +167,7 @@ Crafty.scene('Game', function() {
 	
 	//Every time we get hurt, check if we're dead
 	this.show_defeat = this.bind('LostHeart', function() {
-		if (!Crafty('Heart').length) {
+		if (!Crafty('Heart').length && !Crafty('HalfHeart').length) {
 			Crafty.scene('Defeat');
 		}
 	});
