@@ -210,33 +210,33 @@ Crafty.c('SwarmingOrFleeingBasics', {
 	dx: 0,
 	dy: 0,
 	fleeingFrom: Crafty('Hero'),
+	fleeing: true,
 	
 	init: function() {
-		this.requires('Collision, spr_player, SpriteAnimation');
+		this.requires('Collision, spr_villager, SpriteAnimation');
 		//For the uninitiated: .animate comes from the SpriteAnimation component. Here we're defining reels
 		//.animate with four arguments defines reels, and .animate with three arguments plays them. Obviously.
-		//Here we're saying the 'PlayerMovingUp' reel should be the two frames starting at 0,0 in our sprite component (spr_player)
+		//Here we're saying the 'PlayerMovingUp' reel should be the two frames starting at 0,0 in our sprite component (spr_villager)
 		this.animate('PlayerMovingUp',    0, 0, 2)
 			.animate('PlayerMovingRight', 0, 1, 2)
 			.animate('PlayerMovingDown',  0, 2, 2)
 			.animate('PlayerMovingLeft',  0, 3, 2);
 	},
 	
-	//oh GLUB the redundancy between this and swarm(). MUST FIX
-	flee: function() {
+	move: function() {
 		var newDx = this.dx;
 		var newDy = this.dy;
 		this.fleeingFrom = Crafty('Hero');
 		this.speed = this.originalSpeed;
 		newDy = this.speed / 2;
-		if (this.fleeingFrom.y > this.y) {
+		if (this.fleeingFrom.y > this.y ^ !this.fleeing) {
 			newDy = -newDy;
 		}
 		else if (this.fleeingFrom.y == this.y) {
 			newDy = 0;
 		}
 		newDx = this.speed / 2;
-		if (this.fleeingFrom.x > this.x) {
+		if (this.fleeingFrom.x > this.x ^ !this.fleeing) {
 			newDx = -newDx;
 		}
 		else if (this.fleeingFrom.x == this.x) {
@@ -264,6 +264,14 @@ Crafty.c('SwarmingOrFleeingBasics', {
 			}
 		}
 		return this;
+	},
+	
+	
+	
+	//oh GLUB the redundancy between this and swarm(). MUST FIX
+	flee: function() {
+		this.fleeing = true;
+		return this.move();
 	},
 	
 	//So you ran into a wall.
@@ -290,46 +298,8 @@ Crafty.c('SwarmingOrFleeingBasics', {
 	},
 	
 	swarm: function() {
-		var newDx = this.dx;
-		var newDy = this.dy;
-		this.fleeingFrom = Crafty('Hero');
-		this.speed = this.originalSpeed;
-		newDy = this.speed / 2;
-		if (this.fleeingFrom.y < this.y) {
-			newDy = -newDy;
-		}
-		else if (this.fleeingFrom.y == this.y) {
-			newDy = 0;
-		}
-		newDx = this.speed / 2;
-		if (this.fleeingFrom.x < this.x) {
-			newDx = -newDx;
-		}
-		else if (this.fleeingFrom.x == this.x) {
-			newDx = 0;
-		}
-		this.y += newDy;
-		this.x += newDx;
-		if (newDy != this.dy || newDx != this.dx) {
-			this.dy = newDy;
-			this.dx = newDx;
-			if (this.dx > 0) {
-				this.animate('PlayerMovingRight', this.animation_speed, -1);
-			}
-			else if (this.dx < 0) {
-				this.animate('PlayerMovingLeft', this.animation_speed, -1);
-			}
-			else if (this.dy > 0) {
-				this.animate('PlayerMovingDown', this.animation_speed, -1);
-			}
-			else if (this.dy < 0) {
-				this.animate('PlayerMovingUp', this.animation_speed, -1);
-			}
-			else {
-				this.stop();
-			}
-		}
-		return this;
+		this.fleeing = false;
+		return this.move();
 	},
 });
 
