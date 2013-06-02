@@ -162,7 +162,7 @@ Crafty.c('Hero', {
 //To-Do: Abstract most of this to a Weapon component
 // (then make more weapons in Pickle)
 Crafty.c('Sword', {
-	wielder: Crafty('Hero'),
+
 	init: function() {
 		this.requires('Actor, spr_sword, Collision, SpriteAnimation, DeflectsBullets');
 		this.animate('SwordSwinging',    0, 0, 4)
@@ -176,7 +176,8 @@ Crafty.c('Sword', {
 		this.bind('EnterFrame', function() {
 			this.attr({ x: wielder.x, y: wielder.y - Game.map_grid.tile.height});
 		});
-		this.origin(Game.map_grid.tile.width / 2, Game.map_grid.tile.height * 3 / 2);
+		//offset our center of rotation to the center of the wielder
+		this.origin(wielder.w / 2, wielder.h * 3 / 2);
 		this.rotation = wielder.swordRotation;
 		this.swing();
 		this.bind('AnimationEnd', function() { //Revisit if we add more animations
@@ -186,8 +187,8 @@ Crafty.c('Sword', {
 	},
 	stab: function(data)
 	{
-		villlage = data[0].obj;
-		villlage.collect();
+		collectible = data[0].obj;
+		collectible.collect();
 	},
 	sheathe: function()
 	{
@@ -337,6 +338,31 @@ Crafty.c('ShootsAtPlayer', {
 	},
 });
 
+Crafty.c('CanSwingASword', {
+	swordOut: false,
+	swordRotation: 180, 	//To keep track of where the sword should swing
+	init: function() {
+		this.requires('Actor');
+	},
+	swingSword: function() {
+		Crafty.e('Sword').wieldedBy(this);
+	},
+	changeDirectionOfSword: function(newDirection) {
+		this.swordRotation = newDirection;
+	},
+});
+
+Crafty.c('SwingSwordRandomly', {
+	init: function() {
+		this.requires('CanSwingASword, Chance');
+		this.bind('EnterFrame', function() {
+			if (this.chance(1)) {
+				this.swingSword();
+			}
+		});
+	},
+});
+
 //If the player touches it, some health is lost
 //Currently does nothing to anything else
 Crafty.c('HurtsToTouch', {
@@ -414,17 +440,21 @@ Crafty.c('SwarmingOrFleeingBasics', {
 			this.dx = newDx;
 			if (Math.abs(newDy) > Math.abs(newDx)) {
 				if (newDy > 0) {
+					if (this.has('CanSwingASword')) this.swordRotation = 180;
 					this.animate('PlayerMovingDown', this.animation_speed, -1);
 				}
 				else {
+					if (this.has('CanSwingASword')) this.swordRotation = 0;
 					this.animate('PlayerMovingUp', this.animation_speed, -1);
 				}
 			}
 			else {
 				if (newDx > 0) {
+					if (this.has('CanSwingASword')) this.swordRotation = 90;
 					this.animate('PlayerMovingRight', this.animation_speed, -1);
 				}
 				else {
+					if (this.has('CanSwingASword')) this.swordRotation = 270;
 					this.animate('PlayerMovingLeft', this.animation_speed, -1);
 				}
 			}
