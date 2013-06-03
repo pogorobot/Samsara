@@ -1,6 +1,6 @@
 Swing a sword:
-	/a Sword-swing animation
-	/p trigger animation on key
+	CHECK /a Sword-swing animation
+	CHECK /p trigger animation on key
 	/d control scheme (generalize) (regular attacks, special attacks)
 	/d fuss with timings, variables
 Multiple Screens (MegaMap):
