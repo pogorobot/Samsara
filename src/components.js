@@ -59,8 +59,6 @@ Crafty.c('ChargingEnemy', {
 Crafty.c('Hero', {
 	swordOut: false, 		//So we don't swing our sword if we're already swinging our sword
 	swordRotation: 180, 	//To keep track of where the sword should swing
-	healthBar: [],			//Holds the Heart components that show up atop the screen
-	maxHealth: 3,			//In full Hearts
 	invulnerable: false,	//So we don't take damage just after taking damage
 	init: function() {
 		var speed = 2;
@@ -68,7 +66,7 @@ Crafty.c('Hero', {
 		//Requirements:   Actor (exists on a grid), Solid (enemies don't walk through  you), 
 						//Fourway, Collision, Keyboard (various interface functionality), 
 						//spr_player, SpriteAnimation (for your appearance)
-		this.requires('Actor, Solid, Fourway, Collision, spr_player, SpriteAnimation, Keyboard')
+		this.requires('Actor, Solid, Fourway, Collision, HasHealth, CanHeal, spr_player, SpriteAnimation, Keyboard')
 			.fourway(speed)			//Crafty method to grant keyboard control
 			.animate('PlayerMovingUp',    0, 0, 2)	//Define various animations
 			.animate('PlayerMovingRight', 0, 1, 2)	//arguments are: reel name, row and column on spritesheet, duration
@@ -80,7 +78,7 @@ Crafty.c('Hero', {
 													//Note: Do not reverse the order of those.
 		
 		//Define what happens when we swing a sword
-		var sword; //We'll want to keep track of it so we can rotate it when we change direction
+		var sword = Crafty.e('Sword').wieldedBy(this); //We'll want to keep track of it so we can rotate it when we change direction
 		this.bind('KeyDown', function() {
 			if (this.isDown('SPACE')) {
 				if (!this.swordOut) {
@@ -112,11 +110,6 @@ Crafty.c('Hero', {
 			sword.rotation = this.swordRotation; //If we already have a sword onscreen, rotate it (otherwise does nothing)
 		});
 		
-		//Put a health bar onscreen
-		var xOfFirstHeart = Game.map_grid.width / 2 - this.maxHealth / 2;
-		for (var i = 0; i < this.maxHealth; i++) {
-			this.healthBar[i] = (Crafty.e('Heart').at(xOfFirstHeart + i, 1));
-		}
 	},
 	
 	//When we get hurt
@@ -159,12 +152,24 @@ Crafty.c('Hero', {
 	},
 });
 
+Crafty.c('StealsLife', {
+	init: function() {
+		this.requires('Weapon');
+		this.bind('VillageVisited', this.stealLife);
+	},
+	stealLife: function() {
+		if (this.wielder.has('CanHeal')) {
+			this.wielder.heal();
+		}
+	},
+});
+
 //To-Do: Abstract most of this to a Weapon component
 // (then make more weapons in Pickle)
 Crafty.c('Sword', {
 
 	init: function() {
-		this.requires('Actor, spr_sword, Collision, SpriteAnimation, DeflectsBullets');
+		this.requires('Actor, spr_sword, Collision, SpriteAnimation, StealsLife, Weapon');
 		this.animate('SwordSwinging',    0, 0, 4)
 		this.onHit('Collectible', this.stab);
 	},
@@ -414,6 +419,7 @@ Crafty.c('SwarmingOrFleeingBasics', {
 			.animate('PlayerMovingLeft',  0, 3, 2);
 	},
 	
+	//TAKES ALL THE CPUs
 	move: function() {
 		var newDx = this.dx;
 		var newDy = this.dy;
@@ -470,6 +476,7 @@ Crafty.c('SwarmingOrFleeingBasics', {
 	//So you ran into a wall.
 	//Maybe all is not lost?
 	//Here we cancel out only that part of the movement that actually keeps us touching solids
+	//Somewhat slow, currently
 	stopMovement: function() {
 		if (this.dx || this.dy) {
 			//First try undoing the x move we did
@@ -515,6 +522,39 @@ Crafty.c('Fleeing', {
 	},
 });
 
+Crafty.c('HasHealth', {
+	healthBar: [],			//Holds the Heart components that show up atop the screen
+	maxHealth: 3,			//In full Hearts
+	init: function() {
+		//Put a health bar onscreen
+		var xOfFirstHeart = Game.map_grid.width / 2 - this.maxHealth / 2;
+		for (var i = 0; i < this.maxHealth; i++) {
+			this.healthBar[i] = (Crafty.e('Heart').at(xOfFirstHeart + i, 1));
+		}
+	},
+});
+
+Crafty.c('CanHeal', {
+	init: function() {
+		this.requires('HasHealth');
+	},
+	
+	heal: function() {
+		if (this.healthBar.length >= this.maxHealth) return;
+		if (Crafty('HalfHeart').length) {
+			this.healthBar.push(Crafty.e('Heart').at(Crafty('HalfHeart').tileX, Crafty('HalfHeart').tileY));
+			Crafty('HalfHeart').destroy();
+		}
+		else {
+			Crafty('BrokenHeart').each(function() {
+				heartToGain = this;
+			});
+			Crafty.e('HalfHeart').at(heartToGain.tileX, heartToGain.tileY);
+			heartToGain.destroy();
+		}
+	},
+});
+
 //This component randomly spawns new enemies
 Crafty.c('SpawnPoint', {
 	probability: 0.2,
@@ -524,7 +564,7 @@ Crafty.c('SpawnPoint', {
 	},
 	thinkAboutSpawning: function() {
 		if (this.chance(this.probability)) {
-			if (this.chance(50)) {
+			if (this.chance(100)) {
 				Crafty.e('Enemy').at(this.tileX,this.tileY+1);
 			}
 			else {
