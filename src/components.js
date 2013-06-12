@@ -43,7 +43,7 @@ Crafty.c('Enemy', {
 });
 
 //Just like a regular old enemy but heads toward the hero instead of fleeing
-Crafty.c('ChargingEnemy', {
+Crafty.c('SwarmingEnemy', {
 	init: function() {
 		this.requires('Actor, HurtsToTouch, Solid, Swarming, Collectible, Chance, ShootsAtPlayer')
 	},
@@ -568,7 +568,7 @@ Crafty.c('SpawnPoint', {
 				Crafty.e('Enemy').at(this.tileX,this.tileY+1);
 			}
 			else {
-				Crafty.e('ChargingEnemy').at(this.tileX, this.tileY+1);
+				Crafty.e('SwarmingEnemy').at(this.tileX, this.tileY+1);
 			}
 		}
 	},
