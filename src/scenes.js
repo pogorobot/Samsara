@@ -23,6 +23,7 @@ Crafty.scene('Loading', function() {
 		'assets/swordSwing.gif',			//Ha ha whoops I drew a bunch of sprites but forgot to preload them
 		'assets/8x8_bullet.gif',
 		'assets/16x16_hearts.gif',			//There, fixed.
+		'assets/zigguratWalls.gif',
 		'assets/skeleton.png',
 		'assets/door_knock_3x.mp3',			//I'm not sure why all the audio files are in three formats??
 		'assets/door_knock_3x.ogg',			//That's how they did it in the tutorial =/
@@ -71,6 +72,11 @@ Crafty.scene('Loading', function() {
 		Crafty.sprite(16, 'assets/hunter.png', {
 			spr_villager: [0, 2],
 		}, 0, 2);
+		
+		Crafty.sprite(16, 'assets/zigguratWalls.png', {
+			spr_wall:  [1, 0],
+			spr_block: [0, 0]
+		});
 		
 		// Define our sounds for later use
 		Crafty.audio.add({
@@ -124,11 +130,40 @@ Crafty.scene('Game', function() {
 	var max_enemies = 0;
 	for (var x = 0; x < Game.map_grid.width; x++) {
 		for (var y = 0; y < Game.map_grid.height; y++) {
-			var at_edge = x == 0 || x == Game.map_grid.width - 1 || y == 0 || y == Game.map_grid.height - 1;
+			var atTop = y == 0;
+			var atBottom = y == Game.map_grid.height - 1;
+			var atLeft = x == 0;
+			var atRight = x == Game.map_grid.width - 1;
+			var at_edge = atTop || atBottom || atLeft || atRight;
 			
 			if (at_edge) {
-				// Place a tree entity at the current tile
-				Crafty.e('Tree').at(x, y);
+				var rotation = 0;
+				var atCorner = false;
+				if (atTop) {
+					if (atLeft || atRight) {
+						atCorner = true;
+					}
+					rotation = 0;
+				}
+				else if (atBottom) {
+					if (atLeft || atRight) {
+						atCorner = true;
+					}
+					rotation = 180;
+				}
+				else if (atLeft) {
+					rotation = 270;
+				}
+				else if (atRight) {
+					rotation = 90;
+				}
+				// Place a wall entity at the current tile
+				if (atCorner) {
+					Crafty.e('Block').at(x, y);
+				}
+				else {
+					Crafty.e('Wall').at(x, y).setRotation(rotation);
+				}
 				this.occupied[x][y] = true;
 			} else if (Math.random() < 0.06 && !this.occupied[x][y]) {
 				// Place a bush entity at the current tile

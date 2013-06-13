@@ -12,6 +12,22 @@ Crafty.c('Tree', {
 	},
 });
 
+Crafty.c('Wall', {
+	init: function() {
+		this.requires('Actor, Solid, spr_wall, StopsBullets');
+	},
+	setRotation: function(rotation) {
+		this.origin(this.w / 2, this.h / 2);
+		this.rotation = rotation;
+	},
+});
+
+Crafty.c('Block', {
+	init: function() {
+		this.requires('Actor, Solid, spr_block, StopsBullets');
+	},
+});
+
 // A Bush is just an Actor with a certain sprite (that is solid)
 Crafty.c('Bush', {
 	init: function() {
