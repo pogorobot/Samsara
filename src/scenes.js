@@ -205,6 +205,10 @@ Crafty.scene('Game', function() {
 		}
 	});
 	
+	this.changeRooms = this.bind('LeftScreen', function() {
+		Crafty.scene('Game');
+	});
+	
 	//Every time we get hurt, check if we're dead
 	this.show_defeat = this.bind('LostHeart', function() {
 		if (!Crafty('Heart').length && !Crafty('HalfHeart').length) {
@@ -215,6 +219,8 @@ Crafty.scene('Game', function() {
 	this.unbind('LostHeart', this.show_defeat);
 }, function() {
 	this.unbind('VillageVisited', this.show_victory);
+}, function() {
+	this.unbind('LeftScreen', this.changeRooms);
 });
 
 //Victory Scene

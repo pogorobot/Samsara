@@ -140,7 +140,11 @@ Crafty.c('Hero', {
 			}
 			sword.rotation = this.swordRotation; //If we already have a sword onscreen, rotate it (otherwise does nothing)
 		});
-		
+		this.bind('EnterFrame', function() {
+			if (this.x < 0 || this.x > Game.width() || this.y < 0 || this.y > Game.height()) {
+				Crafty.trigger('LeftScreen');
+			}
+		});
 	},
 	
 	//When we get hurt
