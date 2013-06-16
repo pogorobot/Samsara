@@ -23,7 +23,7 @@ Crafty.scene('Loading', function() {
 		'assets/swordSwing.gif',			//Ha ha whoops I drew a bunch of sprites but forgot to preload them
 		'assets/8x8_bullet.gif',
 		'assets/16x16_hearts.gif',			//There, fixed.
-		'assets/zigguratWalls.gif',
+		'assets/zigguratWalls.png',
 		'assets/skeleton.png',
 		'assets/door_knock_3x.mp3',			//I'm not sure why all the audio files are in three formats??
 		'assets/door_knock_3x.ogg',			//That's how they did it in the tutorial =/
@@ -73,10 +73,11 @@ Crafty.scene('Loading', function() {
 			spr_villager: [0, 2],
 		}, 0, 2);
 		
-		Crafty.sprite(16, 'assets/zigguratWalls.gif', {
+		Crafty.sprite(16, 'assets/zigguratWalls.png', {
 			spr_wall:  [1, 0],
 			spr_block: [0, 0],
-			spr_door:  [2, 0]
+			spr_door:  [2, 0],
+			spr_floor: [3, 0]
 		});
 		
 		// Define our sounds for later use
@@ -121,6 +122,14 @@ Crafty.scene('Game', function() {
 			this.occupied[i][y] = false;
 		}
 	}
+	/*
+	//This makes the floor look nice, but lags everything to hell.
+	for (var x = 0; x < Game.map_grid.width; x++) {
+		for (var y = 0; y < Game.map_grid.height; y++) {
+			Crafty.e('Floor').at(x, y);
+		}
+	}
+	*/
 	
 	//Spawn the player first, somewhere not stuck in a wall.
 	this.player = Crafty.e('Hero').at(Crafty.math.randomInt(1, Game.map_grid.width - 2), Crafty.math.randomInt(1, Game.map_grid.height - 2));
