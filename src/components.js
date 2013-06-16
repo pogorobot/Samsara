@@ -19,6 +19,7 @@ Crafty.c('Wall', {
 	setRotation: function(rotation) {
 		this.origin(this.w / 2, this.h / 2);
 		this.rotation = rotation;
+		return this;
 	},
 });
 
@@ -32,6 +33,20 @@ Crafty.c('Block', {
 Crafty.c('Bush', {
 	init: function() {
 		this.requires('Actor, Solid, spr_bush');
+	},
+});
+
+Crafty.c('Door', {
+	init: function() {
+		this.requires('Actor, Solid, spr_door, StopsBullets');
+		this.bind('DoorsOpen', function() {
+			this.destroy();
+		});
+	},
+	setRotation: function(rotation) {
+		this.origin(this.w / 2, this.h / 2);
+		this.rotation = rotation;
+		return this;
 	},
 });
 

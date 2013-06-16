@@ -73,9 +73,10 @@ Crafty.scene('Loading', function() {
 			spr_villager: [0, 2],
 		}, 0, 2);
 		
-		Crafty.sprite(16, 'assets/zigguratWalls.png', {
+		Crafty.sprite(16, 'assets/zigguratWalls.gif', {
 			spr_wall:  [1, 0],
-			spr_block: [0, 0]
+			spr_block: [0, 0],
+			spr_door:  [2, 0]
 		});
 		
 		// Define our sounds for later use
@@ -161,6 +162,9 @@ Crafty.scene('Game', function() {
 				if (atCorner) {
 					Crafty.e('Block').at(x, y);
 				}
+				else if (Math.random() < 0.05) {
+					Crafty.e('Door').at(x, y).setRotation(rotation);
+				}
 				else {
 					Crafty.e('Wall').at(x, y).setRotation(rotation);
 				}
@@ -196,7 +200,8 @@ Crafty.scene('Game', function() {
 	//Every time we might have won, check if we've won
 	this.show_victory = this.bind('VillageVisited', function() {
 		if (!Crafty('Collectible').length) {
-			Crafty.scene('Victory');
+			//Crafty.scene('Victory');
+			Crafty.trigger('DoorsOpen');
 		}
 	});
 	
