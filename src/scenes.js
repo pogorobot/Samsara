@@ -135,12 +135,15 @@ Crafty.scene('Game', function() {
 	this.player = Crafty.e('Hero').at(Crafty.math.randomInt(1, Game.map_grid.width - 2), Crafty.math.randomInt(1, Game.map_grid.height - 2));
 	//Don't spawn anything on top of 'em.
 	this.occupied[this.player.at().x][this.player.at().y] = true;
+	var room = Crafty.e('Room');
+	room.display();
 	
 	//Uncomment this and the camera tracks the player!
 	//Probably it should do that for outdoor scenes, but stay room-to-room for indoor ones??
 	//this.camera = Crafty.e('Camera').camera(this.player);
 	
 	// Place a tree at every edge square on our grid of 16x16 tiles
+	/* ROOM TEST
 	var max_enemies = 0;
 	for (var x = 0; x < Game.map_grid.width; x++) {
 		for (var y = 0; y < Game.map_grid.height; y++) {
@@ -207,11 +210,13 @@ Crafty.scene('Game', function() {
 			}
 		}
 	}
-	
+	*/
 	Crafty.audio.play('ring'); //Little chime to signal kickoff
 	
 	//Every time we might have won, check if we've won
 	this.show_victory = this.bind('VillageVisited', function() {
+		
+		
 		if (!Crafty('Collectible').length) {
 			//Crafty.scene('Victory');
 			Crafty.trigger('DoorsOpen');
@@ -235,7 +240,6 @@ Crafty.scene('Game', function() {
 }, function() {
 	this.unbind('LeftScreen', this.changeRooms);
 });
-
 //Victory Scene
 // -------------
 // When you are all alone in the world

@@ -23,6 +23,27 @@ Crafty.c('Wall', {
 	},
 });
 
+Crafty.c('RightWall', {
+	init: function() {
+		this.requires('Wall');
+		this.setRotation(90);
+	},
+});
+
+Crafty.c('BottomWall', {
+	init: function() {
+		this.requires('Wall');
+		this.setRotation(180);
+	},
+});
+
+Crafty.c('LeftWall', {
+	init: function() {
+		this.requires('Wall');
+		this.setRotation(270);
+	},
+});
+
 Crafty.c('Floor', {
 	init: function() {
 		this.requires('Actor, spr_floor');
@@ -56,6 +77,27 @@ Crafty.c('Door', {
 	},
 });
 
+Crafty.c('RightDoor', {
+	init: function() {
+		this.requires('Door');
+		this.setRotation(90);
+	},
+});
+
+Crafty.c('BottomDoor', {
+	init: function() {
+		this.requires('Door');
+		this.setRotation(180);
+	},
+});
+
+Crafty.c('LeftDoor', {
+	init: function() {
+		this.requires('Door');
+		this.setRotation(270);
+	},
+});
+
 //A Rock is a Solid Actor that stops bullets
 Crafty.c('Rock', {
 	init: function() {
@@ -63,16 +105,94 @@ Crafty.c('Rock', {
 	},
 });
 
+//Rooms keep track of everything that shows up on a given screen!
 Crafty.c('Room', {
 	contents: [],
 	width: Game.map_grid.width,
 	height: Game.map_grid.height,
 	init: function() {
+		for (var x = 0; x < this.width; x++) {
+			this.contents[x] = new Array(this.height);
+			for (var y = 0; y < this.height; y++) {
+				this.contents[x][y] = false;
+			}
+		}
 		this.populate();
 	},
 	populate: function() {
+		for (var x = 0; x < this.width; x++) {
+			for (var y = 0; y < this.height; y++) {
+				this.contents[x][y] = this.whatGoesAt(x, y);
+			}
+		}
+	},
+	whatGoesAt: function(x, y) {
+		var atTop = y == 0;
+		var atBottom = y == this.height - 1;
+		var atLeft = x == 0;
+		var atRight = x == this.width - 1;
+		var atEdge = atTop || atBottom || atLeft || atRight;
+		var chanceOfDoor = 0.05;
+		if (atEdge) {
+			if (atTop) {
+				if (atLeft || atRight) {
+					return 'Block';
+				}
+				else if (Math.random() < chanceOfDoor) {
+					return 'Door';
+				}
+				else {
+					return 'Wall';
+				}
+			}
+			else if (atBottom) {
+				if (atLeft || atRight) {
+					return 'Block';
+				}
+				else if (Math.random() < chanceOfDoor) {
+					return 'BottomDoor';
+				}
+				else {
+					return 'BottomWall';
+				}
+			}
+			else if (atLeft) {
+				if (Math.random() < chanceOfDoor) {
+					return 'LeftDoor';
+				}
+				else {
+					return 'LeftWall';
+				}
+			}
+			else if (atRight) {
+				if (Math.random() < chanceOfDoor) {
+					return 'RightDoor';
+				}
+				else {
+					return 'RightWall';
+				}
+			}
+		}
+		else if (Math.random() < 0.06 && !this.contents[x][y]) {
+			// Place a bush entity at the current tile
+			return (Math.random() > 0.3) ? 'Bush' : 'Rock';
+		} //else if (Math.random() < 0.03 && !this.contents[x][y]) {
+			//return "Enemy";
+		 else if (Math.random() < 0.02 && !this.contents[x][y] && !this.contents[x][y+1]) {
+			return "Village";
+		}
+		else {
+			return false;
+		}
 	},
 	display: function() {
+		for (var x = 0; x < this.width; x++) {
+			for (var y = 0; y < this.width; y++) {
+				if (this.contents[x][y]) {
+					Crafty.e(this.contents[x][y]).at(x, y);
+				}
+			}
+		}
 	},
 });
 
