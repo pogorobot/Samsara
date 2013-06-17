@@ -136,6 +136,10 @@ Crafty.scene('Game', function() {
 	//Don't spawn anything on top of 'em.
 	this.occupied[this.player.at().x][this.player.at().y] = true;
 	
+	//Uncomment this and the camera tracks the player!
+	//Probably it should do that for outdoor scenes, but stay room-to-room for indoor ones??
+	//this.camera = Crafty.e('Camera').camera(this.player);
+	
 	// Place a tree at every edge square on our grid of 16x16 tiles
 	var max_enemies = 0;
 	for (var x = 0; x < Game.map_grid.width; x++) {
