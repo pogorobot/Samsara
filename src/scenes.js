@@ -142,75 +142,7 @@ Crafty.scene('Game', function() {
 	//Probably it should do that for outdoor scenes, but stay room-to-room for indoor ones??
 	//this.camera = Crafty.e('Camera').camera(this.player);
 	
-	// Place a tree at every edge square on our grid of 16x16 tiles
-	/* ROOM TEST
-	var max_enemies = 0;
-	for (var x = 0; x < Game.map_grid.width; x++) {
-		for (var y = 0; y < Game.map_grid.height; y++) {
-			var atTop = y == 0;
-			var atBottom = y == Game.map_grid.height - 1;
-			var atLeft = x == 0;
-			var atRight = x == Game.map_grid.width - 1;
-			var at_edge = atTop || atBottom || atLeft || atRight;
-			
-			if (at_edge) {
-				var rotation = 0;
-				var atCorner = false;
-				if (atTop) {
-					if (atLeft || atRight) {
-						atCorner = true;
-					}
-					rotation = 0;
-				}
-				else if (atBottom) {
-					if (atLeft || atRight) {
-						atCorner = true;
-					}
-					rotation = 180;
-				}
-				else if (atLeft) {
-					rotation = 270;
-				}
-				else if (atRight) {
-					rotation = 90;
-				}
-				// Place a wall entity at the current tile
-				if (atCorner) {
-					Crafty.e('Block').at(x, y);
-				}
-				else if (Math.random() < 0.05) {
-					Crafty.e('Door').at(x, y).setRotation(rotation);
-				}
-				else {
-					Crafty.e('Wall').at(x, y).setRotation(rotation);
-				}
-				this.occupied[x][y] = true;
-			} else if (Math.random() < 0.06 && !this.occupied[x][y]) {
-				// Place a bush entity at the current tile
-				var bush_or_rock = (Math.random() > 0.3) ? 'Bush' : 'Rock';
-				Crafty.e(bush_or_rock).at(x, y);
-				this.occupied[x][y] = true;
-			} else if (Math.random() < 0.03 && !this.occupied[x][y] && Crafty('Enemy').length < max_enemies) {
-				Crafty.e('Enemy').at(x, y);
-				this.occupied[x][y] = true;
-			}
-		}
-	}
-	
-	// Generate a lucky number of villages on the map in random locations
-	// Or, to be precise, give every location a small chance of spawning a village (until you run out)
-	var max_villages = 10;
-	for (var x = 0; x < Game.map_grid.width; x++) {
-		for (var y = 0; y < Game.map_grid.height; y++) {
-			if (Math.random() < 0.02) {
-				//Spawn one as long as you haven't hit the max, the square isn't occupied, and the square it would spawn enemies at isn't occupied
-				if (Crafty('Village').length < max_villages && !this.occupied[x][y] && !this.occupied[x][y+1]) {
-					Crafty.e('Village').at(x, y);
-				}
-			}
-		}
-	}
-	*/
+
 	Crafty.audio.play('ring'); //Little chime to signal kickoff
 	
 	//Every time we might have won, check if we've won
