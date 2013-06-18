@@ -215,16 +215,14 @@ Crafty.scene('Game', function() {
 	
 	//Every time we might have won, check if we've won
 	this.show_victory = this.bind('VillageVisited', function() {
-		
-		
 		if (!Crafty('Collectible').length) {
-			//Crafty.scene('Victory');
 			Crafty.trigger('DoorsOpen');
 		}
 	});
 	
-	this.changeRooms = this.bind('LeftScreen', function() {
-		Crafty.scene('Game');
+	this.changeRooms = this.bind('LeftScreen', function(data) {
+		Crafty('Terrain').destroy();
+		var room = Crafty.e('Room').display();
 	});
 	
 	//Every time we get hurt, check if we're dead

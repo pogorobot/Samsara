@@ -8,13 +8,13 @@
 // A Tree is just an Actor with a certain sprite (that is solid and stops bullets)
 Crafty.c('Tree', {
 	init: function() {
-		this.requires('Actor, Solid, spr_tree, StopsBullets');
+		this.requires('Actor, Solid, spr_tree, StopsBullets, Terrain');
 	},
 });
 
 Crafty.c('Wall', {
 	init: function() {
-		this.requires('Actor, Solid, spr_wall, StopsBullets');
+		this.requires('Actor, Solid, spr_wall, StopsBullets, Terrain');
 	},
 	setRotation: function(rotation) {
 		this.origin(this.w / 2, this.h / 2);
@@ -46,26 +46,26 @@ Crafty.c('LeftWall', {
 
 Crafty.c('Floor', {
 	init: function() {
-		this.requires('Actor, spr_floor');
+		this.requires('Actor, spr_floor, Terrain');
 	},
 });
 
 Crafty.c('Block', {
 	init: function() {
-		this.requires('Actor, Solid, spr_block, StopsBullets');
+		this.requires('Actor, Solid, spr_block, StopsBullets, Terrain');
 	},
 });
 
 // A Bush is just an Actor with a certain sprite (that is solid)
 Crafty.c('Bush', {
 	init: function() {
-		this.requires('Actor, Solid, spr_bush');
+		this.requires('Actor, Solid, spr_bush, Terrain');
 	},
 });
 
 Crafty.c('Door', {
 	init: function() {
-		this.requires('Actor, Solid, spr_door, StopsBullets');
+		this.requires('Actor, Solid, spr_door, StopsBullets, Terrain');
 		this.bind('DoorsOpen', function() {
 			this.destroy();
 		});
@@ -101,7 +101,7 @@ Crafty.c('LeftDoor', {
 //A Rock is a Solid Actor that stops bullets
 Crafty.c('Rock', {
 	init: function() {
-		this.requires('Actor, Solid, spr_rock, StopsBullets');
+		this.requires('Actor, Solid, spr_rock, StopsBullets, Terrain');
 	},
 });
 
@@ -187,12 +187,13 @@ Crafty.c('Room', {
 	},
 	display: function() {
 		for (var x = 0; x < this.width; x++) {
-			for (var y = 0; y < this.width; y++) {
+			for (var y = 0; y < this.height; y++) {
 				if (this.contents[x][y]) {
 					Crafty.e(this.contents[x][y]).at(x, y);
 				}
 			}
 		}
+		return this;
 	},
 });
 
@@ -293,7 +294,20 @@ Crafty.c('Hero', {
 			sword.rotation = this.swordRotation; //If we already have a sword onscreen, rotate it (otherwise does nothing)
 		});
 		this.bind('EnterFrame', function() {
-			if (this.x < -this.w || this.x > Game.width() || this.y < -this.h || this.y > Game.height()) {
+			if (this.x < -this.w) {
+				this.x += Game.width() - this.w;
+				Crafty.trigger('LeftScreen');
+			}
+			if (this.x > Game.width() + this.w) {
+				this.x -= Game.width();
+				Crafty.trigger('LeftScreen');
+			}
+			if (this.y < -this.h) {
+				this.y += Game.height() - this.h;
+				Crafty.trigger('LeftScreen');
+			}
+			if (this.y > Game.height() + this.h) {
+				this.y -= Game.height();
 				Crafty.trigger('LeftScreen');
 			}
 		});
@@ -483,7 +497,7 @@ Crafty.c('HalfHeart', {
 // A village is a tile on the grid that the PC must visit in order to win the game
 Crafty.c('Village', {
 	init: function() {
-		this.requires('Actor, Solid, spr_village, Collectible, SpawnPoint');
+		this.requires('Actor, Solid, spr_village, Collectible, SpawnPoint, Terrain');
 	},
 });
 
