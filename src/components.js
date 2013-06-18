@@ -12,6 +12,7 @@ Crafty.c('Tree', {
 	},
 });
 
+//A wall forms the boundaries of a Room, and comes in four rotated varieties.
 Crafty.c('Wall', {
 	init: function() {
 		this.requires('Actor, Solid, spr_wall, StopsBullets, Terrain');
@@ -44,6 +45,7 @@ Crafty.c('LeftWall', {
 	},
 });
 
+// Floor is currently unused due to lag.
 Crafty.c('Floor', {
 	init: function() {
 		this.requires('Actor, spr_floor, Terrain');
@@ -146,6 +148,7 @@ Crafty.c('Room', {
 		var atRight = x == this.width - 1;
 		var atEdge = atTop || atBottom || atLeft || atRight;
 		var chanceOfDoor = 0.05;
+		var maxSpawningVillages = 4;
 		if (atEdge) {
 			if (atTop) {
 				if (atLeft || atRight) {
@@ -192,7 +195,12 @@ Crafty.c('Room', {
 		} //else if (Math.random() < 0.03 && !this.contents[x][y]) {
 			//return "Enemy";
 		 else if (Math.random() < 0.02 && !this.contents[x][y] && !this.contents[x][y+1]) {
-			return "Village";
+			if (Crafty("SpawningVillage").length < maxSpawningVillages){
+				return "SpawningVillage";
+			}	
+			else {
+				return "Village";
+			}	
 		}
 		else {
 			return false;
@@ -430,8 +438,11 @@ Crafty.c('Bullet', {
 		this.onHit('StopsBullets', function() { this.destroy(); });
 	},
 	setAngle: function(dx, dy) {
-		this.dy = dy;
-		this.dx = dx;
+		// dx and dy are rounded to the number of decimal places given by aimFidelity
+		// higher aimFidelity = better accuracy, but worse performance
+		var aimFidelity = 1;
+		this.dy = Math.round((dy) * Math.pow(10, aimFidelity))/(Math.pow(10, aimFidelity));
+		this.dx = Math.round((dx) * Math.pow(10, aimFidelity))/(Math.pow(10, aimFidelity));
 		return this;
 	},
 	setPos: function (x, y) {
@@ -507,10 +518,16 @@ Crafty.c('HalfHeart', {
 	}
 });
 
-// A village is a tile on the grid that the PC must visit in order to win the game
+// A village is a tile on the grid that the PC must destroy in order to complete a room.
 Crafty.c('Village', {
 	init: function() {
-		this.requires('Actor, Solid, spr_village, Collectible, SpawnPoint, Terrain');
+		this.requires('Actor, Solid, spr_village, Collectible, Terrain');
+	},
+});
+
+Crafty.c('SpawningVillage', {
+	init: function() {
+		this.requires('Village, SpawnPoint');
 	},
 });
 
@@ -553,7 +570,8 @@ Crafty.c('ShootsAtPlayer', {
 		Crafty.e('Bullet').setPos(shootX, shootY).setAngle(dx, dy);
 	},
 	shootRandomly: function() {
-		if (this.chance(0.5)) this.shoot();
+		var maxBullets = 5;
+		if (Crafty("Bullet").length < maxBullets && this.chance(0.5)) this.shoot();
 	},
 });
 
@@ -777,7 +795,8 @@ Crafty.c('SpawnPoint', {
 		this.bind('EnterFrame', this.thinkAboutSpawning);
 	},
 	thinkAboutSpawning: function() {
-		if (this.chance(this.probability)) {
+		var maxEnemies = 5;
+		if (Crafty('Enemy').length + Crafty('SwarminEnemy').length < maxEnemies && this.chance(this.probability)) {
 			if (this.chance(100)) {
 				Crafty.e('Enemy').at(this.tileX,this.tileY+1);
 			}
