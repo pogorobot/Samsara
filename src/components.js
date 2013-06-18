@@ -120,8 +120,8 @@ Crafty.c('Room', {
 		this.populate();
 	},
 	populate: function() {
-		for (var x = 0; x < this.width; x++) {
-			for (var y = 0; y < this.height; y++) {
+		for (var x = this.width-1; x >= 0; x--) {
+			for (var y = this.height-1; y >= 0; y--) {
 				this.contents[x][y] = this.whatGoesAt(x, y);
 			}
 		}
