@@ -105,6 +105,12 @@ Crafty.c('Rock', {
 	},
 });
 
+Crafty.c('Placeholder', {
+	init: function() {
+		this.requires('Actor');
+	},
+});
+
 //Rooms keep track of everything that shows up on a given screen!
 Crafty.c('Room', {
 	contents: [],
@@ -117,7 +123,10 @@ Crafty.c('Room', {
 				this.contents[x][y] = false;
 			}
 		}
-		this.populate();
+	},
+	leaveEmpty: function(x, y) {
+		this.contents[x][y] = 'Placeholder';
+		return this;
 	},
 	populate: function() {
 		for (var x = 0; x < this.width; x++) {
@@ -125,8 +134,12 @@ Crafty.c('Room', {
 				this.contents[x][y] = this.whatGoesAt(x, y);
 			}
 		}
+		return this;
 	},
 	whatGoesAt: function(x, y) {
+		if (this.contents[x][y])    {
+               return this.contents[x][y];
+        }
 		var atTop = y == 0;
 		var atBottom = y == this.height - 1;
 		var atLeft = x == 0;
@@ -295,19 +308,19 @@ Crafty.c('Hero', {
 		});
 		this.bind('EnterFrame', function() {
 			if (this.x < -this.w) {
-				this.x += Game.width() - this.w;
+				this.x += Game.width();
 				Crafty.trigger('LeftScreen');
 			}
 			if (this.x > Game.width() + this.w) {
-				this.x -= Game.width();
+				this.x -= Game.width() + this.w;
 				Crafty.trigger('LeftScreen');
 			}
 			if (this.y < -this.h) {
-				this.y += Game.height() - this.h;
+				this.y += Game.height();
 				Crafty.trigger('LeftScreen');
 			}
 			if (this.y > Game.height() + this.h) {
-				this.y -= Game.height();
+				this.y -= Game.height() + this.h;
 				Crafty.trigger('LeftScreen');
 			}
 		});
@@ -776,6 +789,9 @@ Crafty.c('SpawnPoint', {
 });
 
 Crafty.c('Collectible', {
+	init: function() {
+		this.requires('Actor, Terrain');
+	},
 	collect: function() {
 		this.destroy();
 		Crafty.audio.play('knock');
@@ -812,7 +828,7 @@ Crafty.c('Grid', {
 	at: function(x, y) {
 		//at() means you're asking
 		if (x === undefined && y === undefined) {
-			return { x: this.x/this.w, y: this.y/this.h }
+			return { x: Math.round(this.x/this.w), y: Math.round(this.y/this.h) }
 		}
 		//at(here) means you're telling
 		else {

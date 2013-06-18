@@ -134,9 +134,9 @@ Crafty.scene('Game', function() {
 	//Spawn the player first, somewhere not stuck in a wall.
 	this.player = Crafty.e('Hero').at(Crafty.math.randomInt(1, Game.map_grid.width - 2), Crafty.math.randomInt(1, Game.map_grid.height - 2));
 	//Don't spawn anything on top of 'em.
-	this.occupied[this.player.at().x][this.player.at().y] = true;
-	var room = Crafty.e('Room');
-	room.display();
+	//this.occupied[this.player.at().x][this.player.at().y] = true;
+	Crafty.e('Room').leaveEmpty(this.player.at().x, this.player.at().y).populate().display();
+	
 	
 	//Uncomment this and the camera tracks the player!
 	//Probably it should do that for outdoor scenes, but stay room-to-room for indoor ones??
@@ -222,7 +222,7 @@ Crafty.scene('Game', function() {
 	
 	this.changeRooms = this.bind('LeftScreen', function(data) {
 		Crafty('Terrain').destroy();
-		var room = Crafty.e('Room').display();
+		var room = Crafty.e('Room').leaveEmpty(this.player.at().x, this.player.at().y).populate().display();
 	});
 	
 	//Every time we get hurt, check if we're dead
