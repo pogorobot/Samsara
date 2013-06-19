@@ -369,7 +369,17 @@ Crafty.c('Hero', {
 		this._speed = 0;
 		if (this._movement) {
 			this.x -= this._movement.x;
-			this.y -= this._movement.y;
+			if (this.hit('Solid') != false) {
+				this.x += this._movement.x;
+				this.y -= this._movement.y;
+				if (this.hit('Solid') != false) {
+					this.x -= this._movement.x;
+					if (this.hit('Solid') != false) {
+						this.x += this._movement.x;
+						this.y += this._movement.y;
+					}
+				}
+			}
 		}
 	},
 });
