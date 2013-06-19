@@ -805,13 +805,16 @@ Crafty.c('SpawnPoint', {
 		this.bind('EnterFrame', this.thinkAboutSpawning);
 	},
 	thinkAboutSpawning: function() {
-		var maxEnemies = 5;
-		if (Crafty('Enemy').length + Crafty('SwarminEnemy').length < maxEnemies && this.chance(this.probability)) {
-			if (this.chance(100)) {
-				Crafty.e('Enemy').at(this.tileX,this.tileY+1);
+		var maxEnemies = 10;
+		if (Crafty('Enemy').length + Crafty('SwarmingEnemy').length < maxEnemies && this.chance(this.probability)) {
+			if (this.chance(50)) {
+				var newGuy = Crafty.e('Enemy').at(this.tileX,this.tileY+1);
 			}
 			else {
-				Crafty.e('SwarmingEnemy').at(this.tileX, this.tileY+1);
+				var newGuy = Crafty.e('SwarmingEnemy').at(this.tileX, this.tileY+1);
+			}
+			if (newGuy.hit('Solid')) {
+				newGuy.destroy();
 			}
 		}
 	},
