@@ -250,7 +250,7 @@ Crafty.c('Enemy', {
 //Just like a regular old enemy but heads toward the hero instead of fleeing
 Crafty.c('SwarmingEnemy', {
 	init: function() {
-		this.requires('Actor, HurtsToTouch, Solid, Swarming, Collectible, Chance, ShootsAtPlayer')
+		this.requires('Actor, HurtsToTouch, Solid, Swarming, Collectible, Chance, ShootsAtPlayer, SwingSwordRandomly')
 	},
 	loseHeart: function() {
 	},
@@ -403,7 +403,6 @@ Crafty.c('Sword', {
 	init: function() {
 		this.requires('Actor, spr_sword, Collision, SpriteAnimation, StealsLife, Weapon');
 		this.animate('SwordSwinging',    0, 0, 4)
-		this.onHit('Collectible', this.stab);
 	},
 	swing: function() {
 		this.animate('SwordSwinging', 8, 0);
@@ -420,17 +419,29 @@ Crafty.c('Sword', {
 		this.bind('AnimationEnd', function() { //Revisit if we add more animations
 			this.sheathe();
 		});
+		if (this.wielder.has('Hero')) {
+			this.requires('HurtsMonsters');
+		}
+		else {
+			this.requires('HurtsToTouch');
+		}
 		return this;
-	},
-	stab: function(data)
-	{
-		collectible = data[0].obj;
-		collectible.collect();
 	},
 	sheathe: function()
 	{
 		this.wielder.swordOut = false;
 		this.destroy();
+	},
+});
+
+Crafty.c('HurtsMonsters', {
+	init: function() {
+		this.onHit('Collectible', this.stab);
+	},
+	stab: function(data)
+	{
+		collectible = data[0].obj;
+		collectible.collect();
 	},
 });
 
