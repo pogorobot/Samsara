@@ -113,6 +113,59 @@ Crafty.c('Placeholder', {
 	},
 });
 
+Crafty.c('MegaMap', {
+	contents: [],
+	width: 5,
+	height: 5,
+	init: function() {
+		for (var x = 0; x < this.width; x++) {
+			this.contents[x] = new Array(this.height);
+			for (var y = 0; y < this.height; y++) {
+				this.contents[x][y] = 0;
+			}
+		}
+		this.makeRooms();
+		this.placeDoors();
+	},
+	makeRooms: function() {
+		for (var x = 0; x < this.width; x++) {
+			for (var y = 0; y < this.height; y++) {
+				this.contents[x][y] = this.whatGoesAt(x, y);
+			}
+		}
+		return this;
+	},
+	whatGoesAt: function(x, y) {
+		return Crafty.e('Room').populate();
+	},
+	placeDoors: function() {
+		var chanceOfDoor = 0.7;
+		for (var x = 0; x < this.width - 1; x++) {
+			for (var y = 0; y < this.height - 1; y++) {
+				if (Math.random() < chanceOfDoor) {
+					//these functions return just where they placed it (chosen randomly if undefined)
+					var yToPut = this.contents[x][y].putDoorOnRight();
+					this.contents[x+1][y].putDoorOnLeft(yToPut);
+				}
+				if (Math.random() < chanceOfDoor) {
+					var xToPut = this.contents[x][y].putDoorOnBottom();
+					this.contents[x][y+1].putDoorOnTop(xToPut);
+				}
+			}
+		}
+	},
+	placeHero: function(roomX, roomY) {
+		//select a randomly chosen room
+		if (roomX === undefined || roomY === undefined) {
+			roomX = Math.floor(Math.random() * this.width);
+			roomY = Math.floor(Math.random() * this.height);
+		}
+		this.roomX = roomX;
+		this.roomY = roomY;
+		this.contents[roomX][roomY].display();
+	},
+});
+
 //Rooms keep track of everything that shows up on a given screen!
 Crafty.c('Room', {
 	contents: [],
@@ -125,6 +178,7 @@ Crafty.c('Room', {
 				this.contents[x][y] = false;
 			}
 		}
+		//this.populate();
 	},
 	leaveEmpty: function(x, y) {
 		this.contents[x][y] = 'Placeholder';
@@ -147,7 +201,7 @@ Crafty.c('Room', {
 		var atLeft = x == 0;
 		var atRight = x == this.width - 1;
 		var atEdge = atTop || atBottom || atLeft || atRight;
-		var chanceOfDoor = 0.05;
+		var chanceOfDoor = 0;
 		var maxSpawningVillages = 4;
 		if (atEdge) {
 			if (atTop) {
@@ -215,6 +269,36 @@ Crafty.c('Room', {
 			}
 		}
 		return this;
+	},
+	putDoorOnTop: function(x) {
+		if (x === undefined) {
+			//pick a random x between 1 and width - 2 (not a corner)
+			x = Math.floor(Math.random() * (this.width - 2)) + 1;
+		}
+		this.contents[x][0] = 'Door';
+		return x;
+	},
+	putDoorOnRight: function(y) {
+		if (y === undefined) {
+			y = Math.floor(Math.random() * (this.height - 2)) + 1;
+		}
+		this.contents[this.width - 1][y] = 'RightDoor';
+		return y;
+	},
+	putDoorOnBottom: function(x) {
+		if (x === undefined) {
+			//pick a random x between 1 and width - 2 (not a corner)
+			x = Math.floor(Math.random() * (this.width - 2)) + 1;
+		}
+		this.contents[x][this.height - 1] = 'BottomDoor';
+		return x;
+	},
+	putDoorOnLeft: function(y) {
+		if (y === undefined) {
+			y = Math.floor(Math.random() * (this.height - 2)) + 1;
+		}
+		this.contents[0][y] = 'LeftDoor';
+		return y;
 	},
 });
 
@@ -317,19 +401,19 @@ Crafty.c('Hero', {
 		this.bind('EnterFrame', function() {
 			if (this.x < -this.w) {
 				this.x += Game.width();
-				Crafty.trigger('LeftScreen');
+				Crafty.trigger('WentLeft');
 			}
 			if (this.x > Game.width() + this.w) {
 				this.x -= Game.width() + this.w;
-				Crafty.trigger('LeftScreen');
+				Crafty.trigger('WentRight');
 			}
 			if (this.y < -this.h) {
 				this.y += Game.height();
-				Crafty.trigger('LeftScreen');
+				Crafty.trigger('WentUp');
 			}
 			if (this.y > Game.height() + this.h) {
 				this.y -= Game.height() + this.h;
-				Crafty.trigger('LeftScreen');
+				Crafty.trigger('WentDown');
 			}
 		});
 	},

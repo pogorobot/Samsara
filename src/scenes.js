@@ -135,7 +135,11 @@ Crafty.scene('Game', function() {
 	this.player = Crafty.e('Hero').at(Crafty.math.randomInt(1, Game.map_grid.width - 2), Crafty.math.randomInt(1, Game.map_grid.height - 2));
 	//Don't spawn anything on top of 'em.
 	//this.occupied[this.player.at().x][this.player.at().y] = true;
-	Crafty.e('Room').leaveEmpty(this.player.at().x, this.player.at().y).populate().display();
+	//Crafty.e('Room').leaveEmpty(this.player.at().x, this.player.at().y).populate().display();
+	this.megaMap = Crafty.e('MegaMap');
+	this.megaMap.placeHero();
+	//this.coordinates = this.megaMap.placeHero();
+	//this.megaMap.placeHero();
 	
 	
 	//Uncomment this and the camera tracks the player!
@@ -151,10 +155,37 @@ Crafty.scene('Game', function() {
 			Crafty.trigger('DoorsOpen');
 		}
 	});
-	
+	/*
 	this.changeRooms = this.bind('LeftScreen', function(data) {
 		Crafty('Terrain').destroy();
 		var room = Crafty.e('Room').leaveEmpty(this.player.at().x, this.player.at().y).populate().display();
+	});
+	*/
+	this.wentUp = this.bind('WentUp', function() {
+		Crafty('Terrain').destroy();
+		this.megaMap.roomY--;
+		var roomX = this.megaMap.roomX;
+		var roomY = this.megaMap.roomY;
+		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
+		var youWonText = Crafty.e('2D, DOM, Text')
+			.attr({ x: 0, y: Game.height()/2 - 24, w: Game.width() })
+			.text("(" + roomX + ", " + roomY + ")")
+			.css($text_css);
+	});
+	this.wentDown = this.bind('WentDown', function() {
+		Crafty('Terrain').destroy();
+		this.megaMap.roomY++;
+		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
+	});
+	this.wentRight = this.bind('WentRight', function() {
+		Crafty('Terrain').destroy();
+		this.megaMap.roomX++;
+		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
+	});
+	this.wentLeft = this.bind('WentLeft', function() {
+		Crafty('Terrain').destroy();
+		this.megaMap.roomX--;
+		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
 	});
 	
 	//Every time we get hurt, check if we're dead
