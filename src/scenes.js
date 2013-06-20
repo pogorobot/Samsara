@@ -164,13 +164,7 @@ Crafty.scene('Game', function() {
 	this.wentUp = this.bind('WentUp', function() {
 		Crafty('Terrain').destroy();
 		this.megaMap.roomY--;
-		var roomX = this.megaMap.roomX;
-		var roomY = this.megaMap.roomY;
 		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
-		var youWonText = Crafty.e('2D, DOM, Text')
-			.attr({ x: 0, y: Game.height()/2 - 24, w: Game.width() })
-			.text("(" + roomX + ", " + roomY + ")")
-			.css($text_css);
 	});
 	this.wentDown = this.bind('WentDown', function() {
 		Crafty('Terrain').destroy();

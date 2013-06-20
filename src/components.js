@@ -168,10 +168,10 @@ Crafty.c('MegaMap', {
 
 //Rooms keep track of everything that shows up on a given screen!
 Crafty.c('Room', {
-	contents: [],
 	width: Game.map_grid.width,
 	height: Game.map_grid.height,
 	init: function() {
+		this.contents = new Array(this.width);
 		for (var x = 0; x < this.width; x++) {
 			this.contents[x] = new Array(this.height);
 			for (var y = 0; y < this.height; y++) {
