@@ -715,9 +715,9 @@ Crafty.c('HurtsToTouch', {
 	},
 	
 	touch: function(data) {
-		bigShot = data[0].obj;
-		//bigShot.getPushed(bigShot.x - this.x, bigShot.y - this.y);
-		bigShot.loseHeart();
+		target = data[0].obj;
+		//target.getPushed(target.x - this.x, target.y - this.y);
+		target.loseHeart();
 	},
 });
 
