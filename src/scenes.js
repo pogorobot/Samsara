@@ -60,7 +60,8 @@ Crafty.scene('Loading', function() {
 			spr_halfHeart:  [2, 0]
 		});
 		Crafty.sprite(8, 'assets/8x8_bullet.gif', {
-			spr_bullet: [0, 0]
+			spr_bullet: [0, 0],
+			spr_deflectedBullet: [1, 0]
 		});
 		
 		// Define the PC's sprite to be the first sprite in the third row of the 

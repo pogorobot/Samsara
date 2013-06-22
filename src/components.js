@@ -322,7 +322,7 @@ Crafty.c("Camera",{
 //Other components currently perform literally all the logic of that.
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('Actor, HurtsToTouch, Solid, Fleeing, Collectible, Chance, ShootsAtPlayer')
+		this.requires('Actor, Solid, Fleeing, Collectible, Chance, ShootsAtPlayer')
 	},
 	//What happens when you get hit with something that hurts (e.g., bullets)
 	//Currently nothing
@@ -334,7 +334,7 @@ Crafty.c('Enemy', {
 //Just like a regular old enemy but heads toward the hero instead of fleeing
 Crafty.c('SwarmingEnemy', {
 	init: function() {
-		this.requires('Actor, HurtsToTouch, Solid, Swarming, Collectible, Chance, ShootsAtPlayer, SwingSwordRandomly')
+		this.requires('Actor, Solid, Swarming, Collectible, Chance, ShootsAtPlayer, SwingSwordRandomly')
 	},
 	loseHeart: function() {
 	},
@@ -485,7 +485,7 @@ Crafty.c('StealsLife', {
 Crafty.c('Sword', {
 
 	init: function() {
-		this.requires('Actor, spr_sword, Collision, SpriteAnimation, StealsLife, Weapon');
+		this.requires('Actor, spr_sword, Collision, SpriteAnimation, Weapon');
 		this.animate('SwordSwinging',    0, 0, 4)
 	},
 	swing: function() {
@@ -504,7 +504,7 @@ Crafty.c('Sword', {
 			this.sheathe();
 		});
 		if (this.wielder.has('Hero')) {
-			this.requires('HurtsMonsters');
+			this.requires('HurtsMonsters, DeflectsBullets');
 		}
 		else {
 			this.requires('HurtsToTouch');
@@ -582,6 +582,10 @@ Crafty.c('Bullet', {
 			}
 			this.dx -= force;
 		}
+		this.removeComponent('spr_bullet');
+		this.addComponent('spr_deflectedBullet');
+		this.removeComponent('HurtsToTouch');
+		this.addComponent('HurtsMonsters');
 	},
 	//as if bouncing off a horizontal surface
 	bounceHorizontally: function() {
