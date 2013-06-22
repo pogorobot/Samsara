@@ -276,6 +276,7 @@ Crafty.c('Room', {
 			x = Math.floor(Math.random() * (this.width - 2)) + 1;
 		}
 		this.contents[x][0] = 'Door';
+		this.contents[x][1] = false; //Don't block the door
 		return x;
 	},
 	putDoorOnRight: function(y) {
@@ -283,6 +284,7 @@ Crafty.c('Room', {
 			y = Math.floor(Math.random() * (this.height - 2)) + 1;
 		}
 		this.contents[this.width - 1][y] = 'RightDoor';
+		this.contents[this.width - 2][y] = false;
 		return y;
 	},
 	putDoorOnBottom: function(x) {
@@ -291,6 +293,7 @@ Crafty.c('Room', {
 			x = Math.floor(Math.random() * (this.width - 2)) + 1;
 		}
 		this.contents[x][this.height - 1] = 'BottomDoor';
+		this.contents[x][this.height - 2] = false;
 		return x;
 	},
 	putDoorOnLeft: function(y) {
@@ -298,6 +301,7 @@ Crafty.c('Room', {
 			y = Math.floor(Math.random() * (this.height - 2)) + 1;
 		}
 		this.contents[0][y] = 'LeftDoor';
+		this.contents[1][y] = false;
 		return y;
 	},
 });
