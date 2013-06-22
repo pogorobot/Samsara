@@ -178,6 +178,7 @@ Crafty.c('Room', {
 				this.contents[x][y] = false;
 			}
 		}
+		this.placedOneVillage = false;
 		//this.populate();
 	},
 	leaveEmpty: function(x, y) {
@@ -190,6 +191,14 @@ Crafty.c('Room', {
 				this.contents[x][y] = this.whatGoesAt(x, y);
 			}
 		}
+		if (!this.placedOneVillage) {
+			do {
+				x = Math.ceil(Math.random() * this.width - 2);
+				y = Math.ceil(Math.random() * this.height - 2);
+			}
+			while (this.contents[x][y]);
+			this.contents[x][y] = 'SpawningVillage';
+		}
 		return this;
 	},
 	whatGoesAt: function(x, y) {
@@ -201,15 +210,11 @@ Crafty.c('Room', {
 		var atLeft = x == 0;
 		var atRight = x == this.width - 1;
 		var atEdge = atTop || atBottom || atLeft || atRight;
-		var chanceOfDoor = 0;
 		var maxSpawningVillages = 4;
 		if (atEdge) {
 			if (atTop) {
 				if (atLeft || atRight) {
 					return 'Block';
-				}
-				else if (Math.random() < chanceOfDoor) {
-					return 'Door';
 				}
 				else {
 					return 'Wall';
@@ -219,28 +224,15 @@ Crafty.c('Room', {
 				if (atLeft || atRight) {
 					return 'Block';
 				}
-				else if (Math.random() < chanceOfDoor) {
-					return 'BottomDoor';
-				}
 				else {
 					return 'BottomWall';
 				}
 			}
 			else if (atLeft) {
-				if (Math.random() < chanceOfDoor) {
-					return 'LeftDoor';
-				}
-				else {
-					return 'LeftWall';
-				}
+				return 'LeftWall';
 			}
 			else if (atRight) {
-				if (Math.random() < chanceOfDoor) {
-					return 'RightDoor';
-				}
-				else {
-					return 'RightWall';
-				}
+				return 'RightWall';
 			}
 		}
 		else if (Math.random() < 0.06 && !this.contents[x][y]) {
@@ -250,6 +242,7 @@ Crafty.c('Room', {
 			//return "Enemy";
 		 else if (Math.random() < 0.02 && !this.contents[x][y] && !this.contents[x][y+1]) {
 			if (Crafty("SpawningVillage").length < maxSpawningVillages){
+				this.placedOneVillage = true;
 				return "SpawningVillage";
 			}	
 			else {
