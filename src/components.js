@@ -178,6 +178,8 @@ Crafty.c('Room', {
 		}
 		this.placedOneVillage = false;
 		this.placedOneDoor = false;
+		this.maxSpawningVillages = 5;
+		this.spawningVillageCount = 0;
 		//this.populate();
 	},
 	leaveEmpty: function(x, y) {
@@ -209,7 +211,6 @@ Crafty.c('Room', {
 		var atLeft = x == 0;
 		var atRight = x == this.width - 1;
 		var atEdge = atTop || atBottom || atLeft || atRight;
-		var maxSpawningVillages = 4;
 		if (atEdge) {
 			if (atTop) {
 				if (atLeft || atRight) {
@@ -240,8 +241,9 @@ Crafty.c('Room', {
 		} //else if (Math.random() < 0.03 && !this.contents[x][y]) {
 			//return "Enemy";
 		 else if (Math.random() < 0.02 && !this.contents[x][y] && !this.contents[x][y+1]) {
-			if (Crafty("SpawningVillage").length < maxSpawningVillages){
+			if (this.spawningVillageCount < this.maxSpawningVillages){
 				this.placedOneVillage = true;
+				this.spawningVillageCount++;
 				return "SpawningVillage";
 			}	
 			else {
@@ -485,7 +487,7 @@ Crafty.c('StealsLife', {
 Crafty.c('Sword', {
 
 	init: function() {
-		this.requires('Actor, spr_sword, Collision, SpriteAnimation, Weapon');
+		this.requires('Actor, spr_sword, Collision, SpriteAnimation, Weapon, StealsLife');
 		this.animate('SwordSwinging',    0, 0, 4)
 	},
 	swing: function() {
@@ -904,8 +906,8 @@ Crafty.c('SpawnPoint', {
 		this.bind('EnterFrame', this.thinkAboutSpawning);
 	},
 	thinkAboutSpawning: function() {
-		var maxEnemies = 10;
-		if (Crafty('Enemy').length + Crafty('SwarmingEnemy').length < maxEnemies && this.chance(this.probability)) {
+		var maxCollectibles = 10;
+		if (Crafty('Enemy').length + Crafty('SwarmingEnemy').length + Crafty('SpawningVillage').length < maxCollectibles && this.chance(this.probability)) {
 			if (this.chance(50)) {
 				var newGuy = Crafty.e('Enemy').at(this.tileX,this.tileY+1);
 			}
