@@ -144,12 +144,10 @@ Crafty.c('MegaMap', {
 			for (var y = 0; y < this.height - 1; y++) {
 				if (Math.random() < chanceOfDoor) {
 					//these functions return just where they placed it (chosen randomly if undefined)
-					var yToPut = this.contents[x][y].putDoorOnRight();
-					this.contents[x+1][y].putDoorOnLeft(yToPut);
+					this.contents[x+1][y].putDoorOnLeft(this.contents[x][y].putDoorOnRight());
 				}
-				if (Math.random() < chanceOfDoor) {
-					var xToPut = this.contents[x][y].putDoorOnBottom();
-					this.contents[x][y+1].putDoorOnTop(xToPut);
+				if (Math.random() < chanceOfDoor || !this.contents[x][y].placedOneDoor) {
+					this.contents[x][y+1].putDoorOnTop(this.contents[x][y].putDoorOnBottom());
 				}
 			}
 		}
@@ -179,6 +177,7 @@ Crafty.c('Room', {
 			}
 		}
 		this.placedOneVillage = false;
+		this.placedOneDoor = false;
 		//this.populate();
 	},
 	leaveEmpty: function(x, y) {
@@ -270,6 +269,7 @@ Crafty.c('Room', {
 		}
 		this.contents[x][0] = 'Door';
 		this.contents[x][1] = false; //Don't block the door
+		this.placedOneDoor = true;
 		return x;
 	},
 	putDoorOnRight: function(y) {
@@ -278,6 +278,7 @@ Crafty.c('Room', {
 		}
 		this.contents[this.width - 1][y] = 'RightDoor';
 		this.contents[this.width - 2][y] = false;
+		this.placedOneDoor = true;
 		return y;
 	},
 	putDoorOnBottom: function(x) {
@@ -287,6 +288,7 @@ Crafty.c('Room', {
 		}
 		this.contents[x][this.height - 1] = 'BottomDoor';
 		this.contents[x][this.height - 2] = false;
+		this.placedOneDoor = true;
 		return x;
 	},
 	putDoorOnLeft: function(y) {
@@ -295,6 +297,7 @@ Crafty.c('Room', {
 		}
 		this.contents[0][y] = 'LeftDoor';
 		this.contents[1][y] = false;
+		this.placedOneDoor = true;
 		return y;
 	},
 });
