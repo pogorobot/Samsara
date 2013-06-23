@@ -160,7 +160,9 @@ Crafty.c('MegaMap', {
 		}
 		this.roomX = roomX;
 		this.roomY = roomY;
-		this.contents[roomX][roomY].display();
+		room = this.contents[roomX][roomY];
+		room.leaveEmpty(Game.player.at().x, Game.player.at().y);
+		room.display();
 	},
 });
 
@@ -485,7 +487,6 @@ Crafty.c('StealsLife', {
 //To-Do: Abstract most of this to a Weapon component
 // (then make more weapons in Pickle)
 Crafty.c('Sword', {
-
 	init: function() {
 		this.requires('Actor, spr_sword, Collision, SpriteAnimation, Weapon, StealsLife');
 		this.animate('SwordSwinging',    0, 0, 4)
