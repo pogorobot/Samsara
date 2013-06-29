@@ -157,11 +157,12 @@ Crafty.c('MegaMap', {
 		if (roomX === undefined || roomY === undefined) {
 			roomX = Math.floor(Math.random() * this.width);
 			roomY = Math.floor(Math.random() * this.height);
+			room = this.contents[roomX][roomY];
+			room.leaveEmpty(Game.player.at().x, Game.player.at().y);
 		}
 		this.roomX = roomX;
 		this.roomY = roomY;
 		room = this.contents[roomX][roomY];
-		room.leaveEmpty(Game.player.at().x, Game.player.at().y);
 		room.display();
 	},
 });
@@ -403,19 +404,19 @@ Crafty.c('Hero', {
 			sword.rotation = this.swordRotation; //If we already have a sword onscreen, rotate it (otherwise does nothing)
 		});
 		this.bind('EnterFrame', function() {
-			if (this.x < -this.w) {
+			if (this.x < -(this.w-10)) {
 				this.x += Game.width();
 				Crafty.trigger('WentLeft');
 			}
-			if (this.x > Game.width() + this.w) {
+			if (this.x > Game.width() + this.w - 10) {
 				this.x -= Game.width() + this.w;
 				Crafty.trigger('WentRight');
 			}
-			if (this.y < -this.h) {
+			if (this.y < -(this.h - 10)) {
 				this.y += Game.height();
 				Crafty.trigger('WentUp');
 			}
-			if (this.y > Game.height() + this.h) {
+			if (this.y > Game.height() + this.h - 10) {
 				this.y -= Game.height() + this.h;
 				Crafty.trigger('WentDown');
 			}
