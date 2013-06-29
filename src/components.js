@@ -157,11 +157,12 @@ Crafty.c('MegaMap', {
 		if (roomX === undefined || roomY === undefined) {
 			roomX = Math.floor(Math.random() * this.width);
 			roomY = Math.floor(Math.random() * this.height);
+			room = this.contents[roomX][roomY];
+			room.leaveEmpty(Game.player.at().x, Game.player.at().y);
 		}
 		this.roomX = roomX;
 		this.roomY = roomY;
 		room = this.contents[roomX][roomY];
-		room.leaveEmpty(Game.player.at().x, Game.player.at().y);
 		room.display();
 	},
 });
