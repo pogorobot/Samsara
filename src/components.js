@@ -403,20 +403,20 @@ Crafty.c('Hero', {
 			sword.rotation = this.swordRotation; //If we already have a sword onscreen, rotate it (otherwise does nothing)
 		});
 		this.bind('EnterFrame', function() {
-			if (this.x < -this.w) {
+			if (this.x < -this.w / 2) {
 				this.x += Game.width();
 				Crafty.trigger('WentLeft');
 			}
-			if (this.x > Game.width() + this.w) {
-				this.x -= Game.width() + this.w;
+			if (this.x > Game.width() - this.w / 2) {
+				this.x -= Game.width();
 				Crafty.trigger('WentRight');
 			}
-			if (this.y < -this.h) {
+			if (this.y < -this.h / 2) {
 				this.y += Game.height();
 				Crafty.trigger('WentUp');
 			}
-			if (this.y > Game.height() + this.h) {
-				this.y -= Game.height() + this.h;
+			if (this.y > Game.height() - this.h / 2) {
+				this.y -= Game.height();
 				Crafty.trigger('WentDown');
 			}
 		});
