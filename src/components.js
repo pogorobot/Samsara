@@ -65,6 +65,40 @@ Crafty.c('Bush', {
 	},
 });
 
+Crafty.c('Doorway', {
+	init: function() {
+		this.requires('Actor');
+		this.bind('DoorsClose', function() {
+			this.requires('Door');
+		});
+	}
+});
+
+Crafty.c('RightDoorway', {
+	init: function() {
+		this.requires('Actor');
+		this.bind('DoorsClose', function() {
+			this.requires('RightDoor');
+		});
+	}
+});
+Crafty.c('BottomDoorway', {
+	init: function() {
+		this.requires('Actor');
+		this.bind('DoorsClose', function() {
+			this.requires('BottomDoor');
+		});
+	}
+});
+Crafty.c('LeftDoorway', {
+	init: function() {
+		this.requires('Actor');
+		this.bind('DoorsClose', function() {
+			this.requires('LeftDoor');
+		});
+	}
+});
+
 Crafty.c('Door', {
 	init: function() {
 		this.requires('Actor, Solid, spr_door, StopsBullets, Terrain');
@@ -164,6 +198,7 @@ Crafty.c('MegaMap', {
 		this.roomY = roomY;
 		room = this.contents[roomX][roomY];
 		room.display();
+		Game.player.doorsWillClose();
 	},
 });
 
@@ -272,7 +307,7 @@ Crafty.c('Room', {
 			//pick a random x between 1 and width - 2 (not a corner)
 			x = Math.floor(Math.random() * (this.width - 2)) + 1;
 		}
-		this.contents[x][0] = 'Door';
+		this.contents[x][0] = 'Doorway';
 		this.contents[x][1] = false; //Don't block the door
 		this.placedOneDoor = true;
 		return x;
@@ -281,7 +316,7 @@ Crafty.c('Room', {
 		if (y === undefined) {
 			y = Math.floor(Math.random() * (this.height - 2)) + 1;
 		}
-		this.contents[this.width - 1][y] = 'RightDoor';
+		this.contents[this.width - 1][y] = 'RightDoorway';
 		this.contents[this.width - 2][y] = false;
 		this.placedOneDoor = true;
 		return y;
@@ -291,7 +326,7 @@ Crafty.c('Room', {
 			//pick a random x between 1 and width - 2 (not a corner)
 			x = Math.floor(Math.random() * (this.width - 2)) + 1;
 		}
-		this.contents[x][this.height - 1] = 'BottomDoor';
+		this.contents[x][this.height - 1] = 'BottomDoorway';
 		this.contents[x][this.height - 2] = false;
 		this.placedOneDoor = true;
 		return x;
@@ -300,7 +335,7 @@ Crafty.c('Room', {
 		if (y === undefined) {
 			y = Math.floor(Math.random() * (this.height - 2)) + 1;
 		}
-		this.contents[0][y] = 'LeftDoor';
+		this.contents[0][y] = 'LeftDoorway';
 		this.contents[1][y] = false;
 		this.placedOneDoor = true;
 		return y;
@@ -421,6 +456,20 @@ Crafty.c('Hero', {
 				Crafty.trigger('WentDown');
 			}
 		});
+	},
+	
+	doorsWillClose: function() {
+		this.bind('Moved', function() {
+			if (this.insideWallEdge())
+			{
+				Crafty.trigger('DoorsClose');
+				this.unbind('Moved', this.doorsWillClose);
+			}
+		});
+	},
+	
+	insideWallEdge: function() {
+		return this.x > this.w && this.y > this.h && this.x < Game.width() - this.w && this.h < Game.height() - this.h;
 	},
 	
 	//When we get hurt
