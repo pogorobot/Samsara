@@ -67,16 +67,18 @@ Crafty.c('Bush', {
 
 Crafty.c('Doorway', {
 	init: function() {
-		this.requires('Actor');
+		this.requires('Terrain');
 		this.bind('DoorsClose', function() {
-			this.requires('Door');
+			if (!this.room.cleared()) {
+				this.requires('Door');
+			}
 		});
 	}
 });
 
 Crafty.c('RightDoorway', {
 	init: function() {
-		this.requires('Actor');
+		this.requires('Terrain');
 		this.bind('DoorsClose', function() {
 			this.requires('RightDoor');
 		});
@@ -84,7 +86,7 @@ Crafty.c('RightDoorway', {
 });
 Crafty.c('BottomDoorway', {
 	init: function() {
-		this.requires('Actor');
+		this.requires('Terrain');
 		this.bind('DoorsClose', function() {
 			this.requires('BottomDoor');
 		});
@@ -92,7 +94,7 @@ Crafty.c('BottomDoorway', {
 });
 Crafty.c('LeftDoorway', {
 	init: function() {
-		this.requires('Actor');
+		this.requires('Terrain');
 		this.bind('DoorsClose', function() {
 			this.requires('LeftDoor');
 		});
@@ -143,7 +145,7 @@ Crafty.c('Rock', {
 
 Crafty.c('Placeholder', {
 	init: function() {
-		this.requires('Actor');
+		this.requires('Terrain');
 	},
 });
 
@@ -198,7 +200,9 @@ Crafty.c('MegaMap', {
 		this.roomY = roomY;
 		room = this.contents[roomX][roomY];
 		room.display();
-		Game.player.doorsWillClose();
+		if (!room.cleared()) {
+			Game.player.doorsWillClose();
+		}
 	},
 });
 
@@ -218,7 +222,9 @@ Crafty.c('Room', {
 		this.placedOneDoor = false;
 		this.maxSpawningVillages = 5;
 		this.spawningVillageCount = 0;
-		//this.populate();
+	},
+	cleared: function() {
+		return !Crafty('Collectible').length;
 	},
 	leaveEmpty: function(x, y) {
 		this.contents[x][y] = 'Placeholder';
@@ -296,7 +302,7 @@ Crafty.c('Room', {
 		for (var x = 0; x < this.width; x++) {
 			for (var y = 0; y < this.height; y++) {
 				if (this.contents[x][y]) {
-					Crafty.e(this.contents[x][y]).at(x, y);
+					Crafty.e(this.contents[x][y]).at(x, y).placeInRoom(this);
 				}
 			}
 		}
@@ -956,7 +962,7 @@ Crafty.c('CanHeal', {
 Crafty.c('SpawnPoint', {
 	probability: 0.2,
 	init: function() {
-		this.requires('Actor, Chance');
+		this.requires('Terrain, Chance');
 		this.bind('EnterFrame', this.thinkAboutSpawning);
 	},
 	thinkAboutSpawning: function() {
@@ -975,16 +981,32 @@ Crafty.c('SpawnPoint', {
 	},
 });
 
+Crafty.c('Terrain', {
+	init: function() {
+		this.requires('Actor');
+	},
+	placeInRoom: function(room) {
+		this.room = room;
+	}
+});
+
 Crafty.c('Collectible', {
 	init: function() {
-		this.requires('Actor, Terrain');
+		this.requires('Actor');
 	},
 	collect: function() {
 		this.destroy();
 		Crafty.audio.play('knock');
 		Crafty.trigger('VillageVisited', this);
-	}
+		if (this.has('Terrain')) {
+			this.eraseFromRoom();
+		}
+	},
+	eraseFromRoom: function() {
+		this.room.contents[this.at().x][this.at().y] = false;
+	},
 });
+
 
 //Here so I can define boolean chance events in percentages
 Crafty.c('Chance', {
