@@ -395,7 +395,7 @@ Crafty.c('Hero', {
 		//Requirements:   Actor (exists on a grid), Solid (enemies don't walk through  you), 
 						//Fourway, Collision, Keyboard (various interface functionality), 
 						//spr_player, SpriteAnimation (for your appearance)
-		this.requires('Actor, Solid, Fourway, Collision, HasHealth, CanHeal, spr_player, SpriteAnimation, Keyboard')
+		this.requires('Actor, Solid, Fourway, Collision, HasHealth, CanHeal, CanSwingASword, spr_player, SpriteAnimation, Keyboard')
 			.fourway(speed)			//Crafty method to grant keyboard control
 			.animate('PlayerMovingUp',    0, 0, 2)	//Define various animations
 			.animate('PlayerMovingRight', 0, 1, 2)	//arguments are: reel name, row and column on spritesheet, duration
@@ -410,10 +410,7 @@ Crafty.c('Hero', {
 		var sword = Crafty.e('Sword').wieldedBy(this); //We'll want to keep track of it so we can rotate it when we change direction
 		this.bind('KeyDown', function() {
 			if (this.isDown('SPACE')) {
-				if (!this.swordOut) {
-					sword = Crafty.e('Sword').wieldedBy(this); //We create a new one wtih every swing (Sword destroys itself when the animation ends)
-					this.swordOut = true;
-				}
+				this.swingSword();
 			}
 		});
 		
@@ -540,14 +537,18 @@ Crafty.c('Sword', {
 	init: function() {
 		this.requires('Actor, spr_sword, Collision, SpriteAnimation, Weapon, StealsLife');
 		this.animate('SwordSwinging',    0, 0, 4)
+		this.alpha = 0;
 	},
 	swing: function() {
+		this.alpha = 1;
 		this.animate('SwordSwinging', 8, 0);
 	},
 	wieldedBy: function(wielder) {
 		this.wielder = wielder;
+		this.attr({ x: wielder.x, y: wielder.y - wielder.h});
+		
 		this.bind('EnterFrame', function() {
-			this.attr({ x: wielder.x, y: wielder.y - Game.map_grid.tile.height});
+			this.attr({ x: wielder.x, y: wielder.y - wielder.h});
 		});
 		//offset our center of rotation to the center of the wielder
 		this.origin(wielder.w / 2, wielder.h * 3 / 2);
@@ -744,7 +745,9 @@ Crafty.c('CanSwingASword', {
 		this.requires('Actor');
 	},
 	swingSword: function() {
+		if (this.swordOut) return;
 		Crafty.e('Sword').wieldedBy(this);
+		this.swordOut = true;
 	},
 	changeDirectionOfSword: function(newDirection) {
 		this.swordRotation = newDirection;
