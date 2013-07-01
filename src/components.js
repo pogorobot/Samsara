@@ -202,6 +202,7 @@ Crafty.c('MegaMap', {
 		room.display();
 		if (!room.cleared()) {
 			Game.player.doorsWillClose();
+			Game.player.triggerDoors();
 		}
 	},
 });
@@ -467,12 +468,16 @@ Crafty.c('Hero', {
 	
 	doorsWillClose: function() {
 		this.bind('Moved', function() {
-			if (this.insideWallEdge())
+			this.triggerDoors();
+		});
+	},
+	
+	triggerDoors: function(){
+		if (this.insideWallEdge())
 			{
 				Crafty.trigger('DoorsClose');
 				this.unbind('Moved', this.doorsWillClose);
-			}
-		});
+			};
 	},
 	
 	insideWallEdge: function() {
