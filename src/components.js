@@ -364,11 +364,10 @@ Crafty.c("Camera",{
 
 //Enemy Component
 //---------------
-//Current spec: Runs away from the hero, shooting plasma balls at 'em.
-//Other components currently perform literally all the logic of that.
+// Enemies are collectibles which are distinguished from terrain by some sort of behaviour, handled in separate components.
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('Actor, Solid, Fleeing, Collectible, Chance, ShootsAtPlayer')
+		this.requires('Actor, Solid, Collectible, Chance, ShootsAtPlayer')
 	},
 	//What happens when you get hit with something that hurts (e.g., bullets)
 	//Currently nothing
@@ -377,12 +376,17 @@ Crafty.c('Enemy', {
 	},
 });
 
-//Just like a regular old enemy but heads toward the hero instead of fleeing
+//FleeingEnemies are generic cowardly enemies, running away from the Hero while firing bullets.
+Crafty.c('FleeingEnemy', {
+	init: function() {
+		this.requires('Enemy, ShootsAtPlayer, Fleeing')
+	},
+});
+
+//SwarmingEnemies are generic enemies that bum-rush and attempt to shiv the Hero, while also firing bullets.
 Crafty.c('SwarmingEnemy', {
 	init: function() {
-		this.requires('Actor, Solid, Swarming, Collectible, Chance, ShootsAtPlayer, SwingSwordRandomly')
-	},
-	loseHeart: function() {
+		this.requires('Enemy, Swarming, ShootsAtPlayer, SwingSwordRandomly')
 	},
 });
 
@@ -977,9 +981,9 @@ Crafty.c('SpawnPoint', {
 	},
 	thinkAboutSpawning: function() {
 		var maxCollectibles = 10;
-		if (Crafty('Enemy').length + Crafty('SwarmingEnemy').length + Crafty('SpawningVillage').length < maxCollectibles && this.chance(this.probability)) {
+		if (Crafty('Enemy').length + Crafty('SpawningVillage').length < maxCollectibles && this.chance(this.probability)) {
 			if (this.chance(50)) {
-				var newGuy = Crafty.e('Enemy').at(this.tileX,this.tileY+1);
+				var newGuy = Crafty.e('FleeingEnemy').at(this.tileX,this.tileY+1);
 			}
 			else {
 				var newGuy = Crafty.e('SwarmingEnemy').at(this.tileX, this.tileY+1);
