@@ -2,9 +2,11 @@
 <html>
 <head>
 <script src="lib/crafty.js"></script>
+<script src="lib/jquery-1.9.1.min.js"></script>
 <script src="src/game.js"></script>
 <script src="src/components.js"></script>
 <script src="src/scenes.js"></script>
+<script src="src/thoughts.js"></script>
 <script>
 window.addEventListener('load', Game.start);
 </script>
@@ -18,6 +20,10 @@ window.addEventListener('load', Game.start);
 	
 	.controls {
 		color: #BBB;
+	}
+	
+	.thoughts {
+		color: #CCC;
 	}
 	
 	#cr-stage { margin: 20px auto 0; }
@@ -36,7 +42,7 @@ window.addEventListener('load', Game.start);
 <body>
 	<h2>Slaughter the Villagers!</h2>
 	
-	<p>A knock at the door means the Reckoning has come!</p>
+	<p class="thoughts">A knock at the door means the Reckoning has come!</p></div>
 	
 	<p class="controls">Use WASD and the spacebar to hunt your prey!</p>
 	

@@ -25,6 +25,12 @@ Game = {
 		return this.map_grid.height * this.map_grid.tile.height;
 	},
 	
+	think: function(thought) {
+		$(document).ready(function() {
+			$('.thoughts').html("<p>" + thought + "</p>");
+		});
+	},
+	
 	// Initialize and start our game
 	start: function() {
 		//Initialize Crafty, creating a canvas window
