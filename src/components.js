@@ -80,7 +80,9 @@ Crafty.c('RightDoorway', {
 	init: function() {
 		this.requires('Terrain');
 		this.bind('DoorsClose', function() {
-			this.requires('RightDoor');
+			if (!this.room.cleared()) {
+				this.requires('RightDoor');
+			}
 		});
 	}
 });
@@ -88,7 +90,9 @@ Crafty.c('BottomDoorway', {
 	init: function() {
 		this.requires('Terrain');
 		this.bind('DoorsClose', function() {
-			this.requires('BottomDoor');
+			if (!this.room.cleared()) {
+				this.requires('BottomDoor');
+			}
 		});
 	}
 });
@@ -96,7 +100,9 @@ Crafty.c('LeftDoorway', {
 	init: function() {
 		this.requires('Terrain');
 		this.bind('DoorsClose', function() {
-			this.requires('LeftDoor');
+			if (!this.room.cleared()) {
+				this.requires('LeftDoor');
+			}
 		});
 	}
 });
