@@ -25,6 +25,7 @@ Crafty.scene('Loading', function() {
 		'assets/16x16_hearts.gif',			//There, fixed.
 		'assets/zigguratWalls.png',
 		'assets/skeleton.png',
+		'assets/sentinel.png',
 		'assets/door_knock_3x.mp3',			//I'm not sure why all the audio files are in three formats??
 		'assets/door_knock_3x.ogg',			//That's how they did it in the tutorial =/
 		'assets/door_knock_3x.aac',			//Seems kind of silly tbh
@@ -62,6 +63,13 @@ Crafty.scene('Loading', function() {
 		Crafty.sprite(8, 'assets/8x8_bullet.gif', {
 			spr_bullet: [0, 0],
 			spr_deflectedBullet: [1, 0]
+		});
+		
+		Crafty.sprite(16, 'assets/sentinel.png', {
+			spr_sentinel_down: [0, 0],
+			spr_sentinel_up: [1, 0],
+			spr_sentinel_right: [2, 0],
+			spr_sentinel_left: [3, 0]
 		});
 		
 		// Define the PC's sprite to be the first sprite in the third row of the 
@@ -113,7 +121,6 @@ Crafty.scene('Loading', function() {
 // So really this is just placing everything on the map and keeping rough track of it.
 // Also has event listeners to check if we've won or lost (and therefore need to change scenes)
 Crafty.scene('Game', function() {
-	
 	this.occupied = new Array(Game.map_grid.width);
 	// A 2D array to keep track of all occupied tiles
 	// And by 'occupied' I mean you don't want to spawn another thing there.

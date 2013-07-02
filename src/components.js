@@ -540,6 +540,41 @@ Crafty.c('Hero', {
 	},
 });
 
+Crafty.c('Sentinel', {
+	dx: 0,
+	dy: 0,
+	init: function() {
+		this.requires('Actor, Solid, StopsAtWalls, Collectible');
+		if (Math.random() < .5) {
+			if (Math.random() < .5) {
+				this.dx = 1;
+				this.requires("spr_sentinel_right");
+			}
+			else {
+				this.dx = -1;
+				this.requires("spr_sentinel_left");
+			}
+		}
+		else {
+			if (Math.random() < .5) {
+				this.dy = 1;
+				this.requires("spr_sentinel_down");
+			}
+			else {
+				this.dy = -1;
+				this.requires("spr_sentinel_up");
+			}
+		}
+		this.bind('EnterFrame', this.moveAlong);
+		this.onHit('Solid', this.stopMovement);
+	},
+	
+	moveAlong: function() {
+		this.x += this.dx;
+		this.y += this.dy;
+	},
+});
+
 Crafty.c('StealsLife', {
 	init: function() {
 		this.requires('Weapon');
@@ -837,7 +872,7 @@ Crafty.c('SwarmingOrFleeingBasics', {
 	fleeing: true,
 	
 	init: function() {
-		this.requires('Collision, spr_villager, SpriteAnimation');
+		this.requires('Collision, spr_villager, SpriteAnimation, StopsAtWalls');
 		//For the uninitiated: .animate comes from the SpriteAnimation component. Here we're defining reels
 		//.animate with four arguments defines reels, and .animate with three arguments plays them. Obviously.
 		//Here we're saying the 'PlayerMovingUp' reel should be the two frames starting at 0,0 in our sprite component (spr_villager)
@@ -901,10 +936,22 @@ Crafty.c('SwarmingOrFleeingBasics', {
 		return this.move();
 	},
 	
-	//So you ran into a wall.
+	
+	
+	swarm: function() {
+		this.fleeing = false;
+		return this.move();
+	},
+});
+
+Crafty.c('StopsAtWalls', {//So you ran into a wall.
 	//Maybe all is not lost?
 	//Here we cancel out only that part of the movement that actually keeps us touching solids
 	//Somewhat slow, currently
+	
+	init: function() {
+		this.requires('Collision');
+	},
 	stopMovement: function() {
 		if (this.dx || this.dy) {
 			//First try undoing the x move we did
@@ -923,11 +970,6 @@ Crafty.c('SwarmingOrFleeingBasics', {
 		//}
 		
 		return this;
-	},
-	
-	swarm: function() {
-		this.fleeing = false;
-		return this.move();
 	},
 });
 
@@ -992,8 +1034,12 @@ Crafty.c('SpawnPoint', {
 	},
 	thinkAboutSpawning: function() {
 		var maxCollectibles = 10;
+		var chanceOfSentinel = 33;
 		if (Crafty('Enemy').length + Crafty('SpawningVillage').length < maxCollectibles && this.chance(this.probability)) {
-			if (this.chance(50)) {
+			if (this.chance(chanceOfSentinel)) {
+				var newGuy = Crafty.e('Sentinel').at(this.tileX, this.tileY + 1);
+			}
+			else if (this.chance(50)) {
 				var newGuy = Crafty.e('FleeingEnemy').at(this.tileX,this.tileY+1);
 			}
 			else {
