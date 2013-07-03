@@ -170,30 +170,23 @@ Crafty.scene('Game', function() {
 	});
 	*/
 	this.wentUp = this.bind('WentUp', function() {
-		Crafty('Terrain').destroy();
-		Crafty('Enemy').destroy();
-		Crafty('Bullet').destroy();
+		Crafty('StaysInRoom').destroy();
 		this.megaMap.roomY--;
 		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
 	});
 	this.wentDown = this.bind('WentDown', function() {
-		Crafty('Terrain').destroy();
-		Crafty('Enemy').destroy();
-		Crafty('Bullet').destroy();
+		
+		Crafty('StaysInRoom').destroy();
 		this.megaMap.roomY++;
 		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
 	});
 	this.wentRight = this.bind('WentRight', function() {
-		Crafty('Terrain').destroy();
-		Crafty('Enemy').destroy();
-		Crafty('Bullet').destroy();
+		Crafty('StaysInRoom').destroy();
 		this.megaMap.roomX++;
 		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
 	});
 	this.wentLeft = this.bind('WentLeft', function() {
-		Crafty('Terrain').destroy();
-		Crafty('Enemy').destroy();
-		Crafty('Bullet').destroy();
+		Crafty('StaysInRoom').destroy();
 		this.megaMap.roomX--;
 		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
 	});

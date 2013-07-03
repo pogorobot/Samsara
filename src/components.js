@@ -374,7 +374,7 @@ Crafty.c("Camera",{
 // Enemies are collectibles which are distinguished from terrain by some sort of behaviour, handled in separate components.
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('Actor, Solid, Collectible, Chance, ShootsAtPlayer')
+		this.requires('Actor, Solid, Collectible, Chance, StaysInRoom')
 	},
 	//What happens when you get hit with something that hurts (e.g., bullets)
 	//Currently nothing
@@ -544,7 +544,7 @@ Crafty.c('Sentinel', {
 	dx: 0,
 	dy: 0,
 	init: function() {
-		this.requires('Actor, Solid, StopsAtWalls, Collectible');
+		this.requires('Enemy, StopsAtWalls');
 		if (Math.random() < .5) {
 			if (Math.random() < .5) {
 				this.dx = 1;
@@ -655,7 +655,7 @@ Crafty.c('Bullet', {
 	dx: 0,
 	bounced: 0,
 	init: function() {
-		this.requires('Actor, Collision, spr_bullet, HurtsToTouch');
+		this.requires('Actor, Collision, spr_bullet, HurtsToTouch, StaysInRoom');
 		this.bind('EnterFrame', function() {
 			this.x += this.dx;
 			this.y += this.dy;
@@ -1052,15 +1052,23 @@ Crafty.c('SpawnPoint', {
 	},
 });
 
+//A Terrain is a static object made to be placed and kept in a room.
 Crafty.c('Terrain', {
 	init: function() {
-		this.requires('Actor');
+		this.requires('Actor, StaysInRoom');
 	},
 	placeInRoom: function(room) {
 		this.room = room;
 	}
 });
 
+//StaysInRoom is a label that prevents objects from moving between rooms along with the player.
+//Uncommenting this makes things really weird!
+//Crafty.c('StaysInRoom', {
+//	init: function() {}
+//});
+
+//A Collectible is anything that must be destroyed to clear a room. 
 Crafty.c('Collectible', {
 	init: function() {
 		this.requires('Actor');
