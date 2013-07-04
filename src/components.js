@@ -724,28 +724,26 @@ Crafty.c('Bullet', {
 	},
 });
 
-Crafty.c('Heart', {
+Crafty.c('FullHeart', {
 	init: function() {
-		this.requires('Actor, spr_heart');
-	},
-	
-	hurt: function() {
-		this.destroy();
+		this.requires('Heart, spr_heart');
 	},
 });
 
 
 Crafty.c('BrokenHeart', {
 	init: function() {
-		this.requires('Actor, spr_emptyHeart');
+		this.requires('Heart, spr_emptyHeart');
 	}
 });
 
 Crafty.c('HalfHeart', {
 	init: function() {
-		this.requires('Actor, spr_halfHeart');
+		this.requires('Heart, spr_halfHeart');
 	}
 });
+
+
 
 // A village is a tile on the grid that the PC must destroy in order to complete a room.
 Crafty.c('Village', {
@@ -837,7 +835,7 @@ Crafty.c('HurtsToTouch', {
 	init: function() {
 		this.requires('Actor, Collision');
 		this.onHit('Hero', this.touch);
-		this.onHit('Enemy', this.touch); //To-do: abstract this, a-la Collectible
+		this.onHit('Enemy', this.touch); 
 	},
 	
 	touch: function(data) {
@@ -999,7 +997,7 @@ Crafty.c('HasHealth', {
 		//Put a health bar onscreen
 		var xOfFirstHeart = Game.map_grid.width / 2 - this.maxHealth / 2;
 		for (var i = 0; i < this.maxHealth; i++) {
-			this.healthBar[i] = (Crafty.e('Heart').at(xOfFirstHeart + i, 1));
+			this.healthBar[i] = (Crafty.e('FullHeart').at(xOfFirstHeart + i, 1));
 		}
 	},
 });
@@ -1012,7 +1010,7 @@ Crafty.c('CanHeal', {
 	heal: function() {
 		if (this.healthBar.length >= this.maxHealth) return;
 		if (Crafty('HalfHeart').length) {
-			this.healthBar.push(Crafty.e('Heart').at(Crafty('HalfHeart').tileX, Crafty('HalfHeart').tileY));
+			this.healthBar.push(Crafty.e('FullHeart').at(Crafty('HalfHeart').tileX, Crafty('HalfHeart').tileY));
 			Crafty('HalfHeart').destroy();
 		}
 		else {
@@ -1059,6 +1057,15 @@ Crafty.c('Terrain', {
 	},
 	placeInRoom: function(room) {
 		this.room = room;
+	}
+});
+
+//Heart deals with anything that lives in the health bar.
+Crafty.c('Heart', {
+	init: function() {
+		this.requires('Actor');
+		//this.onHit('Actor', function(){ this.alpha = 0.4; });
+		this.alpha = 0.4;
 	}
 });
 

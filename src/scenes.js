@@ -175,7 +175,6 @@ Crafty.scene('Game', function() {
 		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
 	});
 	this.wentDown = this.bind('WentDown', function() {
-		
 		Crafty('StaysInRoom').destroy();
 		this.megaMap.roomY++;
 		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
