@@ -1063,9 +1063,9 @@ Crafty.c('Terrain', {
 //Heart deals with anything that lives in the health bar.
 Crafty.c('Heart', {
 	init: function() {
-		this.requires('Actor');
-		//this.onHit('Actor', function(){ this.alpha = 0.4; });
-		this.alpha = 0.4;
+		this.requires('Actor, Collision');
+		this.onHit('Actor', function(){ this.alpha = 0.4; });
+		//this.alpha = 0.4;
 	}
 });
 
