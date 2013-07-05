@@ -493,6 +493,7 @@ Crafty.c('Hero', {
 	//When we get hurt
 	loseHeart: function() {
 		if (this.invulnerable) return; //If we're invulnerable, pain don't hurt
+		if (this.healthBar.length == 0) return; //should not come up, but did once. Can't die twice!
 		var heartToLose;
 		//If we have a fractional heart,
 		if (Crafty('HalfHeart').length) {
