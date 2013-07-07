@@ -397,14 +397,24 @@ Crafty.c('SwarmingEnemy', {
 	},
 });
 
+Crafty.c('SwingSwordOnSpace', {
+	init: function() {
+		this.requires('CanSwingASword, Keyboard');
+		//Define what happens when we swing a sword
+		this.bind('KeyDown', function() {
+			if (this.isDown('SPACE')) {
+				this.swingSword();
+			}
+		});
+	},
+});
+
 //Hero Component
 //--------------
 //Here you have it: The player's avatar
 //Needs to have its behavior devolved to separate components for superior abstaction
 //Is currently kind of a mess of everything I wanted to be able to do
 Crafty.c('Hero', {
-	swordOut: false, 		//So we don't swing our sword if we're already swinging our sword
-	swordRotation: 180, 	//To keep track of where the sword should swing
 	invulnerable: false,	//So we don't take damage just after taking damage
 	init: function() {
 		var speed = 2;
@@ -412,7 +422,7 @@ Crafty.c('Hero', {
 		//Requirements:   Actor (exists on a grid), Solid (enemies don't walk through  you), 
 						//Fourway, Collision, Keyboard (various interface functionality), 
 						//spr_player, SpriteAnimation (for your appearance)
-		this.requires('Actor, Solid, Fourway, Collision, HasHealth, CanHeal, CanSwingASword, spr_player, SpriteAnimation, Keyboard')
+		this.requires('Actor, Solid, Fourway, Collision, CanHeal, SwingSwordOnSpace, spr_player, SpriteAnimation, Keyboard')
 			.fourway(speed)			//Crafty method to grant keyboard control
 			.animate('PlayerMovingUp',    0, 0, 2)	//Define various animations
 			.animate('PlayerMovingRight', 0, 1, 2)	//arguments are: reel name, row and column on spritesheet, duration
@@ -422,14 +432,6 @@ Crafty.c('Hero', {
 		this.onHit('HurtsToTouch', this.loseHeart); //If you cut me, do I not bleed?
 		this.onHit('Solid', this.stopMovement);		//If I walk into a wall, do I not stop moving?
 													//Note: Do not reverse the order of those.
-		
-		//Define what happens when we swing a sword
-		var sword = Crafty.e('Sword').wieldedBy(this); //We'll want to keep track of it so we can rotate it when we change direction
-		this.bind('KeyDown', function() {
-			if (this.isDown('SPACE')) {
-				this.swingSword();
-			}
-		});
 		
 		//Define what happens when we change direction
 		//(i.e., change our animation and rotate our sword)
@@ -450,7 +452,8 @@ Crafty.c('Hero', {
 			} else {
 				this.stop(); //Don't animate if we're not moving
 			}
-			sword.rotation = this.swordRotation; //If we already have a sword onscreen, rotate it (otherwise does nothing)
+			//This does not work! Hence Case 126.
+			this.sword.rotation = this.swordRotation; //If we already have a sword onscreen, rotate it (otherwise does nothing)
 		});
 		this.bind('EnterFrame', function() {
 			if (this.x < -this.w / 2) {
@@ -807,7 +810,7 @@ Crafty.c('CanSwingASword', {
 	},
 	swingSword: function() {
 		if (this.swordOut) return;
-		Crafty.e('Sword').wieldedBy(this);
+		this.sword = Crafty.e('Sword').wieldedBy(this); //keep track of it to change its direction
 		this.swordOut = true;
 	},
 	changeDirectionOfSword: function(newDirection) {
