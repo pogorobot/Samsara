@@ -144,8 +144,25 @@ Crafty.c('LeftDoor', {
 
 //A Rock is a Solid Actor that stops bullets
 Crafty.c('Rock', {
+	dx: 0,
+	dy: 0,
+	friction: 0.9,
 	init: function() {
-		this.requires('Actor, Solid, spr_rock, StopsBullets, Terrain');
+		this.requires('Actor, Solid, spr_rock, StopsBullets, Terrain, Collision');
+		this.onHit('Solid', this.stopAllMovement);
+	},
+	roll: function() {
+		if (this.x || this.y) {
+			this.x += this.dx;
+			this.y += this.dy;
+		}
+	},
+	stopAllMovement: function() {
+		this.x -= this.dx;
+		this.y -= this.dy;
+		this.dx = 0;
+		this.dy = 0;
+		this.unbind('EnterFrame', this.roll);
 	},
 });
 
@@ -432,6 +449,7 @@ Crafty.c('Hero', {
 			.animate('PlayerMovingLeft',  0, 3, 2);
 			
 		this.onHit('HurtsToTouch', this.loseHeart); //If you cut me, do I not bleed?
+		this.onHit('Rock', this.shoveRock);
 		this.onHit('Solid', this.stopMovement);		//If I walk into a wall, do I not stop moving?
 													//Note: Do not reverse the order of those.
 		
@@ -494,6 +512,15 @@ Crafty.c('Hero', {
 		return this.x > this.w && this.y > this.h && this.x < Game.width() - (2*this.w) && this.y < Game.height() - (2 * this.h);
 	},
 	
+	shoveRock: function(data) {
+		rock = data[0].obj;
+		if (this._movement) {
+			rock.dx = this._movement.x;
+			rock.dy = this._movement.y;
+			rock.bind('EnterFrame', rock.roll);
+		}
+	},
+	
 	//When we get hurt
 	loseHeart: function() {
 		if (this.invulnerable) return; //If we're invulnerable, pain don't hurt
@@ -517,25 +544,23 @@ Crafty.c('Hero', {
 		this.timeout(function() { this.invulnerable = false; this.alpha = 1; }, 500);
 	},
 	
-	//Not currently in use (didn't work)
-	getPushed: function(x, y) {
-		if (this.invulnerable) return;
-		this.x += x;
-		this.y += y;
-	},
-	
 	//Gets called when you touch something solid
 	//These _properties are part of the Fourway component
 	stopMovement: function() {
 		this._speed = 0;
+		//Here we try to not get stuck in a wall.
 		if (this._movement) {
+			//try reverting only the x motion
 			this.x -= this._movement.x;
 			if (this.hit('Solid') != false) {
+				//That didn't work, so try reverting only the y motion
 				this.x += this._movement.x;
 				this.y -= this._movement.y;
 				if (this.hit('Solid') != false) {
+					//That also didn't work, so revert all motion
 					this.x -= this._movement.x;
 					if (this.hit('Solid') != false) {
+						//Wait, we must have been stuck beforehand. Fuck it. Just keep walking through walls.
 						this.x += this._movement.x;
 						this.y += this._movement.y;
 					}
