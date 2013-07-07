@@ -5,7 +5,7 @@ Crafty.c('TrainOfThought', {
 		this.thoughts = new Array();
 	},
 	think: function() {
-		if (this.bookmark > this.thoughts.length) {
+		if (this.bookmark >= this.thoughts.length) {
 			this.bookmark = 0;
 		}
 		Game.think(this.thoughts[this.bookmark]);
