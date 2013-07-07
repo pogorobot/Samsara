@@ -31,6 +31,10 @@ Game = {
 		});
 	},
 	
+	chance: function(percent) {
+		return Math.random() * 100 < percent;
+	},
+	
 	// Initialize and start our game
 	start: function() {
 		//Initialize Crafty, creating a canvas window

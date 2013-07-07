@@ -579,7 +579,7 @@ Crafty.c('Sentinel', {
 Crafty.c('StealsLife', {
 	init: function() {
 		this.requires('Weapon');
-		this.bind('VillageVisited', this.stealLife);
+		this.bind('Collected', this.stealLife);
 	},
 	stealLife: function() {
 		if (this.wielder.has('CanHeal')) {
@@ -591,7 +591,7 @@ Crafty.c('StealsLife', {
 Crafty.c('ThinksAboutMurder', {
 	bodyCount: 0,
 	init: function() {
-		this.bind('VillageVisited', function() {
+		this.bind('Collected', function() {
 			this.bodyCount++;
 			Game.think(this.bodyCount);
 		});
@@ -719,10 +719,6 @@ Crafty.c('Bullet', {
 		this.dx *= -1;
 		this.bounced = true;
 	},
-	shove: function(shoveX, shoveY) {
-		this.dx += shoveX;
-		this.dy += shoveY;
-	},
 });
 
 Crafty.c('FullHeart', {
@@ -799,7 +795,7 @@ Crafty.c('ShootsAtPlayer', {
 	},
 	shootRandomly: function() {
 		var maxBullets = 5;
-		if (Crafty("Bullet").length < maxBullets && this.chance(0.5)) this.shoot();
+		if (Crafty("Bullet").length < maxBullets && Game.chance(0.5)) this.shoot();
 	},
 });
 
@@ -823,7 +819,7 @@ Crafty.c('SwingSwordRandomly', {
 	init: function() {
 		this.requires('CanSwingASword, Chance');
 		this.bind('EnterFrame', function() {
-			if (this.chance(1)) {
+			if (Game.chance(1)) {
 				this.swingSword();
 			}
 		});
@@ -1034,11 +1030,11 @@ Crafty.c('SpawnPoint', {
 	thinkAboutSpawning: function() {
 		var maxCollectibles = 10;
 		var chanceOfSentinel = 33;
-		if (Crafty('Enemy').length + Crafty('SpawningVillage').length < maxCollectibles && this.chance(this.probability)) {
-			if (this.chance(chanceOfSentinel)) {
+		if (Crafty('Enemy').length + Crafty('SpawningVillage').length < maxCollectibles && Game.chance(this.probability)) {
+			if (Game.chance(chanceOfSentinel)) {
 				var newGuy = Crafty.e('Sentinel').at(this.tileX, this.tileY + 1);
 			}
-			else if (this.chance(50)) {
+			else if (Game.chance(50)) {
 				var newGuy = Crafty.e('FleeingEnemy').at(this.tileX,this.tileY+1);
 			}
 			else {
@@ -1083,8 +1079,8 @@ Crafty.c('Collectible', {
 	},
 	collect: function() {
 		this.destroy();
-		Crafty.audio.play('knock');
-		Crafty.trigger('VillageVisited', this);
+		//Crafty.audio.play('knock');
+		Crafty.trigger('Collected', this);
 		if (this.has('Terrain')) {
 			this.eraseFromRoom();
 		}
@@ -1094,13 +1090,6 @@ Crafty.c('Collectible', {
 	},
 });
 
-
-//Here so I can define boolean chance events in percentages
-Crafty.c('Chance', {
-	chance: function(percent) {
-		return Math.random() * 100 < percent;
-	},
-});
 
 // ====================
 // INTERFACE COMPONENTS

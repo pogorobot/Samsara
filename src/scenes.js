@@ -158,7 +158,7 @@ Crafty.scene('Game', function() {
 	Crafty.audio.play('ring'); //Little chime to signal kickoff
 	
 	//Every time we might have won, check if we've won
-	this.show_victory = this.bind('VillageVisited', function() {
+	this.show_victory = this.bind('Collected', function() {
 		if (!Crafty('Collectible').length) {
 			Crafty.trigger('DoorsOpen');
 		}
@@ -199,7 +199,7 @@ Crafty.scene('Game', function() {
 }, function() { //Don't leave these listeners constantly waiting around for an event, for hygiene's sake
 	this.unbind('LostHeart', this.show_defeat);
 }, function() {
-	this.unbind('VillageVisited', this.show_victory);
+	this.unbind('Collected', this.show_victory);
 }, function() {
 	this.unbind('LeftScreen', this.changeRooms);
 });
