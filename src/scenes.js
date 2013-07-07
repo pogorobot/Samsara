@@ -157,6 +157,8 @@ Crafty.scene('Game', function() {
 
 	Crafty.audio.play('ring'); //Little chime to signal kickoff
 	
+	Game.loadThoughts();
+	
 	//Every time we might have won, check if we've won
 	this.show_victory = this.bind('Collected', function() {
 		if (!Crafty('Collectible').length) {

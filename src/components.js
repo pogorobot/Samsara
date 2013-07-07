@@ -412,7 +412,7 @@ Crafty.c('Hero', {
 		//Requirements:   Actor (exists on a grid), Solid (enemies don't walk through  you), 
 						//Fourway, Collision, Keyboard (various interface functionality), 
 						//spr_player, SpriteAnimation (for your appearance)
-		this.requires('Actor, Solid, Fourway, Collision, HasHealth, CanHeal, CanSwingASword, spr_player, SpriteAnimation, Keyboard, ThinksAboutMurder')
+		this.requires('Actor, Solid, Fourway, Collision, HasHealth, CanHeal, CanSwingASword, spr_player, SpriteAnimation, Keyboard')
 			.fourway(speed)			//Crafty method to grant keyboard control
 			.animate('PlayerMovingUp',    0, 0, 2)	//Define various animations
 			.animate('PlayerMovingRight', 0, 1, 2)	//arguments are: reel name, row and column on spritesheet, duration

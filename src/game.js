@@ -27,7 +27,9 @@ Game = {
 	
 	think: function(thought) {
 		$(document).ready(function() {
-			$('.thoughts').html("<p>" + thought + "</p>");
+			previousThought = $('.thoughts-2').html();
+			$('.thoughts-2').html("<p>" + thought + "</p>");
+			$('.thoughts').html(previousThought);
 		});
 	},
 	
@@ -43,7 +45,39 @@ Game = {
 		Crafty.background('rgb(87, 109, 124)');
 		//Begin with the Loading scene - see 'scenes.js'
 		Crafty.scene('Loading');
-	}
+	},
+	
+	loadThoughts: function() {
+		Crafty.e('TrainOfThought').loadThoughts([
+			"I shouldn't be here.",
+			"He wouldn't want me to be here.",
+			"I don't have a choice.",
+			"I don't care.",
+			"This is pointless anyway.",
+			"He's not here.",
+			"He's dead, or  worse.",
+			"And what if he's not?",
+			"What if he's here, and I leave?",
+			"You want to risk it?",
+			"He doesn't need me anyway.",
+			"Bullshit!",
+			"He doesn't need me, he doesn't want me.",
+			"I shouldn't be here.",
+			"I don't get to be the hero. That's not me.",
+			"...",
+			"What if he's dead?",
+			"What happened in there?",
+			"Last I heard it was a great victory.",
+			"Peace and freedom forever.",
+			"Sound the trumpets, all hail Sir Theodore.",
+			"Does he remember me?",
+			"It doesn't matter.",
+			"But does he, though?",
+			"That's not why we're here.",
+			"We shouldn't be here.",
+			"That's right."
+		]).keepThinking();
+	},
 }
 
 $text_css = { 'font-size': '24px', 
