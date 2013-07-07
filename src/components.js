@@ -454,7 +454,7 @@ Crafty.c('Hero', {
 			} else {
 				this.stop(); //Don't animate if we're not moving
 			}
-			this.sword.rotation = this.swordRotation; //If we already have a sword onscreen, rotate it (otherwise does nothing)
+			if (this.sword) this.sword.rotation = this.swordRotation; //If we already have a sword onscreen, rotate it (otherwise does nothing)
 		});
 		this.bind('EnterFrame', function() {
 			if (this.x < -this.w / 2) {
@@ -1078,8 +1078,12 @@ Crafty.c('SpikeTrap', {
 Crafty.c('Heart', {
 	init: function() {
 		this.requires('Actor, Collision');
-		this.onHit('Actor', function(){ this.alpha = 0.4; });
-		//this.alpha = 0.4;
+		this.onHit('Actor', function() {
+			this.alpha = 0.4;
+		},
+		function() {
+			this.alpha = 1;
+		});
 	}
 });
 
