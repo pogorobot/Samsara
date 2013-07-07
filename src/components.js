@@ -288,10 +288,12 @@ Crafty.c('Room', {
 		}
 		else if (Math.random() < 0.06 && !this.contents[x][y]) {
 			// Place a bush entity at the current tile
-			return (Math.random() > 0.3) ? 'Bush' : 'Rock';
-		} //else if (Math.random() < 0.03 && !this.contents[x][y]) {
-			//return "Enemy";
-		 else if (Math.random() < 0.02 && !this.contents[x][y] && !this.contents[x][y+1]) {
+			return (Game.chance(30)) ? 'Bush' : 'Rock';
+		}
+		else if (Game.chance(1) && !this.contents[x][y]) {
+			return "SpikeTrap";
+		}
+		else if (Math.random() < 0.02 && !this.contents[x][y] && !this.contents[x][y+1]) {
 			if (this.spawningVillageCount < this.maxSpawningVillages){
 				this.placedOneVillage = true;
 				this.spawningVillageCount++;
@@ -452,7 +454,6 @@ Crafty.c('Hero', {
 			} else {
 				this.stop(); //Don't animate if we're not moving
 			}
-			//This does not work! Hence Case 126.
 			this.sword.rotation = this.swordRotation; //If we already have a sword onscreen, rotate it (otherwise does nothing)
 		});
 		this.bind('EnterFrame', function() {
@@ -880,7 +881,6 @@ Crafty.c('SwarmingOrFleeingBasics', {
 			.animate('PlayerMovingLeft',  0, 3, 2);
 	},
 	
-	//TAKES ALL THE CPUs
 	move: function() {
 		var newDx = this.dx;
 		var newDy = this.dy;
@@ -1058,6 +1058,20 @@ Crafty.c('Terrain', {
 	placeInRoom: function(room) {
 		this.room = room;
 	}
+});
+
+Crafty.c('SpikeTrap', {
+	init: function() {
+		this.requires('Actor, Collision, spr_spikeTrap, Trap, Terrain');
+		this.onHit('Actor', this.spring);
+	},
+	spring: function() {
+		this.removeComponent('spr_spikeTrap');
+		this.requires('HurtsToTouch, HurtsMonsters, spr_spikes');
+		//Would like to make them Solid, but can't find a good way to do that without either
+		//A) keeping them from ever springing
+		//or B) making the hero pass through walls as soon as he springs a trap
+	},
 });
 
 //Heart deals with anything that lives in the health bar.

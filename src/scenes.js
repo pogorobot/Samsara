@@ -26,6 +26,7 @@ Crafty.scene('Loading', function() {
 		'assets/zigguratWalls.png',
 		'assets/skeleton.png',
 		'assets/sentinel.png',
+		'assets/spikes.png',
 		'assets/door_knock_3x.mp3',			//I'm not sure why all the audio files are in three formats??
 		'assets/door_knock_3x.ogg',			//That's how they did it in the tutorial =/
 		'assets/door_knock_3x.aac',			//Seems kind of silly tbh
@@ -63,6 +64,10 @@ Crafty.scene('Loading', function() {
 		Crafty.sprite(8, 'assets/8x8_bullet.gif', {
 			spr_bullet: [0, 0],
 			spr_deflectedBullet: [1, 0]
+		});
+		Crafty.sprite(16, 'assets/spikes.png', {
+			spr_spikeTrap:   [0, 0],
+			spr_spikes:		 [1, 0]
 		});
 		
 		Crafty.sprite(16, 'assets/sentinel.png', {
