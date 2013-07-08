@@ -144,11 +144,16 @@ Crafty.c('LeftDoor', {
 
 //A Rock is a Solid Actor that stops bullets
 Crafty.c('Rock', {
+	init: function() {
+		this.requires('Actor, Solid, spr_rock, StopsBullets, Terrain');
+	},
+});
+
+Crafty.c('GetsShoved', {
 	dx: 0,
 	dy: 0,
-	friction: 0.9,
 	init: function() {
-		this.requires('Actor, Solid, spr_rock, StopsBullets, Terrain, Collision');
+		this.requires('Collision');
 		this.onHit('Solid', this.stopAllMovement);
 	},
 	roll: function() {
@@ -449,7 +454,7 @@ Crafty.c('Hero', {
 			.animate('PlayerMovingLeft',  0, 3, 2);
 			
 		this.onHit('HurtsToTouch', this.loseHeart); //If you cut me, do I not bleed?
-		this.onHit('Rock', this.shoveRock);
+		this.onHit('GetsShoved', this.shoveRock);
 		this.onHit('Solid', this.stopMovement);		//If I walk into a wall, do I not stop moving?
 													//Note: Do not reverse the order of those.
 		
