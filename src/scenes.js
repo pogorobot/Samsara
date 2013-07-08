@@ -199,7 +199,7 @@ Crafty.scene('Game', function() {
 	
 	//Every time we get hurt, check if we're dead
 	this.show_defeat = this.bind('LostHeart', function() {
-		if (!Crafty('Heart').length && !Crafty('HalfHeart').length) {
+		if (!Crafty('FullHeart').length && !Crafty('HalfHeart').length) {
 			Crafty.scene('Defeat');
 		}
 	});

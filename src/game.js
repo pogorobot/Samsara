@@ -32,7 +32,7 @@ Game = {
 			$('.thoughts').html(previousThought);
 		});
 	},
-	
+	//Call Game.chance() for an intuitive percent-chance function.
 	chance: function(percent) {
 		return Math.random() * 100 < percent;
 	},

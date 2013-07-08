@@ -439,14 +439,13 @@ Crafty.c('SwingSwordOnSpace', {
 //Needs to have its behavior devolved to separate components for superior abstaction
 //Is currently kind of a mess of everything I wanted to be able to do
 Crafty.c('Hero', {
-	invulnerable: false,	//So we don't take damage just after taking damage
 	init: function() {
 		var speed = 2;
 		
 		//Requirements:   Actor (exists on a grid), Solid (enemies don't walk through  you), 
 						//Fourway, Collision, Keyboard (various interface functionality), 
 						//spr_player, SpriteAnimation (for your appearance)
-		this.requires('Actor, Solid, Fourway, Collision, CanHeal, SwingSwordOnSpace, spr_player, SpriteAnimation, Keyboard')
+		this.requires('Actor, Solid, Fourway, Collision, GetsHurt, CanHeal, SwingSwordOnSpace, spr_player, SpriteAnimation, Keyboard')
 			.fourway(speed)			//Crafty method to grant keyboard control
 			.animate('PlayerMovingUp',    0, 0, 2)	//Define various animations
 			.animate('PlayerMovingRight', 0, 1, 2)	//arguments are: reel name, row and column on spritesheet, duration
@@ -509,7 +508,7 @@ Crafty.c('Hero', {
 		if (this.insideWallEdge())
 			{
 				Crafty.trigger('DoorsClose');
-				this.unbind('Moved', this.doorsWillClose);
+				this.unbind('Moved', this.triggerDoors);
 			};
 	},
 	
@@ -524,29 +523,6 @@ Crafty.c('Hero', {
 			rock.dy = this._movement.y;
 			rock.bind('EnterFrame', rock.roll);
 		}
-	},
-	
-	//When we get hurt
-	loseHeart: function() {
-		if (this.invulnerable) return; //If we're invulnerable, pain don't hurt
-		if (this.healthBar.length == 0) return; //should not come up, but did once. Can't die twice!
-		var heartToLose;
-		//If we have a fractional heart,
-		if (Crafty('HalfHeart').length) {
-			heartToLose = Crafty('HalfHeart'); //The halfheart will be gone
-			Crafty.e('BrokenHeart').at(heartToLose.tileX, heartToLose.tileY); //and replace it with an empty one
-		}
-		else {
-			heartToLose = this.healthBar[this.healthBar.length - 1]; //The last heart will be fractional'd
-			this.healthBar.length -= 1; //Take it out of the health bar as well as the game
-			Crafty.e('HalfHeart').at(heartToLose.tileX, heartToLose.tileY); //Put a fractional heart in its place
-		}
-		heartToLose.destroy(); //Delete whichever object we've designated
-		Crafty.trigger('LostHeart', this); //Trigger an event so the game knows we may have just died
-		this.invulnerable = true;			//Trigger invulnerability so we just get hurt once
-		this.alpha = 0.4;					//Trigger a visual representation of invulnerability
-		//Wait half a second, then go back to normal
-		this.timeout(function() { this.invulnerable = false; this.alpha = 1; }, 500);
 	},
 	
 	//Gets called when you touch something solid
@@ -1029,6 +1005,35 @@ Crafty.c('HasHealth', {
 		for (var i = 0; i < this.maxHealth; i++) {
 			this.healthBar[i] = (Crafty.e('FullHeart').at(xOfFirstHeart + i, 1));
 		}
+	},
+});
+
+Crafty.c('GetsHurt', {
+	invulnerable: false,
+	init: function() {
+		this.requires('HasHealth');
+	},
+	//When we get hurt
+	loseHeart: function() {
+		if (this.invulnerable) return; //If we're invulnerable, pain don't hurt
+		if (this.healthBar.length == 0 && !Crafty('HalfHeart').length) return; //should not come up, but did once. Can't die twice!
+		var heartToLose;
+		//If we have a fractional heart,
+		if (Crafty('HalfHeart').length) {
+			heartToLose = Crafty('HalfHeart'); //The halfheart will be gone
+			Crafty.e('BrokenHeart').at(heartToLose.tileX, heartToLose.tileY); //and replace it with an empty one
+		}
+		else {
+			heartToLose = this.healthBar[this.healthBar.length - 1]; //The last heart will be fractional'd
+			this.healthBar.length -= 1; //Take it out of the health bar as well as the game
+			Crafty.e('HalfHeart').at(heartToLose.tileX, heartToLose.tileY); //Put a fractional heart in its place
+		}
+		heartToLose.destroy(); //Delete whichever object we've designated
+		Crafty.trigger('LostHeart', this); //Trigger an event so the game knows we may have just died
+		this.invulnerable = true;			//Trigger invulnerability so we just get hurt once
+		this.alpha = 0.4;					//Trigger a visual representation of invulnerability
+		//Wait half a second, then go back to normal
+		this.timeout(function() { this.invulnerable = false; this.alpha = 1; }, 500);
 	},
 });
 
