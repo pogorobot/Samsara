@@ -208,7 +208,13 @@ Crafty.scene('Game', function() {
 }, function() {
 	this.unbind('Collected', this.show_victory);
 }, function() {
-	this.unbind('LeftScreen', this.changeRooms);
+	this.unbind('WentUp', this.WentUp);
+}, function() {
+	this.unbind('WentDown', this.WentDown);
+}, function() {
+	this.unbind('WentLeft', this.WentLeft);
+}, function() {
+	this.unbind('WentRight', this.WentRight);
 });
 //Victory Scene
 // -------------

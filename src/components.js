@@ -210,9 +210,23 @@ Crafty.c('MegaMap', {
 					//these functions return just where they placed it (chosen randomly if undefined)
 					this.contents[x+1][y].putDoorOnLeft(this.contents[x][y].putDoorOnRight());
 				}
+				//Put one on the bottom if the dice roll that way, or if you haven't put one anywhere else
 				if (Math.random() < chanceOfDoor || !this.contents[x][y].placedOneDoor) {
 					this.contents[x][y+1].putDoorOnTop(this.contents[x][y].putDoorOnBottom());
 				}
+			}
+		}
+		//On the bottom row
+		for (var x = 0; x < this.width; x++) {
+			//Put one on top if no other door exists
+			if (!this.contents[x][this.height - 1].placedOneDoor) {
+				this.contents[x][this.height - 2].putDoorOnBottom(this.contents[x][this.height - 1].putDoorOnTop());
+			}
+		}
+		//On the right column
+		for (var y = 0; y < this.height; y++) {
+			if (!this.contents[this.width - 1][y].placedOneDoor) {
+				this.contents[this.width - 2][y].putDoorOnRight(this.contents[this.width - 1][y].putDoorOnLeft());
 			}
 		}
 	},
@@ -379,7 +393,7 @@ Crafty.c('Room', {
 	},
 });
 
-Crafty.c("Camera",{
+Crafty.c("Camera", {
     init: function() {  },
     camera: function(obj) {
       this.set(obj);
@@ -499,17 +513,14 @@ Crafty.c('Hero', {
 	},
 	
 	doorsWillClose: function() {
-		this.bind('Moved', function() {
-			this.triggerDoors();
-		});
+		this.bind('Moved', this.triggerDoors);
 	},
 	
 	triggerDoors: function(){
-		if (this.insideWallEdge())
-			{
-				Crafty.trigger('DoorsClose');
-				this.unbind('Moved', this.triggerDoors);
-			};
+		if (this.insideWallEdge()) {
+			Crafty.trigger('DoorsClose');
+			this.unbind('Moved', this.triggerDoors);
+		}
 	},
 	
 	insideWallEdge: function() {
