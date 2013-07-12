@@ -513,6 +513,7 @@ Crafty.c('Hero', {
 	},
 	
 	doorsWillClose: function() {
+		this.unbind('Moved', this.triggerDoors); //Don't want to bind stuff twice!
 		this.bind('Moved', this.triggerDoors);
 	},
 	
@@ -520,6 +521,7 @@ Crafty.c('Hero', {
 		if (this.insideWallEdge()) {
 			Crafty.trigger('DoorsClose');
 			this.unbind('Moved', this.triggerDoors);
+			//this.unbind('Moved');  //Alternate fix for binding issue
 		}
 	},
 	
