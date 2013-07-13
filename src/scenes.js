@@ -166,7 +166,7 @@ Crafty.scene('Game', function() {
 	
 	//Every time we might have won, check if we've won
 	this.show_victory = this.bind('Collected', function() {
-		if (!Crafty('Collectible').length) {
+		if (!Crafty('Collectable').length) {
 			Crafty.trigger('DoorsOpen');
 		}
 	});
@@ -197,14 +197,10 @@ Crafty.scene('Game', function() {
 		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
 	});
 	
-	//Every time we get hurt, check if we're dead
-	this.show_defeat = this.bind('LostHeart', function() {
-		if (!Crafty('FullHeart').length && !Crafty('HalfHeart').length) {
-			Crafty.scene('Defeat');
-		}
-	});
+	//If we died, change the screen.
+	this.show_defeat = this.bind('HeroDied', function() {Crafty.scene('Defeat');});
 }, function() { //Don't leave these listeners constantly waiting around for an event, for hygiene's sake
-	this.unbind('LostHeart', this.show_defeat);
+	this.unbind('HeroDied', this.show_defeat);
 }, function() {
 	this.unbind('Collected', this.show_victory);
 }, function() {
