@@ -267,7 +267,7 @@ Crafty.c('Room', {
 		this.spawningVillageCount = 0;
 	},
 	cleared: function() {
-		return !Crafty('Collectible').length;
+		return !Crafty('Collectable').length;
 	},
 	leaveEmpty: function(x, y) {
 		this.contents[x][y] = 'Placeholder';
@@ -412,12 +412,7 @@ Crafty.c("Camera", {
 // Enemies are collectibles which are distinguished from terrain by some sort of behaviour, handled in separate components.
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('Actor, Solid, Collectible, Chance, StaysInRoom')
-	},
-	//What happens when you get hit with something that hurts (e.g., bullets)
-	//Currently nothing
-	loseHeart: function() {
-		//this.destroy();
+		this.requires('Actor, Solid, Collectable, Chance, StaysInRoom')
 	},
 });
 
@@ -459,14 +454,14 @@ Crafty.c('Hero', {
 		//Requirements:   Actor (exists on a grid), Solid (enemies don't walk through  you), 
 						//Fourway, Collision, Keyboard (various interface functionality), 
 						//spr_player, SpriteAnimation (for your appearance)
-		this.requires('Actor, Solid, Fourway, Collision, GetsHurt, CanHeal, SwingSwordOnSpace, spr_player, SpriteAnimation, Keyboard')
+		this.requires('Actor, Solid, Fourway, Collision, HasHealthBar, SwingSwordOnSpace, spr_player, SpriteAnimation, Keyboard')
 			.fourway(speed)			//Crafty method to grant keyboard control
 			.animate('PlayerMovingUp',    0, 0, 2)	//Define various animations
 			.animate('PlayerMovingRight', 0, 1, 2)	//arguments are: reel name, row and column on spritesheet, duration
 			.animate('PlayerMovingDown',  0, 2, 2)
 			.animate('PlayerMovingLeft',  0, 3, 2);
 			
-		this.onHit('HurtsToTouch', this.loseHeart); //If you cut me, do I not bleed?
+		this.onHit('HurtsToTouch', this.getHurt); 
 		this.onHit('GetsShoved', this.shoveRock);
 		this.onHit('Solid', this.stopMovement);		//If I walk into a wall, do I not stop moving?
 													//Note: Do not reverse the order of those.
@@ -568,7 +563,9 @@ Crafty.c('Sentinel', {
 	dx: 0,
 	dy: 0,
 	init: function() {
-		this.requires('Enemy, StopsAtWalls');
+		this.requires('Enemy, StopsAtWalls, HurtsToTouch');
+		this.health = 2;
+		this.painfulness = 4;
 		if (Math.random() < .5) {
 			if (Math.random() < .5) {
 				this.dx = 1;
@@ -602,12 +599,9 @@ Crafty.c('Sentinel', {
 Crafty.c('StealsLife', {
 	init: function() {
 		this.requires('Weapon');
-		this.bind('Collected', this.stealLife);
 	},
-	stealLife: function() {
-		if (this.wielder.has('CanHeal')) {
-			this.wielder.heal();
-		}
+	stealLife: function() { //this should only trigger when Hero is wielding the blade, but that doesn't seem to be the case right now.
+		if(this.wielder.has('hasHealthBar')) this.wielder.setHealthBar(this.wielder.health + this.attackPower);
 	},
 });
 
@@ -625,7 +619,7 @@ Crafty.c('ThinksAboutMurder', {
 // (then make more weapons in Pickle)
 Crafty.c('Sword', {
 	init: function() {
-		this.requires('Actor, spr_sword, Collision, SpriteAnimation, Weapon, StealsLife');
+		this.requires('Actor, spr_sword, Collision, SpriteAnimation, Weapon');
 		this.animate('SwordSwinging',    0, 0, 4)
 		this.alpha = 0;
 	},
@@ -648,7 +642,7 @@ Crafty.c('Sword', {
 			this.sheathe();
 		});
 		if (this.wielder.has('Hero')) {
-			this.requires('HurtsMonsters, DeflectsBullets');
+			this.requires('HurtsMonsters, DeflectsBullets, StealsLife');
 		}
 		else {
 			this.requires('HurtsToTouch');
@@ -663,13 +657,17 @@ Crafty.c('Sword', {
 });
 
 Crafty.c('HurtsMonsters', {
+	attackPower: 1,
 	init: function() {
-		this.onHit('Collectible', this.stab);
+		this.onHit('Collectable', this.stab);
 	},
 	stab: function(data)
 	{
-		collectible = data[0].obj;
-		collectible.collect();
+		collectable = data[0].obj;
+		newHealth = collectable.health - this.attackPower;
+		collectable.setHealth(newHealth);
+		if(collectable.health <= 0) collectable.collect();
+		if(this.has("StealsLife")) this.wielder.setHealthBar(this.wielder.health + this.attackPower); 
 	},
 });
 
@@ -768,7 +766,7 @@ Crafty.c('HalfHeart', {
 // A village is a tile on the grid that the PC must destroy in order to complete a room.
 Crafty.c('Village', {
 	init: function() {
-		this.requires('Actor, Solid, spr_village, Collectible, Terrain');
+		this.requires('Actor, Solid, spr_village, Collectable, Terrain');
 	},
 });
 
@@ -852,16 +850,17 @@ Crafty.c('SwingSwordRandomly', {
 //If the player touches it, some health is lost
 //Currently does nothing to anything else
 Crafty.c('HurtsToTouch', {
+	painfulness: 1, //how much this hurts
 	init: function() {
 		this.requires('Actor, Collision');
 		this.onHit('Hero', this.touch);
-		this.onHit('Enemy', this.touch); 
 	},
 	
 	touch: function(data) {
-		target = data[0].obj;
+		target = data[0].obj; //the target in this case should always be Hero.
 		//target.getPushed(target.x - this.x, target.y - this.y);
-		target.loseHeart();
+		target.setHealthBar(target.health-this.painfulness);
+		if(target.health <= 0) Crafty.trigger('HeroDied', target); //check if we died.
 	},
 });
 
@@ -1009,67 +1008,83 @@ Crafty.c('Fleeing', {
 	},
 });
 
-Crafty.c('HasHealth', {
-	healthBar: [],			//Holds the Heart components that show up atop the screen
-	maxHealth: 3,			//In full Hearts
+//anything that takes damage HasHealth.
+Crafty.c('HasHealth', {	
+	health: 1, //tracks how much health you have
+	invulnerable: false, //while invulnerable, take no damage
 	init: function() {
+	},
+	
+	setHealth: function(newHealth){
+		if(newHealth < 0) newHealth = 0; //can't have negative health
+		if(newHealth == this.health) return;
+		else if(newHealth < this.health){ //if it's pain
+			if(!this.invulnerable){
+				this.health = newHealth;
+				this.invulnerable = true;			//Trigger invulnerability so we just get hurt once
+				this.alpha = 0.4;					//Trigger a visual representation of invulnerability
+				//Wait half a second, then go back to normal
+				this.timeout(function() { this.invulnerable = false; this.alpha = 1; }, 500);
+				}
+			}
+		else{ //if it's healing
+			if(this.has('HasHealthBar') && newHealth > this.maxHealth) newHealth = this.maxHealth; 
+			this.health = newHealth;
+		}
+	},
+});
+
+//This is for the Hero's health bar.
+Crafty.c('HasHealthBar', {
+	maxHealth: 6, //in *half* hearts
+	healthBar: [],			//Holds the Heart components that show up atop the screen
+	init: function() {
+		this.requires('HasHealth');
+		this.setHealth(this.maxHealth);
 		//Put a health bar onscreen
-		var xOfFirstHeart = Game.map_grid.width / 2 - this.maxHealth / 2;
-		for (var i = 0; i < this.maxHealth; i++) {
+		var xOfFirstHeart = Game.map_grid.width / 2 - this.maxHealth / 4;
+		for (var i = 0; i < this.maxHealth/2; i++) {
 			this.healthBar[i] = (Crafty.e('FullHeart').at(xOfFirstHeart + i, 1));
 		}
 	},
-});
-
-Crafty.c('GetsHurt', {
-	invulnerable: false,
-	init: function() {
-		this.requires('HasHealth');
-	},
-	//When we get hurt
-	loseHeart: function() {
-		if (this.invulnerable) return; //If we're invulnerable, pain don't hurt
-		if (this.healthBar.length == 0 && !Crafty('HalfHeart').length) return; //should not come up, but did once. Can't die twice!
-		var heartToLose;
-		//If we have a fractional heart,
-		if (Crafty('HalfHeart').length) {
-			heartToLose = Crafty('HalfHeart'); //The halfheart will be gone
-			Crafty.e('BrokenHeart').at(heartToLose.tileX, heartToLose.tileY); //and replace it with an empty one
-		}
-		else {
-			heartToLose = this.healthBar[this.healthBar.length - 1]; //The last heart will be fractional'd
-			this.healthBar.length -= 1; //Take it out of the health bar as well as the game
-			Crafty.e('HalfHeart').at(heartToLose.tileX, heartToLose.tileY); //Put a fractional heart in its place
-		}
-		heartToLose.destroy(); //Delete whichever object we've designated
-		Crafty.trigger('LostHeart', this); //Trigger an event so the game knows we may have just died
-		this.invulnerable = true;			//Trigger invulnerability so we just get hurt once
-		this.alpha = 0.4;					//Trigger a visual representation of invulnerability
-		//Wait half a second, then go back to normal
-		this.timeout(function() { this.invulnerable = false; this.alpha = 1; }, 500);
-	},
-});
-
-Crafty.c('CanHeal', {
-	init: function() {
-		this.requires('HasHealth');
+	
+	//keeps the healthbar display up to date.
+	updateHealthBar: function(){
+		var oldHealth = Crafty('FullHeart').length * 2 + Crafty('HalfHeart').length;
+		if(oldHealth == this.health) return;
+		Crafty('Heart').destroy(); //destroy the old display
+		this.healthbar = []
+		var numFullHearts = ~~(this.health/2);
+		var halfHearted = this.health % 2;
+		var xOfFirstHeart = Game.map_grid.width / 2 - this.maxHealth / 4;
+		for (var i = 0; i < this.maxHealth/2; i++) {
+			if(i < numFullHearts) this.healthBar[i] = (Crafty.e('FullHeart').at(xOfFirstHeart + i, 1)); //create full hearts,
+			else if(halfHearted){ //then perhaps a halfHeart,
+				this.healthBar[i] = (Crafty.e('HalfHeart').at(xOfFirstHeart + i, 1));
+				halfHearted = false;
+				}
+			else if(i < this.maxHealth) this.healthBar[i] = (Crafty.e('BrokenHeart').at(xOfFirstHeart + i, 1)); //then the remaining empty Hearts
+			}
+		
 	},
 	
-	heal: function() {
-		if (this.healthBar.length >= this.maxHealth) return;
-		if (Crafty('HalfHeart').length) {
-			this.healthBar.push(Crafty.e('FullHeart').at(Crafty('HalfHeart').tileX, Crafty('HalfHeart').tileY));
-			Crafty('HalfHeart').destroy();
-		}
-		else {
-			Crafty('BrokenHeart').each(function() {
-				heartToGain = this;
-			});
-			Crafty.e('HalfHeart').at(heartToGain.tileX, heartToGain.tileY);
-			heartToGain.destroy();
-		}
+	//setHealth for our Hero and display.
+	setHealthBar: function(newHealth){
+		this.setHealth(newHealth);
+		this.updateHealthBar();
 	},
+	
+	//this is for when the Hero touches something that hurts.
+	getHurt: function(data){ 
+		sourceOfPain = data[0].obj;
+		this.setHealthBar(this.health-sourceOfPain.painfulness);
+		if(this.health <= 0) Crafty.trigger('HeroDied', this); //check if we died.
+	}
 });
+
+
+
+
 
 //This component randomly spawns new enemies
 Crafty.c('SpawnPoint', {
@@ -1111,6 +1126,7 @@ Crafty.c('Terrain', {
 Crafty.c('SpikeTrap', {
 	init: function() {
 		this.requires('Actor, Collision, spr_spikeTrap, Trap, Terrain');
+		this.painfulness = 2;
 		this.onHit('Actor', this.spring);
 	},
 	spring: function() {
@@ -1141,10 +1157,10 @@ Crafty.c('Heart', {
 //	init: function() {}
 //});
 
-//A Collectible is anything that must be destroyed to clear a room. 
-Crafty.c('Collectible', {
+//A Collectable is anything that must be destroyed to clear a room. 
+Crafty.c('Collectable', {
 	init: function() {
-		this.requires('Actor');
+		this.requires('Actor, HasHealth');
 	},
 	collect: function() {
 		this.destroy();
