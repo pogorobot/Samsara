@@ -200,13 +200,17 @@ Crafty.c('MegaMap', {
 		return this;
 	},
 	whatGoesAt: function(x, y) {
-		return Crafty.e('Room').populate();
+		//Rooms have a 50 percent chance to be >ahem< static
+		if (Game.chance(50))
+			return Crafty.e('StaticRoom').staticPopulate();
+		else 
+			return Crafty.e('Room').populate();
 	},
 	placeDoors: function() {
-		var chanceOfDoor = 0.7;
+		var chanceOfDoor = 70;
 		for (var x = 0; x < this.width - 1; x++) {
 			for (var y = 0; y < this.height - 1; y++) {
-				if (Math.random() < chanceOfDoor) {
+				if (Game.chance(chanceOfDoor)) {
 					//these functions return just where they placed it (chosen randomly if undefined)
 					this.contents[x+1][y].putDoorOnLeft(this.contents[x][y].putDoorOnRight());
 				}
@@ -246,6 +250,60 @@ Crafty.c('MegaMap', {
 			Game.player.doorsWillClose();
 			Game.player.triggerDoors();
 		}
+	},
+});
+
+Crafty.c('StaticRoom', {
+	init: function() {
+		this.requires('Room');
+	},
+	staticPopulate: function() {
+		this.placeWalls();
+		this.placeTestObjects();
+		return this;
+	},
+	placeTestObjects: function() {
+		//In the center of the room, put a clearly-intentional pattern of villages and spike traps
+		
+		xInterval = Math.round(Game.map_grid.width / 8);
+		yInterval = Math.round(Game.map_grid.height / 8);
+		for (var x = 1; x < 7; x++) {
+			for (var y = 1; y < 7; y++) {
+				actualX = x * xInterval;
+				actualY = y * yInterval;
+				if (!this.contents[actualX][actualY]) {
+					//This is a goofy-ass way to do this!!
+					switch ((x+y*2) % 5) {
+						case 0:
+							this.placeObject("Rock", actualX, actualY); break;
+						case 1:
+							this.placeObject("SpawningVillage", actualX, actualY); break;
+						case 2:
+							this.placeObject("Tree", actualX, actualY); break;
+						case 3:
+							this.placeObject("SpikeTrap", actualX, actualY); break;
+						case 4:
+							this.placeObject("Bush", actualX, actualY); break;
+					}
+				}
+			}
+		}
+		return this;
+	},
+	loadRoomFile: function() {
+	},
+	placeWalls: function() {
+		for (var x = this.width-1; x >= 0; x--) {
+			for (var y = this.height-1; y >= 0; y--) {
+				this.contents[x][y] = this.wallIfEdge(x, y);
+			}
+		}
+	},
+});
+
+Crafty.c('RandomRoom', {
+	init: function() {
+		this.requires('Room');
 	},
 });
 
@@ -289,10 +347,36 @@ Crafty.c('Room', {
 		}
 		return this;
 	},
+	placeObject: function(nameOfObject, x, y) {
+		this.contents[x][y] = nameOfObject;
+	},
 	whatGoesAt: function(x, y) {
 		if (this.contents[x][y])    {
                return this.contents[x][y];
         }
+		if (this.wallIfEdge(x, y)) return this.wallIfEdge(x, y);
+		else if (Math.random() < 0.06 && !this.contents[x][y]) {
+			// Place a bush entity at the current tile
+			return (Game.chance(30)) ? 'Bush' : 'Rock';
+		}
+		else if (Game.chance(1) && !this.contents[x][y]) {
+			return "SpikeTrap";
+		}
+		else if (Math.random() < 0.02 && !this.contents[x][y] && !this.contents[x][y+1]) {
+			if (this.spawningVillageCount < this.maxSpawningVillages){
+				this.placedOneVillage = true;
+				this.spawningVillageCount++;
+				return "SpawningVillage";
+			}	
+			else {
+				return "Village";
+			}	
+		}
+		else {
+			return false;
+		}
+	},
+	wallIfEdge: function(x, y) {
 		var atTop = y == 0;
 		var atBottom = y == this.height - 1;
 		var atLeft = x == 0;
@@ -322,26 +406,7 @@ Crafty.c('Room', {
 				return 'RightWall';
 			}
 		}
-		else if (Math.random() < 0.06 && !this.contents[x][y]) {
-			// Place a bush entity at the current tile
-			return (Game.chance(30)) ? 'Bush' : 'Rock';
-		}
-		else if (Game.chance(1) && !this.contents[x][y]) {
-			return "SpikeTrap";
-		}
-		else if (Math.random() < 0.02 && !this.contents[x][y] && !this.contents[x][y+1]) {
-			if (this.spawningVillageCount < this.maxSpawningVillages){
-				this.placedOneVillage = true;
-				this.spawningVillageCount++;
-				return "SpawningVillage";
-			}	
-			else {
-				return "Village";
-			}	
-		}
-		else {
-			return false;
-		}
+		return false;
 	},
 	display: function() {
 		for (var x = 0; x < this.width; x++) {
