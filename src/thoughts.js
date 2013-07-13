@@ -16,7 +16,9 @@ Crafty.c('TrainOfThought', {
 		this.bookmark++;
 	},
 	keepThinking: function() {
-		this.think(); //think the next thought, wait a given amount of time, then think again.
+		if (!Crafty.isPaused()) {
+			this.think(); //think the next thought, wait a given amount of time, then think again.
+		}
 		this.timeout(this.keepThinking, 3500);
 	},
 	//takes one string

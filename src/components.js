@@ -503,6 +503,9 @@ Crafty.c('SwingSwordOnSpace', {
 			if (this.isDown('SPACE')) {
 				this.swingSword();
 			}
+			if (this.isDown('P')) {
+				Crafty.pause();
+			}
 		});
 	},
 });
@@ -1101,7 +1104,7 @@ Crafty.c('HasHealth', {
 
 //This is for the Hero's health bar.
 Crafty.c('HasHealthBar', {
-	maxHealth: 6, //in *half* hearts
+	maxHealth: 7, //in *half* hearts
 	healthBar: [],			//Holds the Heart components that show up atop the screen
 	init: function() {
 		this.requires('HasHealth');
