@@ -157,7 +157,7 @@ Crafty.scene('Game', function() {
 	
 	//Uncomment this and the camera tracks the player!
 	//Probably it should do that for outdoor scenes, but stay room-to-room for indoor ones??
-	//this.camera = Crafty.e('Camera').camera(this.player);
+	//this.camera = Crafty.e('Camera').camera(Game.player);
 	
 
 	Crafty.audio.play('ring'); //Little chime to signal kickoff
