@@ -355,11 +355,11 @@ Crafty.c('Room', {
                return this.contents[x][y];
         }
 		if (this.wallIfEdge(x, y)) return this.wallIfEdge(x, y);
-		else if (Math.random() < 0.06 && !this.contents[x][y]) {
+		else if (Game.chance(6) && !this.contents[x][y]) {
 			// Place a bush entity at the current tile
 			return (Game.chance(30)) ? 'Bush' : 'Rock';
 		}
-		else if (Game.chance(1) && !this.contents[x][y]) {
+		else if (Game.chance(2) && !this.contents[x][y]) {
 			return "SpikeTrap";
 		}
 		else if (Math.random() < 0.02 && !this.contents[x][y] && !this.contents[x][y+1]) {
@@ -506,8 +506,56 @@ Crafty.c('SwingSwordOnSpace', {
 			if (this.isDown('P')) {
 				Crafty.pause();
 			}
+			if (this.isDown('C')) {
+				Crafty('Arrow').destroy();
+				Crafty.e('Arrow').setRotation(this.swordRotation).at(this.at().x, this.at().y);
+			}
 		});
 	},
+});
+
+Crafty.c('Arrow', {
+	init: function() {
+		this.requires('Actor, spr_arrow, Collision, Terrain');
+		this.onHit('Marching', function(data) {
+			var marcher = data[0].obj;
+			if (this.at().x == marcher.at().x && this.at().y == marcher.at().y) {
+				marcher.turn(this.rotation);
+			}
+		});
+		this.origin(this.w/2, this.h/2);
+		return this;
+	},
+	setRotation: function(rotation) {
+		this.rotation = rotation;
+		return this;
+	},
+});
+
+Crafty.c('UpArrow', {
+	init: function() {
+		this.requires('Arrow');
+		this.setRotation(0);
+	}
+});
+
+Crafty.c('DownArrow', {
+	init: function() {
+		this.requires('Arrow');
+		this.setRotation(180);
+	}
+});
+Crafty.c('RightArrow', {
+	init: function() {
+		this.requires('Arrow');
+		this.setRotation(90);
+	}
+});
+Crafty.c('LeftArrow', {
+	init: function() {
+		this.requires('Arrow');
+		this.setRotation(270);
+	}
 });
 
 //Hero Component
@@ -631,27 +679,23 @@ Crafty.c('Sentinel', {
 	dx: 0,
 	dy: 0,
 	init: function() {
-		this.requires('Enemy, StopsAtWalls, HurtsToTouch');
+		this.requires('Enemy, StopsAtWalls, HurtsToTouch, Marching');
 		this.health = 2;
 		this.painfulness = 4;
 		if (Math.random() < .5) {
 			if (Math.random() < .5) {
-				this.dx = 1;
-				this.requires("spr_sentinel_right");
+				this.turn(90);
 			}
 			else {
-				this.dx = -1;
-				this.requires("spr_sentinel_left");
+				this.turn(270);
 			}
 		}
 		else {
 			if (Math.random() < .5) {
-				this.dy = 1;
-				this.requires("spr_sentinel_down");
+				this.turn(180);
 			}
 			else {
-				this.dy = -1;
-				this.requires("spr_sentinel_up");
+				this.turn(0);
 			}
 		}
 		this.bind('EnterFrame', this.moveAlong);
@@ -661,6 +705,27 @@ Crafty.c('Sentinel', {
 	moveAlong: function() {
 		this.x += this.dx;
 		this.y += this.dy;
+	},
+	
+	turn: function(rotation) {
+		this.dx = 0;
+		this.dy = 0;
+		if (rotation == 0) {
+			this.dy = -1;
+			this.requires("spr_sentinel_up");
+		}
+		else if (rotation == 90) {
+			this.dx = 1;
+			this.requires("spr_sentinel_right");
+		}
+		else if (rotation == 180) {
+			this.dy = 1;
+			this.requires("spr_sentinel_down");
+		}
+		else if (rotation == 270) {
+			this.dx = -1;
+			this.requires("spr_sentinel_left");
+		}
 	},
 });
 
