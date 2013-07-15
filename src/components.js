@@ -1276,6 +1276,7 @@ Crafty.c('SpikeTrap', {
 Crafty.c('Heart', {
 	init: function() {
 		this.requires('Actor, Collision');
+		this.z = 100;
 		this.onHit('Actor', function() {
 			this.alpha = 0.4;
 		},
