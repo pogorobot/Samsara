@@ -637,7 +637,7 @@ Crafty.c('Hero', {
 	},
 	
 	insideWallEdge: function() {
-		return this.x > this.w && this.y > this.h && this.x < Game.width() - (2*this.w) && this.y < Game.height() - (2 * this.h);
+		return this.x >= this.w && this.y >= this.h && this.x <= Game.width() - (2*this.w) && this.y <= Game.height() - (2 * this.h);
 	},
 	
 	shoveRock: function(data) {
