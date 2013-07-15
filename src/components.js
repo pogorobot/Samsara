@@ -800,7 +800,11 @@ Crafty.c('HurtsMonsters', {
 		newHealth = collectable.health - this.attackPower;
 		collectable.setHealth(newHealth);
 		if(collectable.health <= 0) collectable.collect();
-		if(this.has("StealsLife")) this.wielder.setHealthBar(this.wielder.health + this.attackPower); 
+		if(this.has("StealsLife")) {
+			this.wielder.setHealthBar(this.wielder.health + this.attackPower); 
+			//Each sword instance only steals life once
+			this.removeComponent("StealsLife");
+		}
 	},
 });
 
@@ -1176,9 +1180,7 @@ Crafty.c('HasHealthBar', {
 		this.setHealth(this.maxHealth);
 		//Put a health bar onscreen
 		var xOfFirstHeart = Game.map_grid.width / 2 - this.maxHealth / 4;
-		for (var i = 0; i < this.maxHealth/2; i++) {
-			this.healthBar[i] = (Crafty.e('FullHeart').at(xOfFirstHeart + i, 1));
-		}
+		this.updateHealthBar();
 	},
 	
 	//keeps the healthbar display up to date.
@@ -1197,8 +1199,7 @@ Crafty.c('HasHealthBar', {
 				halfHearted = false;
 				}
 			else if(i < this.maxHealth) this.healthBar[i] = (Crafty.e('BrokenHeart').at(xOfFirstHeart + i, 1)); //then the remaining empty Hearts
-			}
-		
+		}
 	},
 	
 	//setHealth for our Hero and display.
