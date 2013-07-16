@@ -799,11 +799,13 @@ Crafty.c('HurtsMonsters', {
 		collectable = data[0].obj;
 		newHealth = collectable.health - this.attackPower;
 		collectable.setHealth(newHealth);
-		if(collectable.health <= 0) collectable.collect();
-		if(this.has("StealsLife")) {
-			this.wielder.setHealthBar(this.wielder.health + this.attackPower); 
-			//Each sword instance only steals life once
-			this.removeComponent("StealsLife");
+		if(collectable.health <= 0){
+			collectable.collect();
+			if(this.has("StealsLife")) {
+				this.wielder.setHealthBar(this.wielder.health + this.attackPower); 
+				//Each sword instance only steals life once
+				this.removeComponent("StealsLife");
+			}
 		}
 	},
 });
