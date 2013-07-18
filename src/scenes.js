@@ -13,7 +13,7 @@ Crafty.scene('Loading', function() {
 	// A noticeable amount of time to load
 	var loadingText = Crafty.e('2D, DOM, Text')
 		.text('Loading...')
-		.attr({ x: 0, y: Game.height() / 2 - 24, w: Game.width() })
+		.attr({ x: 0, y: Game.height() / 2 - 72, w: Game.width() })
 		.css($text_css);
 	
 	Crafty.load([
@@ -28,6 +28,7 @@ Crafty.scene('Loading', function() {
 		'assets/sentinel.png',
 		'assets/spikes.png',
 		'assets/arrow.png',
+		'assets/deathGrip.png',
 		'assets/door_knock_3x.mp3',			//I'm not sure why all the audio files are in three formats??
 		'assets/door_knock_3x.ogg',			//That's how they did it in the tutorial =/
 		'assets/door_knock_3x.aac',			//Seems kind of silly tbh
@@ -73,7 +74,9 @@ Crafty.scene('Loading', function() {
 		Crafty.sprite(16, 'assets/arrow.png', {
 			spr_arrow: [0, 0]
 		});
-		
+		Crafty.sprite(9, 'assets/deathGrip.png', {
+			spr_deathGrip: [0, 0]
+		});
 		Crafty.sprite(16, 'assets/sentinel.png', {
 			spr_sentinel_down: [0, 0],
 			spr_sentinel_up: [1, 0],
@@ -113,7 +116,7 @@ Crafty.scene('Loading', function() {
 		//All ready to start the game!
 		//Replace the loading screen text with something more...
 		//...colorful.
-		loadingText.text('Press any key to start murdering innocents!');
+		loadingText.text('To Play:<br>WASD: Controls movement<br>Space: Swings your sword<br>P: Pause<br>C: Place Mysterious Arrows');
 		//Not, y'know, literally.
 	}),
 	this.begin = this.bind('KeyDown', function() { //As soon as we're loaded, you can hit a key to start
