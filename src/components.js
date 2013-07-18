@@ -200,14 +200,15 @@ Crafty.c('MegaMap', {
 		return this;
 	},
 	whatGoesAt: function(x, y) {
-		//Rooms have a 50 percent chance to be >ahem< static
-		if (Game.chance(50))
+		var chanceOfStaticRoom = 10;
+		if (Game.chance(chanceOfStaticRoom))
 			return Crafty.e('StaticRoom').staticPopulate();
 		else 
 			return Crafty.e('Room').populate();
 	},
 	placeDoors: function() {
-		var chanceOfDoor = 70;
+		//the chance that any given wall will have a door in it
+		var chanceOfDoor = 50;
 		for (var x = 0; x < this.width - 1; x++) {
 			for (var y = 0; y < this.height - 1; y++) {
 				if (Game.chance(chanceOfDoor)) {
@@ -229,6 +230,7 @@ Crafty.c('MegaMap', {
 		}
 		//On the right column
 		for (var y = 0; y < this.height; y++) {
+			//Put one on the left if no other door exists
 			if (!this.contents[this.width - 1][y].placedOneDoor) {
 				this.contents[this.width - 2][y].putDoorOnRight(this.contents[this.width - 1][y].putDoorOnLeft());
 			}
@@ -517,6 +519,7 @@ Crafty.c('SwingSwordOnSpace', {
 Crafty.c('Arrow', {
 	init: function() {
 		this.requires('Actor, spr_arrow, Collision, Terrain');
+		this.z = -1;
 		this.onHit('Marching', function(data) {
 			var marcher = data[0].obj;
 			if (this.at().x == marcher.at().x && this.at().y == marcher.at().y) {
@@ -1175,7 +1178,7 @@ Crafty.c('HasHealth', {
 
 //This is for the Hero's health bar.
 Crafty.c('HasHealthBar', {
-	maxHealth: 7, //in *half* hearts
+	maxHealth: 8, //in *half* hearts
 	healthBar: [],			//Holds the Heart components that show up atop the screen
 	init: function() {
 		this.requires('HasHealth');
