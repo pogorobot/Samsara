@@ -505,6 +505,9 @@ Crafty.c('SwingSwordOnSpace', {
 			if (this.isDown('SPACE')) {
 				this.swingSword();
 			}
+			if (this.isDown('F')) {
+				Crafty.e('DeathGrip').shootFrom(this);
+			}
 			if (this.isDown('P')) {
 				Crafty.pause();
 			}
@@ -677,6 +680,60 @@ Crafty.c('Hero', {
 		}
 	},
 });
+
+Crafty.c('DeathGrip', {
+	dx: 0,
+	dy: 0,
+	speed: 3,
+	turned: false,
+	init: function() {
+		this.requires('Actor, spr_deathGrip, Collision, Delay');
+		this.origin(this.w / 2, this.h / 2); //set origin to center
+		this.bind('EnterFrame', this.update);
+		this.onHit('StopsBullets', this.destroy);
+		return this;
+	},
+	shootFrom: function(lifestealer) {
+		this.master = lifestealer;
+		this.rotation = this.master.swordRotation - 90; //sprites are rotated 90 degrees
+		this.movementRotation = this.master.swordRotation;
+		this.x = this.master.x + this.master.w / 3;
+		this.y = this.master.y + this.master.h / 3;
+		this.dx = this.speed * Math.sin(this.movementRotation * Math.PI / 180); //sine because rotation starts from vertical
+		this.dy = this.speed * -Math.cos(this.movementRotation * Math.PI / 180);
+		this.onHit('Enemy', function (data) {
+			enemy = data[0].obj;
+			this.grab(enemy);
+		});
+		this.delay(this.turnAround, 300);
+	},
+	update: function() {
+		this.x += this.dx;
+		this.y += this.dy;
+		if (this.turned) this.courseCorrect();
+	},
+	courseCorrect: function() {
+		var distance = Crafty.math.distance(this.x, this.y, this.master.x, this.master.y);
+		//how that translates to vert and horizontal speeds
+		this.dy = Math.round(this.speed * (this.master.y - this.y) / distance);
+		this.dx = Math.round(this.speed * (this.master.x - this.x) / distance);
+		this.rotation = Math.atan2(this.dy, this.dx) * 180 / Math.PI;
+	},
+	grab: function(enemy) {
+		enemy.removeComponent('HurtsToTouch');
+		this.attach(enemy);
+		this.turnAround();
+	},
+	turnAround: function() {
+		this.turned = true;
+		this.onHit('Hero', this.detachThenDestroy);
+	},
+	detachThenDestroy: function() {
+		this.detach();
+		this.destroy();
+	},
+});
+
 
 Crafty.c('Sentinel', {
 	dx: 0,
