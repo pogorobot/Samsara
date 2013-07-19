@@ -479,7 +479,7 @@ Crafty.c("Camera", {
 // Enemies are collectibles which are distinguished from terrain by some sort of behaviour, handled in separate components.
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('Actor, Solid, Collectable, Chance, StaysInRoom')
+		this.requires('Actor, Solid, Alive, Collectable, StaysInRoom')
 		this.health = 2;
 	},
 });
@@ -795,7 +795,7 @@ Crafty.c('StealsLife', {
 		this.requires('Weapon');
 	},
 	stealLife: function() { //this should only trigger when Hero is wielding the blade, but that doesn't seem to be the case right now.
-		if(this.wielder.has('hasHealthBar')) this.wielder.setHealthBar(this.wielder.health + this.attackPower);
+		if(this.wielder.has('HasHealthBar')) this.wielder.setHealthBar(this.wielder.health + this.attackPower);
 	},
 });
 
@@ -861,12 +861,15 @@ Crafty.c('HurtsMonsters', {
 		newHealth = collectable.health - this.attackPower;
 		collectable.setHealth(newHealth);
 		if(collectable.health <= 0){
-			collectable.collect();
 			if(this.has("StealsLife")) {
-				this.wielder.setHealthBar(this.wielder.health + this.attackPower); 
-				//Each sword instance only steals life once
-				this.removeComponent("StealsLife");
+				if (collectable.has("Alive")) {
+					this.stealLife();
+					//this.wielder.setHealthBar(this.wielder.health + this.attackPower); 
+					//Each sword instance only steals life once
+					this.removeComponent("StealsLife");
+				}
 			}
+			collectable.collect();
 		}
 	},
 });
@@ -985,7 +988,7 @@ Crafty.c('SpawningVillage', {
 
 Crafty.c('ShootsAtPlayer', {
 	init: function() {
-		this.requires('Actor, Chance');
+		this.requires('Actor');
 		this.bind('EnterFrame', this.shootRandomly);
 	},
 	shoot: function() {
@@ -1038,7 +1041,7 @@ Crafty.c('CanSwingASword', {
 
 Crafty.c('SwingSwordRandomly', {
 	init: function() {
-		this.requires('CanSwingASword, Chance');
+		this.requires('CanSwingASword');
 		this.bind('EnterFrame', function() {
 			if (Game.chance(1)) {
 				this.swingSword();
@@ -1287,7 +1290,7 @@ Crafty.c('HasHealthBar', {
 Crafty.c('SpawnPoint', {
 	probability: 0.2,
 	init: function() {
-		this.requires('Terrain, Chance');
+		this.requires('Terrain');
 		this.bind('EnterFrame', this.thinkAboutSpawning);
 	},
 	thinkAboutSpawning: function() {
