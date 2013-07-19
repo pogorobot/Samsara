@@ -465,7 +465,7 @@ Crafty.c("Camera", {
     camera: function(obj) {
       this.set(obj);
       var that = this;
-      obj.bind("Moved",function(location) { that.set(location); });
+      obj.bind("Moved", function(location) { that.set(location); });
     },
     set: function(obj) {
       Crafty.viewport.x = -obj.x + Crafty.viewport.width / 2;
@@ -571,39 +571,37 @@ Crafty.c('LeftArrow', {
 //Needs to have its behavior devolved to separate components for superior abstaction
 //Is currently kind of a mess of everything I wanted to be able to do
 Crafty.c('Hero', {
+	animation_duration: 4, //in frames
 	init: function() {
-		var speed = 2;
-		
+		var speed = 2; //in pixels per frame
 		//Requirements:   Actor (exists on a grid), Solid (enemies don't walk through  you), 
 						//Fourway, Collision, Keyboard (various interface functionality), 
 						//spr_player, SpriteAnimation (for your appearance)
 		this.requires('Actor, Solid, Fourway, Collision, HasHealthBar, SwingSwordOnSpace, spr_player, SpriteAnimation, Keyboard')
 			.fourway(speed)			//Crafty method to grant keyboard control
 			.animate('PlayerMovingUp',    0, 0, 2)	//Define various animations
-			.animate('PlayerMovingRight', 0, 1, 2)	//arguments are: reel name, row and column on spritesheet, duration
+			.animate('PlayerMovingRight', 0, 1, 2)	//arguments are: reel name, row and column on spritesheet, number of frames
 			.animate('PlayerMovingDown',  0, 2, 2)
 			.animate('PlayerMovingLeft',  0, 3, 2);
 			
-		this.onHit('HurtsToTouch', this.getHurt); 
-		this.onHit('GetsShoved', this.shoveRock);
+		this.onHit('HurtsToTouch', this.getHurt);
 		this.onHit('Solid', this.stopMovement);		//If I walk into a wall, do I not stop moving?
 													//Note: Do not reverse the order of those.
 		
 		//Define what happens when we change direction
 		//(i.e., change our animation and rotate our sword)
-		var animation_speed = 4; //More properly, animation_duration... (ie, the two frames of animation will run for four frames)
 		this.bind('NewDirection', function(data) {
 			if (data.x > 0) {
-				this.animate('PlayerMovingRight', animation_speed, -1);
+				this.animate('PlayerMovingRight', this.animation_duration, -1);
 				this.swordRotation = 90;
 			} else if (data.x < 0) {
-				this.animate('PlayerMovingLeft', animation_speed, -1);
+				this.animate('PlayerMovingLeft', this.animation_duration, -1);
 				this.swordRotation = 270;
 			} else if (data.y > 0) {
-				this.animate('PlayerMovingDown', animation_speed, -1);
+				this.animate('PlayerMovingDown', this.animation_duration, -1);
 				this.swordRotation = 180;
 			} else if (data.y < 0) {
-				this.animate('PlayerMovingUp', animation_speed, -1);
+				this.animate('PlayerMovingUp', this.animation_duration, -1);
 				this.swordRotation = 0;
 			} else {
 				this.stop(); //Don't animate if we're not moving
@@ -714,10 +712,12 @@ Crafty.c('DeathGrip', {
 		if (this.turned) this.courseCorrect();
 	},
 	courseCorrect: function() {
-		var distance = Crafty.math.distance(this.x, this.y, this.master.x, this.master.y);
+		//aim for the center
+		var target = { x: this.master.x + this.master.w / 3, y: this.master.y + this.master.h / 3 };
+		var distance = Crafty.math.distance(this.x, this.y, target.x, target.y);
 		//how that translates to vert and horizontal speeds
-		this.dy = Math.round(this.speed * (this.master.y - this.y) / distance);
-		this.dx = Math.round(this.speed * (this.master.x - this.x) / distance);
+		this.dy = Math.round(this.speed * (target.y - this.y) / distance);
+		this.dx = Math.round(this.speed * (target.x - this.x) / distance);
 		this.rotation = Math.atan2(this.dy, this.dx) * 180 / Math.PI;
 	},
 	grab: function(enemy) {
@@ -740,7 +740,7 @@ Crafty.c('Sentinel', {
 	dx: 0,
 	dy: 0,
 	init: function() {
-		this.requires('Enemy, StopsAtWalls, HurtsToTouch, Marching');
+		this.requires('Enemy, HurtsToTouch, StopsAtWalls, Marching');
 		this.health = 4;
 		this.painfulness = 4;
 		if (Math.random() < .5) {
@@ -760,7 +760,6 @@ Crafty.c('Sentinel', {
 			}
 		}
 		this.bind('EnterFrame', this.moveAlong);
-		this.onHit('Solid', this.stopMovement);
 	},
 	
 	moveAlong: function() {
@@ -1061,7 +1060,6 @@ Crafty.c('HurtsToTouch', {
 	
 	touch: function(data) {
 		target = data[0].obj; //the target in this case should always be Hero.
-		//target.getPushed(target.x - this.x, target.y - this.y);
 		target.setHealthBar(target.health-this.painfulness);
 		if(target.health <= 0) Crafty.trigger('HeroDied', target); //check if we died.
 	},
@@ -1155,8 +1153,6 @@ Crafty.c('SwarmingOrFleeingBasics', {
 		return this.move();
 	},
 	
-	
-	
 	swarm: function() {
 		this.fleeing = false;
 		return this.move();
@@ -1170,6 +1166,7 @@ Crafty.c('StopsAtWalls', {//So you ran into a wall.
 	
 	init: function() {
 		this.requires('Collision');
+		this.onHit('Solid', this.stopMovement);
 	},
 	stopMovement: function() {
 		if (this.dx || this.dy) {
@@ -1184,10 +1181,7 @@ Crafty.c('StopsAtWalls', {//So you ran into a wall.
 					this.x -= this.dx;
 				}
 			}
-		} //else {
-			//this.speed = 0;
-		//}
-		
+		}
 		return this;
 	},
 });
@@ -1198,7 +1192,6 @@ Crafty.c('Swarming', {
 		this.requires('SwarmingOrFleeingBasics, HurtsToTouch');
 		this.bind('EnterFrame', this.swarm);
 		this.onHit('Hero', this.touch);
-		this.onHit('Solid', this.stopMovement);
 	},
 });
 
@@ -1207,7 +1200,6 @@ Crafty.c('Fleeing', {
 	init: function() {
 		this.requires('SwarmingOrFleeingBasics');
 		this.bind('EnterFrame', this.flee);
-		this.onHit('Solid', this.stopMovement);
 	},
 });
 
@@ -1216,6 +1208,7 @@ Crafty.c('HasHealth', {
 	health: 1, //tracks how much health you have
 	invulnerable: false, //while invulnerable, take no damage
 	init: function() {
+		this.requires('Delay');
 	},
 	
 	setHealth: function(newHealth){
@@ -1227,7 +1220,7 @@ Crafty.c('HasHealth', {
 				this.invulnerable = true;			//Trigger invulnerability so we just get hurt once
 				this.alpha = 0.4;					//Trigger a visual representation of invulnerability
 				//Wait half a second, then go back to normal
-				this.timeout(function() { this.invulnerable = false; this.alpha = 1; }, 500);
+				this.delay(function() { this.invulnerable = false; this.alpha = 1; }, 500);
 				}
 			}
 		else{ //if it's healing
@@ -1282,10 +1275,6 @@ Crafty.c('HasHealthBar', {
 	}
 });
 
-
-
-
-
 //This component randomly spawns new enemies
 Crafty.c('SpawnPoint', {
 	probability: 0.2,
@@ -1323,6 +1312,7 @@ Crafty.c('Terrain', {
 	}
 });
 
+//Stepping on a spike trap will cause you to be hurt.
 Crafty.c('SpikeTrap', {
 	init: function() {
 		this.requires('Actor, Collision, spr_spikeTrap, Trap, Terrain');
