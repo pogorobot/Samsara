@@ -480,6 +480,7 @@ Crafty.c("Camera", {
 Crafty.c('Enemy', {
 	init: function() {
 		this.requires('Actor, Solid, Collectable, Chance, StaysInRoom')
+		this.health = 2;
 	},
 });
 
@@ -740,7 +741,7 @@ Crafty.c('Sentinel', {
 	dy: 0,
 	init: function() {
 		this.requires('Enemy, StopsAtWalls, HurtsToTouch, Marching');
-		this.health = 2;
+		this.health = 4;
 		this.painfulness = 4;
 		if (Math.random() < .5) {
 			if (Math.random() < .5) {
