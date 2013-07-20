@@ -710,7 +710,6 @@ Crafty.c('DeathGrip', {
 		this.chase(this.master);
 	},
 	grab: function(enemy) {
-		enemy.removeComponent('HurtsToTouch');
 		enemy.requires('Grabbed');
 		enemy.delay(function() {
 			enemy.removeComponent('Grabbed');
@@ -944,6 +943,7 @@ Crafty.c('ShootsAtPlayer', {
 		this.bind('EnterFrame', this.shootRandomly);
 	},
 	shoot: function() {
+		if (this.has("Grabbed")) return;
 		var hero = Crafty('Hero');
 		var shootX = this.x;
 		var shootY = this.y;
@@ -976,6 +976,7 @@ Crafty.c('CanSwingASword', {
 	},
 	swingSword: function() {
 		if (this.swordOut) return;
+		if (this.has("Grabbed")) return;
 		this.sword = Crafty.e('Sword').wieldedBy(this); //keep track of it to change its direction
 		this.swordOut = true;
 	},
@@ -1005,6 +1006,7 @@ Crafty.c('HurtsToTouch', {
 	},
 	
 	touch: function(data) {
+		if (this.has("Grabbed")) return;
 		target = data[0].obj; //the target in this case should always be Hero.
 		target.setHealthBar(target.health-this.painfulness);
 		if(target.health <= 0) Crafty.trigger('HeroDied', target); //check if we died.
@@ -1141,8 +1143,8 @@ Crafty.c('HasHealthBar', {
 	//this is for when the Hero touches something that hurts.
 	getHurt: function(data){ 
 		sourceOfPain = data[0].obj;
-		this.setHealthBar(this.health-sourceOfPain.painfulness);
-		if(this.health <= 0) Crafty.trigger('HeroDied', this); //check if we died.
+		data[0].obj = this;
+		sourceOfPain.touch(data);
 	}
 });
 
