@@ -710,20 +710,33 @@ Crafty.c('DeathGrip', {
 		this.chase(this.master);
 	},
 	grab: function(enemy) {
+		if (enemy.has("Grabbed")) return;
 		enemy.requires('Grabbed');
+		this.attach(enemy);
 		enemy.delay(function() {
 			enemy.removeComponent('Grabbed');
+			if (enemy._parent) {
+				enemy._parent.detach(enemy);
+			}
 		}, 2000);
-		this.attach(enemy);
 		this.boomerang();
 	},
 	boomerang: function() {
 		this.bind('EnterFrame', this.courseCorrect);
-		this.onHit('Hero', this.detachThenDestroy);
+		this.onHit('Hero', function(data) {
+			hero = data[0].obj;
+			this.transferTo(hero);
+		});
 	},
 	detachThenDestroy: function() {
 		this.detach();
 		this.destroy();
+	},
+	transferTo: function(hero) {
+		for (var i = 1; i < this._children.length; i++) {
+			hero.attach(this._children[1]);
+		}
+		this.detachThenDestroy();
 	},
 });
 
@@ -1036,6 +1049,7 @@ Crafty.c('StopsAtWalls', {//So you ran into a wall.
 		this.onHit('Solid', this.stopMovement);
 	},
 	stopMovement: function() {
+		if (this.has('Grabbed')) return;
 		if (this.dx || this.dy) {
 			//First try undoing the x move we did
 			this.x -= this.dx;
