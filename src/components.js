@@ -487,14 +487,26 @@ Crafty.c('Enemy', {
 //FleeingEnemies are generic cowardly enemies, running away from the Hero while firing bullets.
 Crafty.c('FleeingEnemy', {
 	init: function() {
-		this.requires('Enemy, ShootsAtPlayer, Fleeing')
+		this.requires('Enemy, Fleeing, ShootsAtPlayer, spr_villager, DirectionalAnimation');
+		this.setDirectionAnimations(
+			{x: 0, y: 0}, //up
+			{x: 0, y: 2}, //down
+			{x: 0, y: 1}, //right
+			{x: 0, y: 3}, //left
+			2); //two frames each
 	},
 });
 
 //SwarmingEnemies are generic enemies that bum-rush and attempt to shiv the Hero, while also firing bullets.
 Crafty.c('SwarmingEnemy', {
 	init: function() {
-		this.requires('Enemy, Swarming, ShootsAtPlayer, SwingSwordRandomly')
+		this.requires('Enemy, Swarming, ShootsAtPlayer, SwingSwordRandomly, spr_villager, DirectionalAnimation');
+		this.setDirectionAnimations(
+			{x: 0, y: 0}, //up
+			{x: 0, y: 2}, //down
+			{x: 0, y: 1}, //right
+			{x: 0, y: 3}, //left
+			2); //two frames each
 	},
 });
 
@@ -645,15 +657,6 @@ Crafty.c('Hero', {
 		return this.x >= this.w && this.y >= this.h && this.x <= Game.width() - (2*this.w) && this.y <= Game.height() - (2 * this.h);
 	},
 	
-	shoveRock: function(data) {
-		rock = data[0].obj;
-		if (this._movement) {
-			rock.dx = this._movement.x;
-			rock.dy = this._movement.y;
-			rock.bind('EnterFrame', rock.roll);
-		}
-	},
-	
 	//Gets called when you touch something solid
 	//These _properties are part of the Fourway component
 	stopMovement: function() {
@@ -681,15 +684,12 @@ Crafty.c('Hero', {
 });
 
 Crafty.c('DeathGrip', {
-	dx: 0,
-	dy: 0,
-	speed: 3,
 	turned: false,
 	init: function() {
-		this.requires('Actor, spr_deathGrip, Collision, Delay');
+		this.requires('Actor, spr_deathGrip, Collision, Delay, MovesAround');
+		this.speed = 3;
 		this.origin(this.w / 2, this.h / 2); //set origin to center
-		this.bind('EnterFrame', this.update);
-		this.onHit('StopsBullets', this.destroy);
+		this.onHit('StopsBullets', this.detachThenDestroy);
 		return this;
 	},
 	shootFrom: function(lifestealer) {
@@ -704,29 +704,22 @@ Crafty.c('DeathGrip', {
 			enemy = data[0].obj;
 			this.grab(enemy);
 		});
-		this.delay(this.turnAround, 300);
-	},
-	update: function() {
-		this.x += this.dx;
-		this.y += this.dy;
-		if (this.turned) this.courseCorrect();
+		this.delay(this.boomerang, 300);
 	},
 	courseCorrect: function() {
-		//aim for the center
-		var target = { x: this.master.x + this.master.w / 3, y: this.master.y + this.master.h / 3 };
-		var distance = Crafty.math.distance(this.x, this.y, target.x, target.y);
-		//how that translates to vert and horizontal speeds
-		this.dy = Math.round(this.speed * (target.y - this.y) / distance);
-		this.dx = Math.round(this.speed * (target.x - this.x) / distance);
-		this.rotation = Math.atan2(this.dy, this.dx) * 180 / Math.PI;
+		this.chase(this.master);
 	},
 	grab: function(enemy) {
 		enemy.removeComponent('HurtsToTouch');
+		enemy.requires('Grabbed');
+		enemy.delay(function() {
+			enemy.removeComponent('Grabbed');
+		}, 2000);
 		this.attach(enemy);
-		this.turnAround();
+		this.boomerang();
 	},
-	turnAround: function() {
-		this.turned = true;
+	boomerang: function() {
+		this.bind('EnterFrame', this.courseCorrect);
 		this.onHit('Hero', this.detachThenDestroy);
 	},
 	detachThenDestroy: function() {
@@ -737,54 +730,27 @@ Crafty.c('DeathGrip', {
 
 
 Crafty.c('Sentinel', {
-	dx: 0,
-	dy: 0,
 	init: function() {
-		this.requires('Enemy, HurtsToTouch, StopsAtWalls, Marching');
+		this.requires('Enemy, HurtsToTouch, StopsAtWalls, Marching, MovesAround, DirectionalAnimation');
 		this.health = 4;
 		this.painfulness = 4;
+		
+		this.setDirectionAnimations("spr_sentinel_up", "spr_sentinel_down", "spr_sentinel_right", "spr_sentinel_left");
 		if (Math.random() < .5) {
 			if (Math.random() < .5) {
-				this.turn(90);
+				this.turn(1, 0);
 			}
 			else {
-				this.turn(270);
+				this.turn(-1, 0);
 			}
 		}
 		else {
 			if (Math.random() < .5) {
-				this.turn(180);
+				this.turn(0, 1);
 			}
 			else {
-				this.turn(0);
+				this.turn(0, -1);
 			}
-		}
-		this.bind('EnterFrame', this.moveAlong);
-	},
-	
-	moveAlong: function() {
-		this.x += this.dx;
-		this.y += this.dy;
-	},
-	
-	turn: function(rotation) {
-		this.dx = 0;
-		this.dy = 0;
-		if (rotation == 0) {
-			this.dy = -1;
-			this.requires("spr_sentinel_up");
-		}
-		else if (rotation == 90) {
-			this.dx = 1;
-			this.requires("spr_sentinel_right");
-		}
-		else if (rotation == 180) {
-			this.dy = 1;
-			this.requires("spr_sentinel_down");
-		}
-		else if (rotation == 270) {
-			this.dx = -1;
-			this.requires("spr_sentinel_left");
 		}
 	},
 });
@@ -875,24 +841,11 @@ Crafty.c('HurtsMonsters', {
 
 
 Crafty.c('Bullet', {
-	dy: 0,
-	dx: 0,
 	bounced: 0,
 	init: function() {
-		this.requires('Actor, Collision, spr_bullet, HurtsToTouch, StaysInRoom');
-		this.bind('EnterFrame', function() {
-			this.x += this.dx;
-			this.y += this.dy;
-		});
+		this.requires('Actor, Collision, spr_bullet, HurtsToTouch, StaysInRoom, MovesAround');
 		this.onHit('StopsBullets', function() { this.destroy(); });
-	},
-	setAngle: function(dx, dy) {
-		// dx and dy are rounded to the number of decimal places given by aimFidelity
-		// higher aimFidelity = better accuracy, but worse performance
-		var aimFidelity = 1;
-		this.dy = Math.round((dy) * Math.pow(10, aimFidelity))/(Math.pow(10, aimFidelity));
-		this.dx = Math.round((dx) * Math.pow(10, aimFidelity))/(Math.pow(10, aimFidelity));
-		return this;
+		this.speed = 3;
 	},
 	setPos: function (x, y) {
 		this.x = x;
@@ -992,29 +945,22 @@ Crafty.c('ShootsAtPlayer', {
 	},
 	shoot: function() {
 		var hero = Crafty('Hero');
-		var distance = Crafty.math.distance(this.x, this.y, hero.x, hero.y);
-		//the speed of the projectile in px per frame
-		var speed = 1.5;
-		//how that translates to vert and horizontal speeds
-		var dy = speed * (hero.y - this.y) / distance;
-		var dx = speed * (hero.x - this.x) / distance;
-		//here we decide where to start the projectile
 		var shootX = this.x;
 		var shootY = this.y;
-		if (dx > 0) {
+		if (hero.x > this.x) {
 			shootX += this.w;
 		}
-		else if (dx < 0) {
+		else if (hero.x < this.x) {
 			shootX -= this.w;
 		}
-		else if (dy > 0) {
+		else if (hero.y > this.y) {
 			shootY += this.h;
 		}
 		else {
 			shootY -= this.h;
 		}
 		//now that we have our position and direction, spawn a bullet
-		Crafty.e('Bullet').setPos(shootX, shootY).setAngle(dx, dy);
+		Crafty.e('Bullet').setPos(shootX, shootY).chase(hero);
 	},
 	shootRandomly: function() {
 		var maxBullets = 5;
@@ -1078,87 +1024,6 @@ Crafty.c('DeflectsBullets', {
 	},
 });
 
-
-Crafty.c('SwarmingOrFleeingBasics', {
-	
-	originalSpeed: 1,
-	speed: this.originalSpeed,
-	animation_speed: 2,
-	dx: 0,
-	dy: 0,
-	fleeingFrom: Crafty('Hero'),
-	fleeing: true,
-	
-	init: function() {
-		this.requires('Collision, spr_villager, SpriteAnimation, StopsAtWalls');
-		//For the uninitiated: .animate comes from the SpriteAnimation component. Here we're defining reels
-		//.animate with four arguments defines reels, and .animate with three arguments plays them. Obviously.
-		//Here we're saying the 'PlayerMovingUp' reel should be the two frames starting at 0,0 in our sprite component (spr_villager)
-		this.animate('PlayerMovingUp',    0, 0, 2)
-			.animate('PlayerMovingRight', 0, 1, 2)
-			.animate('PlayerMovingDown',  0, 2, 2)
-			.animate('PlayerMovingLeft',  0, 3, 2);
-	},
-	
-	move: function() {
-		var newDx = this.dx;
-		var newDy = this.dy;
-		this.fleeingFrom = Crafty('Hero'); //Remember what we're headed toward, or away from
-		this.speed = this.originalSpeed;
-		
-		//Figure out where we're moving
-		var distance = Crafty.math.distance(this.x, this.y, this.fleeingFrom.x, this.fleeingFrom.y);
-		//how that translates to vert and horizontal speeds
-		newDy = Math.round(this.speed * (this.fleeingFrom.y - this.y) / distance);
-		newDx = Math.round(this.speed * (this.fleeingFrom.x - this.x) / distance);
-		if (this.fleeing) {
-			newDy = -newDy;
-			newDx = -newDx;
-		}
-		
-		//Do the moving
-		this.y += newDy;
-		this.x += newDx;
-		
-		//Animate the moving
-		if (newDy != this.dy || newDx != this.dx) {
-			this.dy = newDy;
-			this.dx = newDx;
-			if (Math.abs(newDy) > Math.abs(newDx)) {
-				if (newDy > 0) {
-					if (this.has('CanSwingASword')) this.swordRotation = 180;
-					this.animate('PlayerMovingDown', this.animation_speed, -1);
-				}
-				else {
-					if (this.has('CanSwingASword')) this.swordRotation = 0;
-					this.animate('PlayerMovingUp', this.animation_speed, -1);
-				}
-			}
-			else {
-				if (newDx > 0) {
-					if (this.has('CanSwingASword')) this.swordRotation = 90;
-					this.animate('PlayerMovingRight', this.animation_speed, -1);
-				}
-				else {
-					if (this.has('CanSwingASword')) this.swordRotation = 270;
-					this.animate('PlayerMovingLeft', this.animation_speed, -1);
-				}
-			}
-		}
-		return this;
-	},
-	
-	flee: function() {
-		this.fleeing = true;
-		return this.move();
-	},
-	
-	swarm: function() {
-		this.fleeing = false;
-		return this.move();
-	},
-});
-
 Crafty.c('StopsAtWalls', {//So you ran into a wall.
 	//Maybe all is not lost?
 	//Here we cancel out only that part of the movement that actually keeps us touching solids
@@ -1189,17 +1054,23 @@ Crafty.c('StopsAtWalls', {//So you ran into a wall.
 
 Crafty.c('Swarming', {
 	init: function() {
-		this.requires('SwarmingOrFleeingBasics, HurtsToTouch');
+		this.requires('MovesAround, HurtsToTouch, StopsAtWalls');
 		this.bind('EnterFrame', this.swarm);
-		this.onHit('Hero', this.touch);
+	},
+	swarm: function() {
+		this.chase(Crafty('Hero'));
 	},
 });
 
 
 Crafty.c('Fleeing', {
 	init: function() {
-		this.requires('SwarmingOrFleeingBasics');
+		this.requires('MovesAround, HurtsToTouch, StopsAtWalls');
 		this.bind('EnterFrame', this.flee);
+	},
+	flee: function() {
+		this.chase(Crafty('Hero'));
+		this.turnAround();
 	},
 });
 

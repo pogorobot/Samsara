@@ -2,6 +2,7 @@
 Crafty.c('TrainOfThought', {
 	bookmark: 0, //Keeps track of which thought to think next.
 	init: function() {
+		this.requires('Delay');
 		//An array of strings
 		//Might be better as an array of objects, with a string and an interval attached
 		this.thoughts = new Array();
@@ -16,10 +17,8 @@ Crafty.c('TrainOfThought', {
 		this.bookmark++;
 	},
 	keepThinking: function() {
-		if (!Crafty.isPaused()) {
-			this.think(); //think the next thought, wait a given amount of time, then think again.
-		}
-		this.timeout(this.keepThinking, 3500);
+		this.think(); //think the next thought, wait a given amount of time, then think again.
+		this.delay(this.keepThinking, 3500);
 	},
 	//takes one string
 	loadThought: function(newThought) {
@@ -33,4 +32,7 @@ Crafty.c('TrainOfThought', {
 		}
 		return this;
 	},
+});
+
+Crafty.c('ThoughtProvoking', {
 });
