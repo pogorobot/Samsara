@@ -957,6 +957,8 @@ Crafty.c('ShootsAtPlayer', {
 	},
 	shoot: function() {
 		if (this.has("Grabbed")) return;
+		if (this.has("Stunned")) return;
+		if (this.has("Disarmed")) return;
 		var hero = Crafty('Hero');
 		var shootX = this.x;
 		var shootY = this.y;
@@ -990,6 +992,8 @@ Crafty.c('CanSwingASword', {
 	swingSword: function() {
 		if (this.swordOut) return;
 		if (this.has("Grabbed")) return;
+		if (this.has("Stunned")) return;
+		if (this.has("Disarmed")) return;
 		this.sword = Crafty.e('Sword').wieldedBy(this); //keep track of it to change its direction
 		this.swordOut = true;
 	},

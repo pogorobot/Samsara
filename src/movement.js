@@ -10,8 +10,15 @@ Crafty.c('MovesAround', {
 	},
 	move: function() {
 		if (this.has('Grabbed')) return;
-		this.x += this.dx;
-		this.y += this.dy;
+		if (this.has('Stunned')) return;
+		if (this.has('Slowed')) {
+			this.x += this.dx / 2;
+			this.y += this.dy / 2;
+		}
+		else {
+			this.x += this.dx;
+			this.y += this.dy;
+		}
 	},
 	turn: function(newDx, newDy) {
 		this.dx = newDx;
