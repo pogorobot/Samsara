@@ -835,8 +835,8 @@ Crafty.c('HurtsMonsters', {
 	stab: function(data)
 	{
 		collectable = data[0].obj;
-		newHealth = collectable.health - this.attackPower;
-		collectable.setHealth(newHealth);
+		collectable.loseHealth(this.attackPower);
+		if (this.has('PoisonTouch')) collectable.requires('Poisoned');
 		if(collectable.health <= 0){
 			if(this.has("StealsLife")) {
 				if (collectable.has("Alive")) {
@@ -1022,7 +1022,7 @@ Crafty.c('HurtsToTouch', {
 		if (this.has("Grabbed")) return;
 		target = data[0].obj; //the target in this case should always be Hero.
 		target.setHealthBar(target.health-this.painfulness);
-		if(target.health <= 0) Crafty.trigger('HeroDied', target); //check if we died.
+		if (this.has('PoisonTouch')) target.requires('Poisoned');
 	},
 });
 
@@ -1114,6 +1114,27 @@ Crafty.c('HasHealth', {
 			if(this.has('HasHealthBar') && newHealth > this.maxHealth) newHealth = this.maxHealth; 
 			this.health = newHealth;
 		}
+		if(this.health <= 0) this.die();
+	},
+	
+	die: function() {
+		if (this.has('Hero')) {
+			Crafty.trigger('HeroDied', this);
+			return;
+		}
+		this.destroy();
+	},
+	
+	loseHealth: function(pain) {
+		var newHealth = this.health - pain;
+		if (this.has('HasHealthBar')) this.setHealthBar(newHealth);
+		else this.setHealth(this.health - pain);
+	},
+	
+	gainHealth: function(healing) {
+		var newHealth = this.health + healing;
+		if (this.has('HasHealthBar')) this.setHealthBar(newHealth);
+		else this.setHealth(this.health - pain);
 	},
 });
 
@@ -1203,12 +1224,12 @@ Crafty.c('Terrain', {
 Crafty.c('SpikeTrap', {
 	init: function() {
 		this.requires('Actor, Collision, spr_spikeTrap, Trap, Terrain');
-		this.painfulness = 2;
+		this.painfulness = 1;
 		this.onHit('Actor', this.spring);
 	},
 	spring: function() {
 		this.removeComponent('spr_spikeTrap');
-		this.requires('HurtsToTouch, HurtsMonsters, spr_spikes');
+		this.requires('HurtsToTouch, HurtsMonsters, spr_spikes, PoisonTouch');
 		//Would like to make them Solid, but can't find a good way to do that without either
 		//A) keeping them from ever springing
 		//or B) making the hero pass through walls as soon as he springs a trap
