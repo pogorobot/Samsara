@@ -786,6 +786,7 @@ Crafty.c('ThinksAboutMurder', {
 	},
 });
 
+
 //To-Do: Abstract most of this to a Weapon component
 // (then make more weapons in Pickle)
 Crafty.c('Sword', {
@@ -851,6 +852,25 @@ Crafty.c('HurtsMonsters', {
 	},
 });
 
+Crafty.c('ChargingBullet', {
+	init: function() {
+		this.requires('Actor, spr_bullet, SpriteAnimation');
+		this.animate('Charging', 2, 0, 6);
+		this.animate('Charging', 12, 0);
+		this.bind('AnimationEnd', this.finishCharging);
+		return this;
+	},
+	setPos: function(x, y) {
+		this.x = x;
+		this.y = y;
+		return this;
+	},
+	finishCharging: function() {
+		Crafty.e('Bullet').setPos(this.x, this.y).chase(Crafty('Hero'));
+		this.unbind('AnimationEnd', this.finishCharging); //Delete this line to lag everything to Gehenna
+		this.destroy();
+	},
+});
 
 Crafty.c('Bullet', {
 	bounced: 0,
@@ -960,8 +980,8 @@ Crafty.c('ShootsAtPlayer', {
 		if (this.has("Stunned")) return;
 		if (this.has("Disarmed")) return;
 		var hero = Crafty('Hero');
-		var shootX = this.x;
-		var shootY = this.y;
+		var shootX = this.x + this.w / 3;
+		var shootY = this.y + this.h / 3;
 		if (hero.x > this.x) {
 			shootX += this.w;
 		}
@@ -975,7 +995,7 @@ Crafty.c('ShootsAtPlayer', {
 			shootY -= this.h;
 		}
 		//now that we have our position and direction, spawn a bullet
-		Crafty.e('Bullet').setPos(shootX, shootY).chase(hero);
+		this.attach(Crafty.e('ChargingBullet').setPos(shootX, shootY));
 	},
 	shootRandomly: function() {
 		var maxBullets = 5;
