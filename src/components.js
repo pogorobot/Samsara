@@ -584,13 +584,13 @@ Crafty.c('LeftArrow', {
 //Is currently kind of a mess of everything I wanted to be able to do
 Crafty.c('Hero', {
 	animation_duration: 4, //in frames
+	movementSpeed: 2,
 	init: function() {
-		var speed = 2; //in pixels per frame
 		//Requirements:   Actor (exists on a grid), Solid (enemies don't walk through  you), 
 						//Fourway, Collision, Keyboard (various interface functionality), 
 						//spr_player, SpriteAnimation (for your appearance)
-		this.requires('Actor, Solid, Fourway, Collision, HasHealthBar, SwingSwordOnSpace, spr_player, SpriteAnimation, Keyboard')
-			.fourway(speed)			//Crafty method to grant keyboard control
+		this.requires('Actor, Alive, Solid, Fourway, Collision, HasHealthBar, SwingSwordOnSpace, spr_player, SpriteAnimation, Keyboard')
+			.fourway(this.movementSpeed)			//Crafty method to grant keyboard control
 			.animate('PlayerMovingUp',    0, 0, 2)	//Define various animations
 			.animate('PlayerMovingRight', 0, 1, 2)	//arguments are: reel name, row and column on spritesheet, number of frames
 			.animate('PlayerMovingDown',  0, 2, 2)
@@ -855,7 +855,7 @@ Crafty.c('HurtsMonsters', {
 Crafty.c('Bullet', {
 	bounced: 0,
 	init: function() {
-		this.requires('Actor, Collision, spr_bullet, HurtsToTouch, StaysInRoom, MovesAround');
+		this.requires('Actor, Collision, spr_bullet, HurtsToTouch, StaysInRoom, MovesAround, CausesSlowed');
 		this.onHit('StopsBullets', function() { this.destroy(); });
 		this.speed = 3;
 	},
