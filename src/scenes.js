@@ -69,6 +69,11 @@ Crafty.scene('Loading', function() {
 			spr_bullet: [0, 0],
 			spr_deflectedBullet: [1, 0]
 		});
+		Crafty.sprite(8, 'assets/potions.png', {
+			spr_antidote: [0, 0],
+			spr_healthPotion: [1, 0],
+			spr_regenPotion: [2, 0]
+		});
 		Crafty.sprite(16, 'assets/spikes.png', {
 			spr_spikeTrap:   [0, 0],
 			spr_spikes:		 [1, 0]
