@@ -935,7 +935,6 @@ Crafty.c('FullHeart', {
 	},
 });
 
-
 Crafty.c('BrokenHeart', {
 	init: function() {
 		this.requires('Heart, spr_emptyHeart');
@@ -947,7 +946,6 @@ Crafty.c('HalfHeart', {
 		this.requires('Heart, spr_halfHeart');
 	}
 });
-
 
 
 // A village is a tile on the grid that the PC must destroy in order to complete a room.
@@ -1191,6 +1189,7 @@ Crafty.c('HasHealthBar', {
 				}
 			else if(i < this.maxHealth) this.healthBar[i] = (Crafty.e('BrokenHeart').at(xOfFirstHeart + i, 1)); //then the remaining empty Hearts
 		}
+		if (this.has('Poisoned')) this.turnHeartsGreen();
 	},
 	
 	//setHealth for our Hero and display.

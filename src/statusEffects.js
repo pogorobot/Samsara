@@ -14,10 +14,23 @@ Crafty.c('Poisoned', {
 	init: function() {
 		this.requires('HasHealth, Delay');
 		this.delay(this.sufferFromPoison, this.poisonTime);
+		if (this.has('HasHealthBar')) {
+			this.turnHeartsGreen();
+		}
 	},
 	sufferFromPoison: function() {
 		this.loseHealth(this.poisonStrength);
 		this.delay(this.sufferFromPoison, this.poisonTime);
+	},
+	turnHeartsGreen: function() {
+		for (var i = 0; i < this.healthBar.length; i++) {
+			if (this.healthBar[i].has('FullHeart')) {
+				this.healthBar[i].requires('spr_poisonedHeart');
+			}
+			else if (this.healthBar[i].has('HalfHeart')) {
+				this.healthBar[i].requires('spr_poisonedHalfHeart');
+			}
+		}
 	},
 });
 

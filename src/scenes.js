@@ -61,7 +61,9 @@ Crafty.scene('Loading', function() {
 		Crafty.sprite(16, 'assets/16x16_hearts.gif', {
 			spr_heart:      [0, 0],
 			spr_emptyHeart: [1, 0],
-			spr_halfHeart:  [2, 0]
+			spr_halfHeart:  [2, 0],
+			spr_poisonedHeart: [3, 0],
+			spr_poisonedHalfHeart: [4, 0]
 		});
 		Crafty.sprite(8, 'assets/8x8_bullet.gif', {
 			spr_bullet: [0, 0],
