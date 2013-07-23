@@ -1141,7 +1141,7 @@ Crafty.c('HasHealth', {
 				this.invulnerable = true;			//Trigger invulnerability so we just get hurt once
 				this.alpha = 0.4;					//Trigger a visual representation of invulnerability
 				//Wait a second, then go back to normal
-				this.delay(function() { this.invulnerable = false; this.alpha = 1; }, 1000);
+				this.delay(function() { this.invulnerable = false; this.alpha = 1; }, 750);
 				}
 			}
 		else{ //if it's healing
