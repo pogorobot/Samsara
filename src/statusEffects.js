@@ -19,6 +19,7 @@ Crafty.c('Poisoned', {
 		}
 	},
 	sufferFromPoison: function() {
+		if (!this.has('Poisoned')) return;
 		this.loseHealth(this.poisonStrength);
 		this.delay(this.sufferFromPoison, this.poisonTime);
 	},
@@ -31,6 +32,10 @@ Crafty.c('Poisoned', {
 				this.healthBar[i].requires('spr_poisonedHalfHeart');
 			}
 		}
+	},
+	curePoison: function() {
+		this.removeComponent('Poisoned');
+		if (this.has('HasHealthBar')) this.forceUpdateHealthBar();
 	},
 });
 
@@ -57,5 +62,57 @@ Crafty.c('CausesSlowed', {
 		this.onHit('Alive', function(data) {
 			data[0].obj.requires('Slowed');
 		});
+	},
+});
+
+Crafty.c('Regenerating', {
+	regenStrength: 1,
+	regenTime: 7000,
+	init: function() {
+		this.delay(this.regenerate, this.regenTime);
+	},
+	regenerate: function() {
+		if (this.health == this.maxHealth) return;
+		this.gainHealth(this.regenStrength);
+		this.delay(this.regenerate, this.regenTime);
+	},
+});
+
+Crafty.c('Antidote', {
+	init: function() {
+		this.requires('Actor, spr_antidote, Collision');
+		this.onHit('Hero', function(data) {
+			var drinker = data[0].obj;
+			if (drinker.has('Poisoned')) {
+				drinker.curePoison();
+			}
+			this.destroy();
+		});
+		return this;
+	},
+});
+
+Crafty.c('HealingPotion', {
+	potency: 2,
+	init: function() {
+		this.requires('Actor, spr_healthPotion, Collision');
+		this.onHit('Hero', function(data) {
+			var drinker = data[0].obj;
+			drinker.gainHealth(this.potency);
+			this.destroy();
+		});
+		return this;
+	},
+});
+
+Crafty.c('RegenPotion', {
+	init: function() {
+		this.requires('Actor, spr_regenPotion, Collision');
+		this.onHit('Hero', function(data) {
+			var drinker = data[0].obj;
+			drinker.requires('Regenerating');
+			this.destroy();
+		});
+		return this;
 	},
 });

@@ -38,8 +38,8 @@ Crafty.c('MovesAround', {
 		var target = { x: thingToChase.x + thingToChase.w / 3, y: thingToChase.y + thingToChase.h / 3 };
 		var distance = Crafty.math.distance(this.x, this.y, target.x, target.y);
 		//how that translates to vert and horizontal speeds
-		newDy = Math.round(this.speed * (target.y - this.y) * 100 / distance) / 100;
-		newDx = Math.round(this.speed * (target.x - this.x) * 100 / distance) / 100;
+		newDy = Math.round(this.speed * (target.y - this.y) * 10 / distance) / 10;
+		newDx = Math.round(this.speed * (target.x - this.x) * 10 / distance) / 10;
 		this.turn(newDx, newDy);
 	},
 	turnAround: function() {

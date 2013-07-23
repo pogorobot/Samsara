@@ -856,7 +856,7 @@ Crafty.c('ChargingBullet', {
 	init: function() {
 		this.requires('Actor, spr_bullet, SpriteAnimation');
 		this.animate('Charging', 2, 0, 6);
-		this.animate('Charging', 12, 0);
+		this.animate('Charging', 24, 0);
 		this.bind('AnimationEnd', this.finishCharging);
 		return this;
 	},
@@ -865,9 +865,8 @@ Crafty.c('ChargingBullet', {
 		this.y = y;
 		return this;
 	},
-	finishCharging: function() {
+	finishCharging: function(data) {
 		Crafty.e('Bullet').setPos(this.x, this.y).chase(Crafty('Hero'));
-		this.unbind('AnimationEnd', this.finishCharging); //Delete this line to lag everything to Gehenna
 		this.destroy();
 	},
 });
@@ -1176,6 +1175,9 @@ Crafty.c('HasHealthBar', {
 	updateHealthBar: function(){
 		var oldHealth = Crafty('FullHeart').length * 2 + Crafty('HalfHeart').length;
 		if(oldHealth == this.health) return;
+		this.forceUpdateHealthBar();
+	},
+	forceUpdateHealthBar: function() {
 		Crafty('Heart').destroy(); //destroy the old display
 		this.healthbar = []
 		var numFullHearts = ~~(this.health/2);
@@ -1285,15 +1287,27 @@ Crafty.c('Collectable', {
 		this.requires('Actor, HasHealth');
 	},
 	collect: function() {
-		this.destroy();
 		//Crafty.audio.play('knock');
+		if (this.has('Enemy') && Game.chance(10)) this.dropPotion();
 		Crafty.trigger('Collected', this);
+		this.destroy();
 		if (this.has('Terrain')) {
 			this.eraseFromRoom();
 		}
 	},
 	eraseFromRoom: function() {
 		this.room.contents[this.at().x][this.at().y] = false;
+	},
+	dropPotion: function() {
+		if (Game.chance(33)) {
+			Crafty.e('Antidote').at(this.at().x, this.at().y);
+		}
+		else if (Game.chance(50)) {
+			Crafty.e('HealingPotion').at(this.at().x, this.at().y);
+		}
+		else {
+			Crafty.e('RegenPotion').at(this.at().x, this.at().y);
+		}
 	},
 });
 
@@ -1324,7 +1338,7 @@ Crafty.c('Grid', {
 		}
 		//at(here) means you're telling
 		else {
-			this.attr({ x: x * this.w, y: y * this.h, tileX: x, tileY: y });
+			this.attr({ x: x * Game.map_grid.tile.width, y: y * Game.map_grid.tile.height, tileX: x, tileY: y });
 			return this;
 		}
 	}
