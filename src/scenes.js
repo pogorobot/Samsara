@@ -168,8 +168,8 @@ Crafty.scene('Game', function() {
 		Crafty.e('SoulOrb');
 		setTimeout(function() {
 			Crafty.e('SoulOrb');
-		}, 500);
-	}, 500);
+		}, 450);
+	}, 450);
 	//Don't spawn anything on top of 'em.
 	//this.occupied[this.player.at().x][this.player.at().y] = true;
 	//Crafty.e('Room').leaveEmpty(this.player.at().x, this.player.at().y).populate().display();
