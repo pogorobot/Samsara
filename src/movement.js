@@ -98,3 +98,20 @@ Crafty.c('DirectionalAnimation', {
 		}
 	},
 });	
+
+Crafty.c('Orbits', {
+	radius: 24,
+	orbitalSpeed: 5, //in degrees
+	init: function() {
+	},
+	orbit: function(planet) {
+		this.x = planet.x + planet.w / 3;
+		this.y = planet.y + planet.h / 3;
+		this.y += this.radius;
+		this.origin(this.w / 2, this.h / 2  - this.radius);
+		planet.attach(this);
+		this.bind('EnterFrame', function() {
+			this.rotation += this.orbitalSpeed;
+		});
+	},
+});

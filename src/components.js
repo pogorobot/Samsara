@@ -928,6 +928,13 @@ Crafty.c('Bullet', {
 	},
 });
 
+Crafty.c('SoulOrb', {
+	init: function() {
+		this.requires('Actor, spr_bullet, Orbits');
+		this.orbit(Crafty('Hero'));
+	},
+});
+
 Crafty.c('FullHeart', {
 	init: function() {
 		this.requires('Heart, spr_heart');
