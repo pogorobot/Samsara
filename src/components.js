@@ -773,6 +773,7 @@ Crafty.c('StealsLife', {
 	},
 	stealLife: function() { //this should only trigger when Hero is wielding the blade, but that doesn't seem to be the case right now.
 		if(this.wielder.has('HasHealthBar')) this.wielder.setHealthBar(this.wielder.health + this.attackPower);
+		Crafty.e('SoulOrb');
 	},
 });
 
@@ -1139,8 +1140,8 @@ Crafty.c('HasHealth', {
 				this.health = newHealth;
 				this.invulnerable = true;			//Trigger invulnerability so we just get hurt once
 				this.alpha = 0.4;					//Trigger a visual representation of invulnerability
-				//Wait half a second, then go back to normal
-				this.delay(function() { this.invulnerable = false; this.alpha = 1; }, 500);
+				//Wait a second, then go back to normal
+				this.delay(function() { this.invulnerable = false; this.alpha = 1; }, 1000);
 				}
 			}
 		else{ //if it's healing
@@ -1301,7 +1302,9 @@ Crafty.c('Collectable', {
 	},
 	collect: function() {
 		//Crafty.audio.play('knock');
-		if (this.has('Enemy') && Game.chance(10)) this.dropPotion();
+		if (this.has('Enemy')) {
+			if (Game.chance(10)) this.dropPotion();
+		}
 		Crafty.trigger('Collected', this);
 		this.destroy();
 		if (this.has('Terrain')) {

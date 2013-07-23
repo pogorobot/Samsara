@@ -163,13 +163,6 @@ Crafty.scene('Game', function() {
 	
 	//Spawn the player first, somewhere not stuck in a wall.
 	Game.player = Crafty.e('Hero').at(Crafty.math.randomInt(1, Game.map_grid.width - 2), Crafty.math.randomInt(1, Game.map_grid.height - 2));
-	Crafty.e('SoulOrb');
-	setTimeout(function() {
-		Crafty.e('SoulOrb');
-		setTimeout(function() {
-			Crafty.e('SoulOrb');
-		}, 450);
-	}, 450);
 	//Don't spawn anything on top of 'em.
 	//this.occupied[this.player.at().x][this.player.at().y] = true;
 	//Crafty.e('Room').leaveEmpty(this.player.at().x, this.player.at().y).populate().display();
