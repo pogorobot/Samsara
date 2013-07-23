@@ -1,0 +1,23 @@
+. = nothing.
+B = bush
+D = doorway (direction based on edge)
+E = (east) right wall
+M = spike trap (geddit because it looks spikey)
+N = (north) Wall
+R = rock
+S = (south) bottom wall
+T = tree
+V = spawning Village
+W = (west) left wall
+X = Block
+
+
+
+
+
+
+
+
+
+
+
