@@ -70,11 +70,29 @@ Crafty.c('Regenerating', {
 	regenTime: 7000,
 	init: function() {
 		this.delay(this.regenerate, this.regenTime);
+		if (this.has('HasHealthBar')) {
+			this.turnHeartsBlue();
+		}
 	},
 	regenerate: function() {
 		if (this.health == this.maxHealth) return;
 		this.gainHealth(this.regenStrength);
 		this.delay(this.regenerate, this.regenTime);
+	},
+	turnHeartsBlue: function() {
+		for (var i = 0; i < this.healthBar.length; i++) {
+			if (this.healthBar[i].has('BrokenHeart')) {
+				this.healthBar[i].requires('spr_regenEmptyHeart');
+			}
+			else if (this.healthBar[i].has('HalfHeart')) {
+				if (this.healthBar[i].has('spr_poisonedHalfHeart')) {
+					this.healthBar[i].requires('spr_regenPoisonedHalfHeart');
+				}
+				else {
+					this.healthBar[i].requires('spr_regenHalfHeart');
+				}
+			}
+		}
 	},
 });
 

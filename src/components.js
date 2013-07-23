@@ -1199,6 +1199,7 @@ Crafty.c('HasHealthBar', {
 			else if(i < this.maxHealth) this.healthBar[i] = (Crafty.e('BrokenHeart').at(xOfFirstHeart + i, 1)); //then the remaining empty Hearts
 		}
 		if (this.has('Poisoned')) this.turnHeartsGreen();
+		if (this.has('Regenerating')) this.turnHeartsBlue();
 	},
 	
 	//setHealth for our Hero and display.
