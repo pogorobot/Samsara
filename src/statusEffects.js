@@ -40,13 +40,14 @@ Crafty.c('Poisoned', {
 });
 
 Crafty.c('Slowed', {
+	slowedTime: 4500,
 	init: function() {
 		if (this.has('Fourway')) {
 			this.originalSpeed = this.movementSpeed;
 			this.movementSpeed /= 2;
 			this.fourway(this.movementSpeed);
 		}
-		this.delay(this.unSlow, 7000);
+		this.delay(this.unSlow, this.slowedTime);
 	},
 	unSlow: function() {
 		if (this.has('Fourway')) {
