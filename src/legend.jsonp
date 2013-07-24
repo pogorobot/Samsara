@@ -1,0 +1,12 @@
+Legend = {
+	'.': false,
+	'N': 'Wall',
+	'E': 'RightWall',
+	'W': 'LeftWall',
+	'S': 'BottomWall',
+	'V': 'SpawningVillage',
+	'M': 'SpikeTrap',
+	'B': 'Bush',
+	'T': 'Tree',
+	'R': 'Rock'
+};

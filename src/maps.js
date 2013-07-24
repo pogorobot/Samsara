@@ -49,12 +49,8 @@ Crafty.c('StaticRoom', {
 		this.requires('Room');
 	},
 	staticPopulate: function(roomType) {
-		for (var type = 0; type < Rooms.length; type++){
-			if(roomType == Rooms[type].name){ 
-				this.blueprint = Rooms[type]; //find the right room blueprint
-			}
-		}
-		if(this.blueprint == {}) return;
+		this.blueprint = Rooms[roomType];
+		if(this.blueprint === undefined) return;
 		this.setSize();
 		this.fill();
 		return this;
@@ -78,20 +74,13 @@ Crafty.c('StaticRoom', {
 	},
 	
 	//takes a position and a symbol and converts it into a component.
-	whatGoesAt: function(x, y, symbol){ 
-		if(symbol == '.') return false;
-		if(symbol == 'N') return 'Wall';
-		if(symbol == 'E') return 'RightWall';
-		if(symbol == 'W') return 'LeftWall';
-		if(symbol == 'S') return 'BottomWall';
-		if(symbol == 'V') return 'SpawningVillage';
-		if(symbol == 'M') return 'SpikeTrap';
-		if(symbol == 'B') return 'Bush';
-		if(symbol == 'T') return 'Tree';
-		if(symbol == 'R') return 'Rock';
-		if(symbol == 'X') return this.cornerRotation(x, y);
-		if(symbol == 'D') return this.doorRotation(x, y);
-		return false;
+	whatGoesAt: function(x, y, symbol){
+		if(Legend[symbol] === undefined){ 
+			if(symbol == 'X') return this.cornerRotation(x, y);
+			if(symbol == 'D') return this.doorRotation(x, y);
+			return false;
+		}
+		return Legend[symbol];
 	},
 	
 	//gotta put the right kind of door in!
