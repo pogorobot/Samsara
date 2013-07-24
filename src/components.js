@@ -283,6 +283,25 @@ Crafty.c('SwingSwordOnSpace', {
 	},
 });
 
+Crafty.c('CanEatSoulOrbs', {
+	init: function() {
+		this.requires('Keyboard');
+		this.bind('KeyDown', function() {
+			if (this.isDown('E')) {
+				var didOne = false;
+				Crafty('SoulOrb').each(function() {
+					if (didOne) return;
+					if (!this.has('Falling')) {
+						this.spiralDownward();
+						didOne = true;
+						return;
+					}
+				});
+			}
+		});
+	},
+});
+
 Crafty.c('Arrow', {
 	init: function() {
 		this.requires('Actor, spr_arrow, Collision, Terrain');
@@ -340,7 +359,7 @@ Crafty.c('Hero', {
 		//Requirements:   Actor (exists on a grid), Solid (enemies don't walk through  you), 
 						//Fourway, Collision, Keyboard (various interface functionality), 
 						//spr_player, SpriteAnimation (for your appearance)
-		this.requires('Actor, Alive, Solid, Fourway, Collision, HasHealthBar, SwingSwordOnSpace, spr_player, SpriteAnimation, Keyboard')
+		this.requires('Actor, Alive, Solid, Fourway, Collision, HasHealthBar, SwingSwordOnSpace, spr_player, SpriteAnimation, Keyboard, CanEatSoulOrbs')
 			.fourway(this.movementSpeed)			//Crafty method to grant keyboard control
 			.animate('PlayerMovingUp',    0, 0, 2)	//Define various animations
 			.animate('PlayerMovingRight', 0, 1, 2)	//arguments are: reel name, row and column on spritesheet, number of frames
@@ -523,7 +542,6 @@ Crafty.c('StealsLife', {
 		this.requires('Weapon');
 	},
 	stealLife: function() { //this should only trigger when Hero is wielding the blade, but that doesn't seem to be the case right now.
-		if(this.wielder.has('HasHealthBar')) this.wielder.setHealthBar(this.wielder.health + this.attackPower);
 		Crafty.e('SoulOrb');
 	},
 });

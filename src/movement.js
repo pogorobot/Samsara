@@ -105,6 +105,7 @@ Crafty.c('Orbits', {
 	init: function() {
 	},
 	orbit: function(planet) {
+		this.orbitingAround = planet;
 		this.x = planet.x + planet.w / 3;
 		this.y = planet.y + planet.h / 3;
 		this.y += this.radius;
@@ -112,6 +113,21 @@ Crafty.c('Orbits', {
 		planet.attach(this);
 		this.bind('EnterFrame', function() {
 			this.rotation += this.orbitalSpeed;
+		});
+	},
+	spiralDownward: function(speed) {
+		this.requires('Falling, Collision');
+		if (!speed) speed = 0.5;
+		this.bind('EnterFrame', function() {
+			if (this.radius > 0) {
+				this.radius -= speed;
+				this.origin(this.w / 2, this.h / 2 - this.radius);
+				this.y -= speed;
+			}
+			if (this.radius < this.orbitingAround.h / 2) {
+				this.orbitingAround.gainHealth(1);
+				this.destroy();
+			}
 		});
 	},
 });
