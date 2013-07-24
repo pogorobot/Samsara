@@ -96,9 +96,16 @@ Crafty.c('Regenerating', {
 	},
 });
 
+Crafty.c('Potion', {
+	init: function() {
+		//defaults to green. sprite added to make sure hit box was right size.
+		this.requires('Actor, spr_antidote, Collision, StaysInRoom');
+	}
+});
+
 Crafty.c('Antidote', {
 	init: function() {
-		this.requires('Actor, spr_antidote, Collision');
+		this.requires('Potion, spr_antidote');
 		this.onHit('Hero', function(data) {
 			var drinker = data[0].obj;
 			if (drinker.has('Poisoned')) {
@@ -110,10 +117,11 @@ Crafty.c('Antidote', {
 	},
 });
 
+
 Crafty.c('HealingPotion', {
 	potency: 2,
 	init: function() {
-		this.requires('Actor, spr_healthPotion, Collision');
+		this.requires('Potion, spr_healthPotion');
 		this.onHit('Hero', function(data) {
 			var drinker = data[0].obj;
 			drinker.gainHealth(this.potency);
@@ -125,7 +133,7 @@ Crafty.c('HealingPotion', {
 
 Crafty.c('RegenPotion', {
 	init: function() {
-		this.requires('Actor, spr_regenPotion, Collision');
+		this.requires('Potion, spr_regenPotion');
 		this.onHit('Hero', function(data) {
 			var drinker = data[0].obj;
 			drinker.requires('Regenerating');
