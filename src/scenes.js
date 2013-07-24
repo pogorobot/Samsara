@@ -70,7 +70,8 @@ Crafty.scene('Loading', function() {
 		});
 		Crafty.sprite(8, 'assets/8x8_bullet.gif', {
 			spr_bullet: [0, 0],
-			spr_deflectedBullet: [1, 0]
+			spr_deflectedBullet: [1, 0],
+			spr_soulOrb: [8, 0]
 		});
 		Crafty.sprite(8, 'assets/potions.png', {
 			spr_antidote: [0, 0],
