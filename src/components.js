@@ -496,7 +496,7 @@ Crafty.c('Sentinel', {
 	init: function() {
 		this.requires('Enemy, HurtsToTouch, StopsAtWalls, Marching, MovesAround, DirectionalAnimation');
 		this.health = 4;
-		this.painfulness = 4;
+		this.painfulness = 2;
 		
 		this.setDirectionAnimations("spr_sentinel_up", "spr_sentinel_down", "spr_sentinel_right", "spr_sentinel_left");
 		if (Math.random() < .5) {
