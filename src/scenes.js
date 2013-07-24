@@ -108,7 +108,8 @@ Crafty.scene('Loading', function() {
 			spr_wall:  [1, 0],
 			spr_block: [0, 0],
 			spr_door:  [2, 0],
-			spr_floor: [3, 0]
+			spr_floor: [3, 0],
+			spr_corner: [4, 0]
 		});
 		
 		// Define our sounds for later use

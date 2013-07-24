@@ -89,7 +89,7 @@ Crafty.c('StaticRoom', {
 		if(symbol == 'B') return 'Bush';
 		if(symbol == 'T') return 'Tree';
 		if(symbol == 'R') return 'Rock';
-		if(symbol == 'X') return 'Block';
+		if(symbol == 'X') return this.cornerRotation(x, y);
 		if(symbol == 'D') return this.doorRotation(x, y);
 		return false;
 	},
@@ -101,6 +101,12 @@ Crafty.c('StaticRoom', {
 		if(x >= this.width - 1) return "RightDoorway";
 		if(y >= this.height - 1) return "BottomDoorway";
 		return "Doorway";
+	},
+	cornerRotation: function(x, y) {
+		if (x == 0 && y == 0) return "TopLeftCorner";
+		else if (x == 0) return "BottomLeftCorner";
+		else if (y == 0) return "TopRightCorner";
+		else return "BottomRightCorner";
 	},
 });
 

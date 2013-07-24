@@ -45,6 +45,40 @@ Crafty.c('LeftWall', {
 	},
 });
 
+Crafty.c('Corner', {
+	init: function() {
+		this.requires('Wall, spr_corner');
+	},
+});
+
+Crafty.c('TopRightCorner', {
+	init: function() {
+		this.requires('Corner');
+		this.setRotation(0);
+	},
+});
+
+Crafty.c('BottomRightCorner', {
+	init: function() {
+		this.requires('Corner');
+		this.setRotation(90);
+	},
+});
+
+Crafty.c('BottomLeftCorner', {
+	init: function() {
+		this.requires('Corner');
+		this.setRotation(180);
+	},
+});
+
+Crafty.c('TopLeftCorner', {
+	init: function() {
+		this.requires('Corner');
+		this.setRotation(270);
+	},
+});
+
 // Floor is currently unused due to lag.
 Crafty.c('Floor', {
 	init: function() {
@@ -858,7 +892,7 @@ Crafty.c('HasHealth', {
 				this.invulnerable = true;			//Trigger invulnerability so we just get hurt once
 				this.alpha = 0.4;					//Trigger a visual representation of invulnerability
 				//Wait a second, then go back to normal
-				this.delay(function() { this.invulnerable = false; this.alpha = 1; }, 750);
+				this.delay(function() { this.invulnerable = false; this.alpha = 1; }, 500);
 				}
 			}
 		else{ //if it's healing
