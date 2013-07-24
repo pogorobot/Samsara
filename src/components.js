@@ -1015,7 +1015,7 @@ Crafty.c('SpikeTrap', {
 	init: function() {
 		this.requires('Actor, Collision, spr_spikeTrap, Trap, Terrain');
 		this.painfulness = 1;
-		this.onHit('Actor', this.spring);
+		this.onHit('Solid', this.spring);
 	},
 	spring: function() {
 		this.removeComponent('spr_spikeTrap');
