@@ -14,7 +14,7 @@ Crafty.scene('Loading', function() {
 	var loadingText = Crafty.e('2D, DOM, Text')
 		.text('Loading...')
 		.attr({ x: 0, y: Game.height() / 2 - 72, w: Game.width() })
-		.css($text_css);
+		.textFont({ size: '24px', family: 'Arial', color: 'white', align: 'center' });
 	
 	Crafty.load([
 		'assets/16x16_forest_2.gif', 		//Sprites that came with the tutorial
@@ -243,7 +243,9 @@ Crafty.scene('Victory', function() {
 	var youWonText = Crafty.e('2D, DOM, Text')
 		.attr({ x: 0, y: Game.height()/2 - 24, w: Game.width() })
 		.text('Harvest Complete!')
-		.css($text_css);
+		.textFont({ size: '24px', family: 'Arial', color: 'white', align: 'center' });
+		
+	
 	
 	Crafty.audio.play('applause');
 	
@@ -275,7 +277,7 @@ Crafty.scene('Defeat', function() {
 	var youLostText = Crafty.e('2D, DOM, Text')
 		.attr({ x: 0, y: Game.height()/2 - 24, w: Game.width() })
 		.text("Oh... That didn't go so well.")
-		.css($text_css);
+		.textFont({ size: '24px', family: 'Arial', color: 'white', align: 'center' });
 	
 	Crafty.audio.play('knock');
 	
