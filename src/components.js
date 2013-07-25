@@ -644,7 +644,6 @@ Crafty.c('HurtsMonsters', {
 					this.removeComponent("StealsLife");
 				}
 			}
-			collectable.collect();
 		}
 		this.trigger("HurtSomething");
 	},
@@ -956,6 +955,10 @@ Crafty.c('HasHealth', {
 			Crafty.trigger('HeroDied', this);
 			return;
 		}
+		if (this.has('Collectable')) {
+			this.collect();
+			return;
+		}
 		this.destroy();
 	},
 	
@@ -1105,8 +1108,8 @@ Crafty.c('Collectable', {
 		if (this.has('Enemy')) {
 			if (Game.chance(10)) this.dropPotion();
 		}
-		Crafty.trigger('Collected', this);
 		this.destroy();
+		Crafty.trigger('Collected', this);
 		if (this.has('Terrain')) {
 			this.eraseFromRoom();
 		}
