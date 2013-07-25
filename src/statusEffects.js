@@ -45,7 +45,7 @@ Crafty.c('Poisoned', {
 Crafty.c('Stunned', {
 	stunnedTime: 500,
 	init: function() {
-		this.requires("Alive, Delay");
+		this.requires("Delay");
 		for (var i = 1; i < this._children.length; ) {
 			if (this._children[i].has("ChargingBullet")) {
 				this._children[i].destroy();
