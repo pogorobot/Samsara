@@ -131,9 +131,10 @@ Crafty.scene('Loading', function() {
 		loadingText.text('To Play:<br>WASD: Controls movement<br>Space: Swings your sword<br>P: Pause<br>C: Place Mysterious Arrows');
 		//Not, y'know, literally.
 	}),
-	this.begin = this.bind('KeyDown', function() { //As soon as we're loaded, you can hit a key to start
+	this.begin = function() { //As soon as we're loaded, you can hit a key to start
 		Crafty.scene('Game');
-	});
+	};
+	this.bind('KeyDown', this.begin);
 }, function() {
 	this.unbind('KeyDown', this.begin);
 });
@@ -184,40 +185,41 @@ Crafty.scene('Game', function() {
 	Game.loadThoughts();
 	
 	//Every time we might have won, check if we've won
-	this.show_victory = this.bind('Collected', function() {
+	this.show_victory = function() {
 		if (!Crafty('Collectable').length) {
 			Crafty.trigger('DoorsOpen');
 		}
-	});
-	/*
-	this.changeRooms = this.bind('LeftScreen', function(data) {
-		Crafty('Terrain').destroy();
-		var room = Crafty.e('Room').leaveEmpty(this.player.at().x, this.player.at().y).populate().display();
-	});
-	*/
-	this.wentUp = this.bind('WentUp', function() {
+	};
+	this.bind('Collected', this.show_victory);
+	
+	this.wentUp = function() {
 		Crafty('StaysInRoom').destroy();
 		this.megaMap.roomY--;
 		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
-	});
-	this.wentDown = this.bind('WentDown', function() {
+	};
+	this.bind('WentUp', this.wentUp);
+	this.wentDown = function() {
 		Crafty('StaysInRoom').destroy();
 		this.megaMap.roomY++;
 		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
-	});
-	this.wentRight = this.bind('WentRight', function() {
+	};
+	this.bind('WentDown', this.wentDown);
+	this.wentRight = function() {
 		Crafty('StaysInRoom').destroy();
 		this.megaMap.roomX++;
 		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
-	});
-	this.wentLeft = this.bind('WentLeft', function() {
+	};
+	this.bind('WentRight', this.wentRight);
+	this.wentLeft = function() {
 		Crafty('StaysInRoom').destroy();
 		this.megaMap.roomX--;
 		this.megaMap.placeHero(this.megaMap.roomX, this.megaMap.roomY);
-	});
+	};
+	this.bind('WentLeft', this.wentLeft);
 	
 	//If we died, change the screen.
-	this.show_defeat = this.bind('HeroDied', function() {Crafty.scene('Defeat');});
+	this.show_defeat = function() {Crafty.scene('Defeat');};
+	this.bind('HeroDied', this.show_defeat);
 }, function() { //Don't leave these listeners constantly waiting around for an event, for hygiene's sake
 	this.unbind('HeroDied', this.show_defeat);
 }, function() {
@@ -253,11 +255,12 @@ Crafty.scene('Victory', function() {
 	}, 2000);
 	
 	//Once the delay is up, restart on the press of any key
-	this.restart_game = this.bind('KeyDown', function() {
+	this.restart_game = function() {
 		if (!delay) {
 			Crafty.scene('Game');
 		}
-	});
+	};
+	this.bind('KeyDown', this.restart_game);
 }, function() {
 	this.unbind('KeyDown', this.restart_game);
 });
@@ -282,11 +285,12 @@ Crafty.scene('Defeat', function() {
 		youLostText.text("Care to try again?");
 	}, 2000);
 		
-	this.restart_game = this.bind('KeyDown', function() {
+	this.restart_game = function() {
 		if (!delay) {
 			Crafty.scene('Game');
 		}
-	});
+	};
+	this.bind('KeyDown', this.restart_game);
 }, function() {
 	this.unbind('KeyDown', this.restart_game);
 });
