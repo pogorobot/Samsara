@@ -635,6 +635,7 @@ Crafty.c('HurtsMonsters', {
 		collectable = data[0].obj;
 		collectable.loseHealth(this.attackPower);
 		if (this.has('PoisonTouch')) collectable.requires('Poisoned');
+		collectable.requires('Stunned');
 		if(collectable.health <= 0){
 			if(this.has("StealsLife")) {
 				if (collectable.has("Alive")) {

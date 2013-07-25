@@ -39,6 +39,23 @@ Crafty.c('Poisoned', {
 	},
 });
 
+Crafty.c('Stunned', {
+	stunnedTime: 500,
+	init: function() {
+		this.requires("Alive, Delay");
+		for (var i = 1; i < this._children.length; ) {
+			if (this._children[i].has("ChargingBullet")) {
+				this._children[i].destroy();
+				continue;
+			}
+			i++;
+		}
+		this.delay(function() {
+			this.removeComponent("Stunned");
+		}, this.stunnedTime);
+	},
+});
+
 Crafty.c('Slowed', {
 	slowedTime: 4500,
 	init: function() {
