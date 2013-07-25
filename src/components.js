@@ -285,18 +285,13 @@ Crafty.c('SwingSwordOnSpace', {
 
 Crafty.c('CanEatSoulOrbs', {
 	init: function() {
-		this.requires('Keyboard');
+		this.requires('Keyboard, CarriesOrbs');
 		this.bind('KeyDown', function() {
 			if (this.isDown('E')) {
-				var didOne = false;
-				Crafty('SoulOrb').each(function() {
-					if (didOne) return;
-					if (!this.has('Falling')) {
-						this.spiralDownward();
-						didOne = true;
-						return;
-					}
-				});
+				if (this.orbsCarried.length) {
+					this.orbsCarried[0].spiralDownward();
+					this.orbsCarried.splice(0, 1);
+				}
 			}
 		});
 	},
@@ -359,7 +354,7 @@ Crafty.c('Hero', {
 		//Requirements:   Actor (exists on a grid), Solid (enemies don't walk through  you), 
 						//Fourway, Collision, Keyboard (various interface functionality), 
 						//spr_player, SpriteAnimation (for your appearance)
-		this.requires('Actor, Alive, Solid, Fourway, Collision, HasHealthBar, SwingSwordOnSpace, spr_player, SpriteAnimation, Keyboard, CanEatSoulOrbs')
+		this.requires('Actor, Alive, Solid, Fourway, Collision, HasHealthBar, SwingSwordOnSpace, spr_player, SpriteAnimation, Keyboard, CanEatSoulOrbs, ThrowsOrbs')
 			.fourway(this.movementSpeed)			//Crafty method to grant keyboard control
 			.animate('PlayerMovingUp',    0, 0, 2)	//Define various animations
 			.animate('PlayerMovingRight', 0, 1, 2)	//arguments are: reel name, row and column on spritesheet, number of frames
@@ -369,7 +364,6 @@ Crafty.c('Hero', {
 		this.onHit('HurtsToTouch', this.getHurt);
 		this.onHit('Solid', this.stopMovement);		//If I walk into a wall, do I not stop moving?
 													//Note: Do not reverse the order of those.
-		
 		//Define what happens when we change direction
 		//(i.e., change our animation and rotate our sword)
 		this.bind('NewDirection', function(data) {
@@ -510,6 +504,39 @@ Crafty.c('DeathGrip', {
 	},
 });
 
+Crafty.c('CarriesOrbs', {
+	init: function() {
+		this.orbsCarried = [];
+	},
+	carryOrb: function(orb) {
+		this.orbsCarried.push(orb);
+	},
+	loseOrb: function(orb) {
+		for (var i = 0; i < this.orbsCarried.length; i++) {
+			if (this.orbsCarried[i] === orb) {
+				this.orbsCarried.splice(i, 1);
+				return;
+			}
+		}
+	},
+});
+
+Crafty.c('ThrowsOrbs', {
+	init: function() {
+		this.requires("Actor, CarriesOrbs");
+		Crafty.addEvent(this, Crafty.stage.elem, "click", this.throwOrb);
+	},
+	throwOrb: function(e) {
+        //Game.think(e.mouseButton, e.realX, e.realY);
+		pos = Crafty.DOM.translate(e.clientX, e.clientY);
+		var target = Crafty.e("2D").attr({ x: pos.x, y: pos.y, w: 3, h: 3});
+		if (this.orbsCarried.length) {
+			this.orbsCarried[0].headToward(target);
+			this.orbsCarried.splice(0, 1);
+		}
+	},
+});
+
 
 Crafty.c('Sentinel', {
 	init: function() {
@@ -619,6 +646,7 @@ Crafty.c('HurtsMonsters', {
 			}
 			collectable.collect();
 		}
+		this.trigger("HurtSomething");
 	},
 });
 
@@ -702,9 +730,11 @@ Crafty.c('SoulOrb', {
 	init: function() {
 		this.requires('Actor, spr_soulOrb, Collision, Orbits');
 		this.orbit(Crafty('Hero'));
+		Crafty('Hero').carryOrb(this);
 		this.onHit('Bullet', function(data) {
 			var bullet = data[0].obj;
 			bullet.destroy();
+			Crafty('Hero').loseOrb(this);
 			this.destroy();
 		});
 		this.z = 75;

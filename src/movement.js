@@ -23,6 +23,7 @@ Crafty.c('MovesAround', {
 	turn: function(newDx, newDy) {
 		this.dx = newDx;
 		this.dy = newDy;
+		if (this.has('DontShowTurning')) return;
 		if (this.has('DirectionalAnimation')) {
 			this.animateNewDirection(this.xyToDirection(newDx, newDy));
 		}
@@ -33,6 +34,7 @@ Crafty.c('MovesAround', {
 			this.swordRotation = this.directionToDegrees[this.xyToDirection(newDx, newDy)];
 		}
 	},
+	//thingToChase must have x, y, w, h
 	chase: function(thingToChase) {
 		//aim for the center
 		var target = { x: thingToChase.x + thingToChase.w / 3, y: thingToChase.y + thingToChase.h / 3 };
@@ -103,6 +105,7 @@ Crafty.c('Orbits', {
 	radius: 24,
 	orbitalSpeed: 5, //in degrees
 	init: function() {
+		this.requires('DontShowTurning');
 	},
 	orbit: function(planet) {
 		this.orbitingAround = planet;
@@ -129,5 +132,23 @@ Crafty.c('Orbits', {
 				this.destroy();
 			}
 		});
+	},
+	headToward: function(target) {
+		this.orbitingAround.detach(this);
+		this.requires("MovesAround");
+		this.speed = 3;
+		this.chase(target);
+		var straightenSpeed = 0.5;
+		this.bind('EnterFrame', function() {
+			if (this.radius > this.w) {
+				this.radius -= straightenSpeed;
+				this.origin(this.w / 2, this.h / 2 - this.radius);
+				this.y -= straightenSpeed;
+			}
+		});
+		this.requires('HurtsMonsters');
+		this.attackPower = 2;
+		this.bind('HurtSomething', this.destroy);
+		this.onHit('StopsBullets', this.destroy);
 	},
 });
