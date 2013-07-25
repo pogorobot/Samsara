@@ -138,17 +138,23 @@ Crafty.c('Orbits', {
 		this.requires("MovesAround");
 		this.speed = 3;
 		this.chase(target);
-		var straightenSpeed = 0.5;
-		this.bind('EnterFrame', function() {
-			if (this.radius > this.w) {
-				this.radius -= straightenSpeed;
-				this.origin(this.w / 2, this.h / 2 - this.radius);
-				this.y -= straightenSpeed;
-			}
-		});
+		this.target = target;
+		this.bind('EnterFrame', this.straightenUp);
 		this.requires('HurtsMonsters');
 		this.attackPower = 2;
 		this.bind('HurtSomething', this.destroy);
 		this.onHit('StopsBullets', this.destroy);
 	},
+	straightenUp: function() {
+		var straightenSpeed = 0.5;
+		if (this.radius > this.w) {
+			this.radius -= straightenSpeed;
+			this.origin(this.w / 2, this.h / 2 - this.radius);
+			this.y -= straightenSpeed;
+		}
+		else {
+			this.chase(this.target);
+			this.unbind('EnterFrame', this.straightenUp);
+		}
+	}
 });
