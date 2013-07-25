@@ -5,6 +5,9 @@ Crafty.c('Grabbed', {
 	init: function() {
 		this.requires('Alive');
 	},
+	keepRotationZero: function() {
+		this.rotation = 0;
+	},
 });
 
 //Poisoned targets 

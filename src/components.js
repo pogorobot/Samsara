@@ -477,7 +477,9 @@ Crafty.c('DeathGrip', {
 		if (enemy.has("Grabbed")) return;
 		enemy.requires('Grabbed');
 		this.attach(enemy);
+		enemy.bind('EnterFrame', enemy.keepRotationZero);
 		enemy.delay(function() {
+			enemy.unbind('EnterFrame', enemy.keepRotationZero);
 			enemy.removeComponent('Grabbed');
 			if (enemy._parent) {
 				enemy._parent.detach(enemy);
