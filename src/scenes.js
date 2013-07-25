@@ -13,7 +13,7 @@ Crafty.scene('Loading', function() {
 	// A noticeable amount of time to load
 	var loadingText = Crafty.e('2D, DOM, Text')
 		.text('Loading...')
-		.attr({ x: 0, y: Game.height() / 2 - 72, w: Game.width() })
+		.attr({ x: 0, y: Game.height() / 2 - 96, w: Game.width() })
 		.textFont({ size: '24px', family: 'Arial', color: 'white', align: 'center' });
 	
 	Crafty.load([
@@ -128,7 +128,7 @@ Crafty.scene('Loading', function() {
 		//All ready to start the game!
 		//Replace the loading screen text with something more...
 		//...colorful.
-		loadingText.text('To Play:<br>WASD: Controls movement<br>Space: Swings your sword<br>P: Pause<br>C: Place Mysterious Arrows');
+		loadingText.text('To Play:<br>WASD: Controls movement<br>Space: Swings your sword<br>P: Pause<br>F: Death Grip<br>E: Consume Soul Orb<br>Mouse click: Fire Soul Orb');
 		//Not, y'know, literally.
 	}),
 	this.begin = function() { //As soon as we're loaded, you can hit a key to start
