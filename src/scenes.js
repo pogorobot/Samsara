@@ -146,15 +146,6 @@ Crafty.scene('Loading', function() {
 // So really this is just placing everything on the map and keeping rough track of it.
 // Also has event listeners to check if we've won or lost (and therefore need to change scenes)
 Crafty.scene('Game', function() {
-	this.occupied = new Array(Game.map_grid.width);
-	// A 2D array to keep track of all occupied tiles
-	// And by 'occupied' I mean you don't want to spawn another thing there.
-	for (var i = 0; i < Game.map_grid.width; i++) {
-		this.occupied[i] = new Array(Game.map_grid.height);
-		for (var y = 0; y < Game.map_grid.height; y++) {
-			this.occupied[i][y] = false;
-		}
-	}
 	/*
 	//This makes the floor look nice, but lags everything to hell.
 	for (var x = 0; x < Game.map_grid.width; x++) {
