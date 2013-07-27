@@ -210,6 +210,10 @@ Crafty.c('CanEatSoulOrbs', {
 //Death grip shoots out of the hero, grabs any enemy it finds, and returns them to the hero
 Crafty.c('DeathGrip', {
 	turned: false,
+	//Time spent moving forward, before turning around, in milliseconds
+	moveForwardTime: 300,
+	//Time any grabbed enemy will stay grabbed, in milliseconds
+	grabTime: 2000,
 	init: function() {
 		this.requires('Actor, spr_deathGrip, Collision, Delay, MovesAround');
 		this.speed = 4;
@@ -230,25 +234,28 @@ Crafty.c('DeathGrip', {
 			enemy = data[0].obj;
 			this.grab(enemy);
 		});
-		this.delay(this.boomerang, 300);
+		this.delay(this.boomerang, this.moveForwardTime);
 	},
+	//Return to whence you came
 	courseCorrect: function() {
 		this.chase(this.master);
 	},
+	//Pick up an enemy to return it to the hero
 	grab: function(enemy) {
 		if (enemy.has("Grabbed")) return;
 		enemy.requires('Grabbed');
 		this.attach(enemy);
-		enemy.bind('EnterFrame', enemy.keepRotationZero);
+		enemy.bind('EnterFrame', enemy.keepRotationZero); //You're attached, but don't rotate your sprite
 		enemy.delay(function() {
 			enemy.unbind('EnterFrame', enemy.keepRotationZero);
 			enemy.removeComponent('Grabbed');
 			if (enemy._parent) {
 				enemy._parent.detach(enemy);
 			}
-		}, 2000);
+		}, this.grabTime);
 		this.boomerang();
 	},
+	//Turn around and return to the hero
 	boomerang: function() {
 		this.bind('EnterFrame', this.courseCorrect);
 		this.onHit('Hero', function(data) {
@@ -256,11 +263,16 @@ Crafty.c('DeathGrip', {
 			this.transferTo(hero);
 		});
 	},
+	//Release all children, then self-destruct
 	detachThenDestroy: function() {
 		this.detach();
 		this.destroy();
 	},
+	//All enemies grabbed by the Death Grip are now grabbed by the hero
 	transferTo: function(hero) {
+		//I am not sure why these have to be 1s and not 0s!
+		//this._children[0] is always set to ..something...not.......right.
+		//???
 		for (var i = 1; i < this._children.length; i++) {
 			hero.attach(this._children[1]);
 		}
@@ -268,6 +280,8 @@ Crafty.c('DeathGrip', {
 	},
 });
 
+//Used by Hero exclusively. (for now)
+//Allows her to keep track of any Soul Orbs that may be orbiting.
 Crafty.c('CarriesOrbs', {
 	init: function() {
 		this.orbsCarried = [];
@@ -285,13 +299,16 @@ Crafty.c('CarriesOrbs', {
 	},
 });
 
+//Used by Hero exclusively
+//If there are any SoulOrbs orbiting, send the first one flying in the direction of a mouse click
 Crafty.c('ThrowsOrbs', {
 	init: function() {
 		this.requires("Actor, CarriesOrbs");
+		//Any time we click on the stage, fire this.throwOrb, with the click event attached
 		Crafty.addEvent(this, Crafty.stage.elem, "click", this.throwOrb);
 	},
+	//Translate a mouse click into a shooting Soul Orb
 	throwOrb: function(e) {
-        //Game.think(e.mouseButton, e.realX, e.realY);
 		pos = Crafty.DOM.translate(e.clientX, e.clientY);
 		var target = Crafty.e("2D").attr({ x: pos.x, y: pos.y, w: 3, h: 3});
 		if (this.orbsCarried.length) {
@@ -301,6 +318,9 @@ Crafty.c('ThrowsOrbs', {
 	},
 });
 
+//Entity-level component
+//Sentinels are a type of Enemy that marches in a straight line.
+//They have four health and hurt more than other enemies when you touch them.
 Crafty.c('Sentinel', {
 	init: function() {
 		this.requires('Enemy, HurtsToTouch, StopsAtWalls, Marching, MovesAround, DirectionalAnimation');
