@@ -146,34 +146,16 @@ Crafty.scene('Loading', function() {
 // So really this is just placing everything on the map and keeping rough track of it.
 // Also has event listeners to check if we've won or lost (and therefore need to change scenes)
 Crafty.scene('Game', function() {
-	/*
-	//This makes the floor look nice, but lags everything to hell.
-	for (var x = 0; x < Game.map_grid.width; x++) {
-		for (var y = 0; y < Game.map_grid.height; y++) {
-			Crafty.e('Floor').at(x, y);
-		}
-	}
-	*/
-	
-	//Spawn the player first, somewhere not stuck in a wall.
 
-	//Don't spawn anything on top of 'em.
-	//this.occupied[this.player.at().x][this.player.at().y] = true;
-	//Crafty.e('Room').leaveEmpty(this.player.at().x, this.player.at().y).populate().display();
 	this.megaMap = Crafty.e('StaticMegaMap');
 	this.megaMap.placeHero();
-	//this.coordinates = this.megaMap.placeHero();
-	//this.megaMap.placeHero();
-	
 	
 	//Uncomment this and the camera tracks the player!
 	//Probably it should do that for outdoor scenes, but stay room-to-room for indoor ones??
 	//this.camera = Crafty.e('Camera').camera(Game.player);
-	
-
 	Crafty.audio.play('ring'); //Little chime to signal kickoff
 	
-	Game.loadThoughts();
+	Game.loadThoughts(); //This is problematic - see Case 167.
 	
 	//Every time we might have won, check if we've won
 	this.show_victory = function() {
@@ -182,6 +164,7 @@ Crafty.scene('Game', function() {
 		}
 	};
 	this.bind('Collected', this.show_victory);
+	
 	
 	this.wentUp = function() {
 		Crafty('StaysInRoom').destroy();
@@ -224,6 +207,7 @@ Crafty.scene('Game', function() {
 }, function() {
 	this.unbind('WentRight', this.WentRight);
 });
+
 //Victory Scene
 // -------------
 // When you are all alone in the world
@@ -234,9 +218,7 @@ Crafty.scene('Victory', function() {
 	var youWonText = Crafty.e('2D, DOM, Text')
 		.attr({ x: 0, y: Game.height()/2 - 24, w: Game.width() })
 		.text('Harvest Complete!')
-		.textFont({ size: '24px', family: 'Arial', color: 'white', align: 'center' });
-		
-	
+		.textFont({ size: '24px', family: 'Arial', color: 'white', align: 'center' });	
 	
 	Crafty.audio.play('applause');
 	
@@ -257,7 +239,6 @@ Crafty.scene('Victory', function() {
 }, function() {
 	this.unbind('KeyDown', this.restart_game);
 });
-
 
 //Defeat scene
 //------------
