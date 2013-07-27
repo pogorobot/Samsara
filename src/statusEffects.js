@@ -4,6 +4,7 @@
 Crafty.c('Grabbed', {
 	init: function() {
 		this.requires('Alive');
+		if (this.has('ShootsAtPlayer'))	this.interruptShooting();
 	},
 	keepRotationZero: function() {
 		this.rotation = 0;
@@ -46,13 +47,7 @@ Crafty.c('Stunned', {
 	stunnedTime: 500,
 	init: function() {
 		this.requires("Delay");
-		for (var i = 1; i < this._children.length; ) {
-			if (this._children[i].has("ChargingBullet")) {
-				this._children[i].destroy();
-				continue;
-			}
-			i++;
-		}
+		if (this.has('ShootsAtPlayer'))	this.interruptShooting();
 		this.delay(function() {
 			this.removeComponent("Stunned");
 		}, this.stunnedTime);

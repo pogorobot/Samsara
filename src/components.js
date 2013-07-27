@@ -539,7 +539,6 @@ Crafty.c('ThrowsOrbs', {
 	},
 });
 
-
 Crafty.c('Sentinel', {
 	init: function() {
 		this.requires('Enemy, HurtsToTouch, StopsAtWalls, Marching, MovesAround, DirectionalAnimation');
@@ -808,6 +807,15 @@ Crafty.c('ShootsAtPlayer', {
 		}
 		//now that we have our position and direction, spawn a bullet
 		this.attach(Crafty.e('ChargingBullet').setPos(shootX, shootY));
+	},
+	interruptShooting: function() {
+		for (var i = 1; i < this._children.length; ) {
+			if (this._children[i].has("ChargingBullet")) {
+				this._children[i].destroy();
+				continue;
+			}
+			i++;
+		}
 	},
 	shootRandomly: function() {
 		var maxBullets = 5;
