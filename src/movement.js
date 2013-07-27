@@ -158,3 +158,25 @@ Crafty.c('Orbits', {
 		}
 	}
 });
+
+Crafty.c('GetsShoved', {
+	dx: 0,
+	dy: 0,
+	init: function() {
+		this.requires('Collision');
+		this.onHit('Solid', this.stopAllMovement);
+	},
+	roll: function() {
+		if (this.x || this.y) {
+			this.x += this.dx;
+			this.y += this.dy;
+		}
+	},
+	stopAllMovement: function() {
+		this.x -= this.dx;
+		this.y -= this.dy;
+		this.dx = 0;
+		this.dy = 0;
+		this.unbind('EnterFrame', this.roll);
+	},
+});
