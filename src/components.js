@@ -111,6 +111,10 @@ Crafty.c('Hero', {
 	},
 });
 
+
+//Not currently in use.
+//Crafty.e("Camera").camera(whatever) will cause the hero to follow whatever.
+//Will come in handy whenever we introduce Rooms that are larger than one screen.
 Crafty.c("Camera", {
     init: function() {  },
     camera: function(obj) {
@@ -130,7 +134,7 @@ Crafty.c("Camera", {
 // Enemies are collectibles which are distinguished from terrain by some sort of behaviour, handled in separate components.
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('Actor, Solid, Alive, Collectable, StaysInRoom')
+		this.requires('Actor, Solid, Alive, Collectable, StaysInRoom');
 		this.health = 2;
 	},
 });
@@ -139,6 +143,7 @@ Crafty.c('Enemy', {
 Crafty.c('FleeingEnemy', {
 	init: function() {
 		this.requires('Enemy, Fleeing, ShootsAtPlayer, spr_villager, DirectionalAnimation');
+		//Tell the DirectionalAnimation component where on the spritesheet to find its animations
 		this.setDirectionAnimations(
 			{x: 0, y: 0}, //up
 			{x: 0, y: 2}, //down
@@ -152,6 +157,7 @@ Crafty.c('FleeingEnemy', {
 Crafty.c('SwarmingEnemy', {
 	init: function() {
 		this.requires('Enemy, Swarming, ShootsAtPlayer, SwingSwordRandomly, spr_villager, DirectionalAnimation');
+		//Tell the DirectionalAnimation component where on the spritesheet to find its animations
 		this.setDirectionAnimations(
 			{x: 0, y: 0}, //up
 			{x: 0, y: 2}, //down
@@ -161,6 +167,8 @@ Crafty.c('SwarmingEnemy', {
 	},
 });
 
+//Used by Hero, exclusively
+//Sets a bunch of keybinds
 Crafty.c('SwingSwordOnSpace', {
 	init: function() {
 		this.requires('CanSwingASword, Keyboard');
@@ -176,13 +184,14 @@ Crafty.c('SwingSwordOnSpace', {
 				Crafty.pause();
 			}
 			if (this.isDown('C')) {
-				Crafty('Arrow').destroy();
 				Crafty.e('Arrow').setRotation(this.swordRotation).at(this.at().x, this.at().y);
 			}
 		});
 	},
 });
 
+//Used by Hero, exclusively
+//Sets the keybind for healing using Soul Orbs
 Crafty.c('CanEatSoulOrbs', {
 	init: function() {
 		this.requires('Keyboard, CarriesOrbs');
@@ -197,7 +206,8 @@ Crafty.c('CanEatSoulOrbs', {
 	},
 });
 
-
+//Entity-level component
+//Death grip shoots out of the hero, grabs any enemy it finds, and returns them to the hero
 Crafty.c('DeathGrip', {
 	turned: false,
 	init: function() {
@@ -207,6 +217,7 @@ Crafty.c('DeathGrip', {
 		this.onHit('StopsBullets', this.detachThenDestroy);
 		return this;
 	},
+	//Move in whatever direction the hero is facing
 	shootFrom: function(lifestealer) {
 		this.master = lifestealer;
 		this.rotation = this.master.swordRotation - 90; //sprites are rotated 90 degrees
@@ -637,29 +648,6 @@ Crafty.c('DeflectsBullets', {
 		var lucky = data[0].obj;
 		var force = 0.5 //amount to push per frame once bounced
 		lucky.bounce(this.rotation, force);
-	},
-});
-
-
-Crafty.c('Swarming', {
-	init: function() {
-		this.requires('MovesAround, HurtsToTouch, StopsAtWalls');
-		this.bind('EnterFrame', this.swarm);
-	},
-	swarm: function() {
-		this.chase(Crafty('Hero'));
-	},
-});
-
-
-Crafty.c('Fleeing', {
-	init: function() {
-		this.requires('MovesAround, HurtsToTouch, StopsAtWalls');
-		this.bind('EnterFrame', this.flee);
-	},
-	flee: function() {
-		this.chase(Crafty('Hero'));
-		this.turnAround();
 	},
 });
 

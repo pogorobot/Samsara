@@ -189,6 +189,29 @@ Crafty.c('StopsAtWalls', {
 	},
 });
 
+Crafty.c('Swarming', {
+	init: function() {
+		this.requires('MovesAround, HurtsToTouch, StopsAtWalls');
+		this.bind('EnterFrame', this.swarm);
+	},
+	swarm: function() {
+		this.chase(Crafty('Hero'));
+	},
+});
+
+
+Crafty.c('Fleeing', {
+	init: function() {
+		this.requires('MovesAround, HurtsToTouch, StopsAtWalls');
+		this.bind('EnterFrame', this.flee);
+	},
+	flee: function() {
+		this.chase(Crafty('Hero'));
+		this.turnAround();
+	},
+});
+
+//Not currently in use.
 Crafty.c('GetsShoved', {
 	dx: 0,
 	dy: 0,
