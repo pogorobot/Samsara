@@ -328,8 +328,9 @@ Crafty.c('Sentinel', {
 		this.painfulness = 2;
 		
 		this.setDirectionAnimations("spr_sentinel_up", "spr_sentinel_down", "spr_sentinel_right", "spr_sentinel_left");
-		if (Math.random() < .5) {
-			if (Math.random() < .5) {
+		//turn in a random direction
+		if (Game.chance(50)) {
+			if (Game.chance(50)) {
 				this.turn(1, 0);
 			}
 			else {
@@ -337,7 +338,7 @@ Crafty.c('Sentinel', {
 			}
 		}
 		else {
-			if (Math.random() < .5) {
+			if (Game.chance(50)) {
 				this.turn(0, 1);
 			}
 			else {
@@ -347,66 +348,67 @@ Crafty.c('Sentinel', {
 	},
 });
 
+//Currently used by Sword, if wielded by Hero.
+//Creates a new Soul Orb when an enemy is killed
 Crafty.c('StealsLife', {
-	init: function() {
-		this.requires('Weapon');
-	},
-	stealLife: function() { //this should only trigger when Hero is wielding the blade, but that doesn't seem to be the case right now.
+	//Called by Sword component, on death of enemy
+	stealLife: function() {
 		Crafty.e('SoulOrb');
 	},
 });
 
-Crafty.c('ThinksAboutMurder', {
-	bodyCount: 0,
-	init: function() {
-		this.bind('Collected', function() {
-			this.bodyCount++;
-			Game.think(this.bodyCount);
-		});
-	},
-});
-
-
+//Sword component
+//Hero swings a sword on the spacebar; some enemies just swing randomly
+//At that point, a new Sword entity is created, attached to whoever swang it.
 Crafty.c('Sword', {
 	swingTime: 8,
+	swingDegrees: 36,
 	init: function() {
 		this.requires('Actor, spr_sword, Collision, SpriteAnimation, Weapon');
 		this.animate('SwordSwinging', 0, 0, 4);
 		this.alpha = 0;
 	},
+	//Play our sword-swing animation
 	swing: function() {
 		this.alpha = 1;
 		this.animate('SwordSwinging', this.swingTime, 0);
 	},
+	//This function does the b
 	wieldedBy: function(wielder) {
 		this.wielder = wielder;
 		this.attr({ x: wielder.x, y: wielder.y - wielder.h});
-		
-		this.bind('EnterFrame', function() {
-			this.attr({ x: wielder.x, y: wielder.y - wielder.h});
-		});
+		//stick to the wielder
+		this.wielder.attach(this);
 		//offset our center of rotation to the center of the wielder
 		this.origin(wielder.w / 2, wielder.h * 3 / 2);
+		//If the wielder is moving left, swing from the left
 		this.rotation = wielder.swordRotation;
-		this.widenArc(36);
+		this.widenArc(this.swingDegrees);
+		//Play the animation
 		this.swing();
-		this.bind('AnimationEnd', function() { //Revisit if we add more animations
+		//Once it's over, destroy this Sword instance
+		this.bind('AnimationEnd', function() {
 			this.sheathe();
 		});
+		//Depending on who's wielding the sword, behave differently
 		if (this.wielder.has('Hero')) {
+			//The Hero's sword hurts enemies and creates Soul Orbs
 			this.requires('HurtsMonsters, DeflectsBullets, StealsLife');
 		}
 		else {
+			//Enemies' swords hurt the Hero.
 			this.requires('HurtsToTouch');
 		}
 		return this;
 	},
+	//Rotate the sword a bit to make the swing wider
 	widenArc: function(degrees) {
 		this.rotation += degrees;
 		this.bind('EnterFrame', function() {
 			this.rotation -= degrees / this.swingTime;
 		});
 	},
+	//Tell the Wielder we're doing it, and then destroy this sword instance
 	sheathe: function()
 	{
 		this.wielder.swordOut = false;
@@ -414,6 +416,7 @@ Crafty.c('Sword', {
 	},
 });
 
+//Anything that hurts Enemies or destructible terrain has this component
 Crafty.c('HurtsMonsters', {
 	attackPower: 1,
 	init: function() {
@@ -425,16 +428,17 @@ Crafty.c('HurtsMonsters', {
 		collectable.loseHealth(this.attackPower);
 		if (this.has('PoisonTouch')) collectable.requires('Poisoned');
 		collectable.requires('Stunned');
+		//If we destroyed 'em
 		if(collectable.health <= 0){
+			//And we're a lifestealer
 			if(this.has("StealsLife")) {
+				//And they were alive to begin with
 				if (collectable.has("Alive")) {
 					this.stealLife();
-					//this.wielder.setHealthBar(this.wielder.health + this.attackPower); 
-					//Each sword instance only steals life once
-					this.removeComponent("StealsLife");
 				}
 			}
 		}
+		//For Soul Orbs, which destroy themselves once they've hurt an enemy
 		this.trigger("HurtSomething");
 	},
 });
