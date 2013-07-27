@@ -640,34 +640,6 @@ Crafty.c('DeflectsBullets', {
 	},
 });
 
-Crafty.c('StopsAtWalls', {//So you ran into a wall.
-	//Maybe all is not lost?
-	//Here we cancel out only that part of the movement that actually keeps us touching solids
-	//Somewhat slow, currently
-	
-	init: function() {
-		this.requires('Collision');
-		this.onHit('Solid', this.stopMovement);
-	},
-	stopMovement: function() {
-		if (this.has('Grabbed')) return;
-		if (this.dx || this.dy) {
-			//First try undoing the x move we did
-			this.x -= this.dx;
-			if (this.hit('Solid') != false) { //didn't work (we're still touching a solid)
-				//redo the x move and try undoing the y
-				this.x += this.dx;
-				this.y -= this.dy;
-				if (this.hit('Solid') != false) {
-					//also didn't work, crap
-					this.x -= this.dx;
-				}
-			}
-		}
-		return this;
-	},
-});
-
 
 Crafty.c('Swarming', {
 	init: function() {
