@@ -91,7 +91,10 @@ Crafty.c('Regenerating', {
 		}
 	},
 	regenerate: function() {
-		if (this.health == this.maxHealth) return;
+		if (this.health == this.maxHealth) {
+			this.removeComponent("Regenerating");
+			return;
+		}
 		this.gainHealth(this.regenStrength);
 		this.delay(this.regenerate, this.regenTime);
 	},

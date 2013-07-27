@@ -463,6 +463,7 @@ Crafty.c('ChargingBullet', {
 	},
 });
 
+//A Bullet
 Crafty.c('Bullet', {
 	bounced: 0,
 	init: function() {
@@ -853,13 +854,14 @@ Crafty.c('Heart', {
 
 //A Collectable is anything that must be destroyed to clear a room. 
 Crafty.c('Collectable', {
+	dropPotionChance: 10,
 	init: function() {
 		this.requires('Actor, HasHealth');
 	},
 	collect: function() {
 		//Crafty.audio.play('knock');
 		if (this.has('Enemy')) {
-			if (Game.chance(10)) this.dropPotion();
+			if (Game.chance(this.dropPotionChance)) this.dropPotion();
 		}
 		this.destroy();
 		Crafty.trigger('Collected', this);
