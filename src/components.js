@@ -212,7 +212,7 @@ Crafty.c('DeathGrip', {
 	turned: false,
 	init: function() {
 		this.requires('Actor, spr_deathGrip, Collision, Delay, MovesAround');
-		this.speed = 3;
+		this.speed = 4;
 		this.origin(this.w / 2, this.h / 2); //set origin to center
 		this.onHit('StopsBullets', this.detachThenDestroy);
 		return this;
