@@ -8,5 +8,6 @@ Legend = {
 	'M': 'SpikeTrap',
 	'B': 'Bush',
 	'T': 'Tree',
-	'R': 'Rock'
+	'R': 'Rock',
+	'A': 'Statue'
 };

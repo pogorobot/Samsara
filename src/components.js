@@ -779,59 +779,6 @@ Crafty.c('HasHealthBar', {
 	}
 });
 
-//This component randomly spawns new enemies
-Crafty.c('SpawnPoint', {
-	probability: 0.2,
-	init: function() {
-		this.requires('Terrain');
-		this.bind('EnterFrame', this.thinkAboutSpawning);
-	},
-	thinkAboutSpawning: function() {
-		var maxCollectibles = 10;
-		var chanceOfSentinel = 33;
-		if (Crafty('Enemy').length + Crafty('SpawningVillage').length < maxCollectibles && Game.chance(this.probability)) {
-			if (Game.chance(chanceOfSentinel)) {
-				var newGuy = Crafty.e('Sentinel').at(this.tileX, this.tileY + 1);
-			}
-			else if (Game.chance(50)) {
-				var newGuy = Crafty.e('FleeingEnemy').at(this.tileX,this.tileY+1);
-			}
-			else {
-				var newGuy = Crafty.e('SwarmingEnemy').at(this.tileX, this.tileY+1);
-			}
-			if (newGuy.hit('Solid')) {
-				newGuy.destroy();
-			}
-		}
-	},
-});
-
-//A Terrain is a static object made to be placed and kept in a room.
-Crafty.c('Terrain', {
-	init: function() {
-		this.requires('Actor, StaysInRoom');
-	},
-	placeInRoom: function(room) {
-		this.room = room;
-	}
-});
-
-//Stepping on a spike trap will cause you to be hurt.
-Crafty.c('SpikeTrap', {
-	init: function() {
-		this.requires('Actor, Collision, spr_spikeTrap, Trap, Terrain');
-		this.painfulness = 1;
-		this.onHit('Solid', this.spring);
-	},
-	spring: function() {
-		this.removeComponent('spr_spikeTrap');
-		this.requires('HurtsToTouch, HurtsMonsters, spr_spikes, PoisonTouch');
-		//Would like to make them Solid, but can't find a good way to do that without either
-		//A) keeping them from ever springing
-		//or B) making the hero pass through walls as soon as he springs a trap
-	},
-});
-
 //Heart deals with anything that lives in the health bar.
 Crafty.c('Heart', {
 	init: function() {

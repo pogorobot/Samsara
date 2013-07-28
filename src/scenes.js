@@ -54,6 +54,9 @@ Crafty.scene('Loading', function() {
 			spr_village: [0, 1],
 			spr_rock:    [1, 1]
 		});
+		Crafty.sprite(16, 'assets/statue.png', {
+			spr_statue: [0, 0]
+		});
 		Crafty.sprite(16, 'assets/IceRockMap.gif', {spr_bush: [1, 0]});
 		Crafty.sprite(16, 'assets/swordSwing.gif', { spr_sword: [3, 0] }); //Static sword, not currently in use //I lied
 		//Geez, so don't remove this, because if it can't find a sprite asset Crafty's error message is STUPID.

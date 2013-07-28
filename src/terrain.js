@@ -1,3 +1,12 @@
+//A Terrain is a static object made to be placed and kept in a room.
+Crafty.c('Terrain', {
+	init: function() {
+		this.requires('Actor, StaysInRoom');
+	},
+	placeInRoom: function(room) {
+		this.room = room;
+	}
+});
 
 // A Tree is just an Actor with a certain sprite (that is solid and stops bullets)
 Crafty.c('Tree', {
@@ -49,6 +58,22 @@ Crafty.c('TopRightCorner', {
 	init: function() {
 		this.requires('Corner');
 		this.setRotation(0);
+	},
+});
+
+//Stepping on a spike trap will cause you to be hurt.
+Crafty.c('SpikeTrap', {
+	init: function() {
+		this.requires('Actor, Collision, spr_spikeTrap, Trap, Terrain');
+		this.painfulness = 1;
+		this.onHit('Solid', this.spring);
+	},
+	spring: function() {
+		this.removeComponent('spr_spikeTrap');
+		this.requires('HurtsToTouch, HurtsMonsters, spr_spikes, PoisonTouch');
+		//Would like to make them Solid, but can't find a good way to do that without either
+		//A) keeping them from ever springing
+		//or B) making the hero pass through walls as soon as he springs a trap
 	},
 });
 
@@ -227,4 +252,46 @@ Crafty.c('LeftArrow', {
 		this.requires('Arrow');
 		this.setRotation(270);
 	}
+});
+
+
+//This component randomly spawns new enemies
+Crafty.c('SpawnPoint', {
+	probability: 0,
+	increasePerFrame: 0.005,
+	init: function() {
+		this.requires('Terrain');
+		this.bind('EnterFrame', this.thinkAboutSpawning);
+	},
+	thinkAboutSpawning: function() {
+		var maxCollectibles = 10;
+		var chanceOfSentinel = 33;
+		if (Crafty('Enemy').length + Crafty('SpawningVillage').length < maxCollectibles && Game.chance(this.probability)) {
+			if (Game.chance(chanceOfSentinel)) {
+				var newGuy = Crafty.e('Sentinel').at(this.tileX, this.tileY + 1);
+			}
+			else if (Game.chance(50)) {
+				var newGuy = Crafty.e('FleeingEnemy').at(this.tileX,this.tileY+1);
+			}
+			else {
+				var newGuy = Crafty.e('SwarmingEnemy').at(this.tileX, this.tileY+1);
+			}
+			if (newGuy.hit('Solid')) {
+				newGuy.destroy();
+			}
+		}
+		else {
+			this.probability += this.increasePerFrame;
+		}
+	},
+});
+
+Crafty.c('Statue', {
+	init: function() {
+		this.requires('Actor, Solid, spr_statue, ShootsAtPlayer, Terrain');
+		this.bind('DoorsOpen', function() {
+			this.unbind('EnterFrame', this.shootRandomly);
+			this.removeComponent('ShootsAtPlayer');
+		});
+	},
 });
