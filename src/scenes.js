@@ -199,16 +199,12 @@ Crafty.scene('Game', function() {
 	this.bind('HeroDied', this.show_defeat);
 }, function() { //Don't leave these listeners constantly waiting around for an event, for hygiene's sake
 	this.unbind('HeroDied', this.show_defeat);
-}, function() {
 	this.unbind('Collected', this.show_victory);
-}, function() {
 	this.unbind('WentUp', this.WentUp);
-}, function() {
 	this.unbind('WentDown', this.WentDown);
-}, function() {
 	this.unbind('WentLeft', this.WentLeft);
-}, function() {
 	this.unbind('WentRight', this.WentRight);
+	Game.unloadThoughts();
 });
 
 //Victory Scene

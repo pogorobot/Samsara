@@ -1,6 +1,7 @@
 //An interior monologue, composed of many bite-sized thoughtstrings
 Crafty.c('TrainOfThought', {
 	bookmark: 0, //Keeps track of which thought to think next.
+	timeToNextThought: 3500, //in ms
 	init: function() {
 		this.requires('Delay');
 		//An array of strings
@@ -18,7 +19,12 @@ Crafty.c('TrainOfThought', {
 	},
 	keepThinking: function() {
 		this.think(); //think the next thought, wait a given amount of time, then think again.
-		this.delay(this.keepThinking, 3500);
+		this.delay(function() {
+			this.trigger("ThinkAgain"); //call the next thought
+		}, this.timeToNextThought);
+	},
+	stopThinking: function() {
+		this.unbind("ThinkAgain", this.keepThinking);
 	},
 	//takes one string
 	loadThought: function(newThought) {
@@ -30,6 +36,7 @@ Crafty.c('TrainOfThought', {
 		for (var i = 0; i < newThoughts.length; i++) {
 			this.thoughts.push(newThoughts[i]);
 		}
+		this.bind("ThinkAgain", this.keepThinking);
 		return this;
 	},
 });

@@ -48,7 +48,11 @@ Game = {
 	},
 	
 	loadThoughts: function() {
-		Crafty.e('TrainOfThought').loadThoughts(TestStream.thoughts).keepThinking();
+		Game.trainOfThought = Crafty.e('TrainOfThought').loadThoughts(TestStream.thoughts).trigger("ThinkAgain");
+	},
+	
+	unloadThoughts: function() {
+		Game.trainOfThought.stopThinking();
 	},
 }
 
