@@ -479,19 +479,19 @@ Crafty.c('Bullet', {
 	bounce: function(rotation, force) { //in degrees, from vertical
 		if (this.bounced) return;
 		this.bounced = true;
-		if (rotation == 0) { //bouncing up
+		if (rotation < 45 || rotation > 315) { //bouncing up
 			if (this.dy > 0) { //headed down
 				this.dy *= -1;
 			}
 			this.dy -= force;
 		}
-		else if (rotation == 90) { //bouncing right
+		else if (rotation < 135) { //bouncing right
 			if (this.dx < 0) { //headed left
 				this.dx *= -1;
 			}
 			this.dx += force;
 		}
-		else if (rotation == 180) { //bouncing down
+		else if (rotation < 225) { //bouncing down
 			if (this.dy < 0) {
 				this.dy *= -1;
 			}
