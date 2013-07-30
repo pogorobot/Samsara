@@ -104,6 +104,10 @@ Crafty.scene('Loading', function() {
 			spr_player: [1, 0],
 		});
 		
+		Crafty.sprite(31, 'assets/orbsplosion.png', {
+			spr_explosion: [0, 0],
+		});
+		
 		Crafty.sprite(16, 'assets/hunter.png', {
 			spr_villager: [0, 2],
 		}, 0, 2);

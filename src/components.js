@@ -530,9 +530,42 @@ Crafty.c('SoulOrb', {
 			var bullet = data[0].obj;
 			bullet.destroy();
 			Crafty('Hero').loseOrb(this);
-			this.destroy();
+			this.explode();
 		});
 		this.z = 75;
+	},
+	headToward: function(target) {
+		this.orbitingAround.detach(this);
+		this.requires("MovesAround");
+		this.speed = 3;
+		this.chase(target);
+		this.target = target;
+		this.bind('EnterFrame', this.straightenUp);
+		this.requires('HurtsMonsters');
+		this.attackPower = 2;
+		this.bind('HurtSomething', this.explode);
+		this.onHit('StopsBullets', this.explode);
+	},
+	explode: function() {
+		Crafty.e('Explosion').setCenter(this.x + this.w / 2, this.y + this.h / 2);
+		this.destroy();
+	},
+});
+
+Crafty.c('Explosion', {
+	init: function() {
+		this.requires('Actor, spr_explosion, Collision, HurtsMonsters, StealsLife');
+		this.bind('EnterFrame', this.fade)
+	},
+	fade: function() {
+		this.alpha -= 0.01;
+		if (this.alpha <= 0.25) {
+			this.destroy();
+		}
+	},
+	setCenter: function(x, y) {
+		this.x = x - this.w / 2;
+		this.y = y - this.h / 2;
 	},
 });
 
