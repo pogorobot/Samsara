@@ -3,7 +3,7 @@
 //--------------
 //Here you have it: The player's avatar
 Crafty.c('Hero', {
-	animation_duration: 4, //in frames
+	animation_duration: 6, //in frames
 	movementSpeed: 2, //in pixels per frame
 	init: function() {
 		//Requirements:   Actor (exists on a grid), Solid (enemies don't walk through  you), 
@@ -11,10 +11,10 @@ Crafty.c('Hero', {
 						//spr_player, SpriteAnimation (for your appearance)
 		this.requires('Actor, Alive, Solid, Fourway, Collision, HasHealthBar, SwingSwordOnSpace, spr_player, SpriteAnimation, Keyboard, CanEatSoulOrbs, ThrowsOrbs')
 			.fourway(this.movementSpeed)			//Crafty method to grant keyboard control
-			.animate('PlayerMovingUp',    0, 0, 2)	//Define various animations
-			.animate('PlayerMovingRight', 0, 1, 2)	//arguments are: reel name, row and column on spritesheet, number of frames
-			.animate('PlayerMovingDown',  0, 2, 2)
-			.animate('PlayerMovingLeft',  0, 3, 2);
+			.animate('PlayerMovingUp',    7, 0, 9)	//Define various animations
+			.animate('PlayerMovingRight', 4, 0, 6)	//arguments are: reel name, row and column on spritesheet, last row
+			.animate('PlayerMovingDown',  1, 0, 3)
+			.animate('PlayerMovingLeft',  10, 0, 12);
 			
 		this.onHit('HurtsToTouch', this.getHurt);
 		this.onHit('Solid', this.stopMovement);		//If I walk into a wall, do I not stop moving?
