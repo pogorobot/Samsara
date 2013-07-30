@@ -121,57 +121,100 @@ Crafty.c('Bush', {
 Crafty.c('Doorway', {
 	init: function() {
 		this.requires('Terrain');
+	},
+	onCloseBecome: function(newThing) {
 		this.bind('DoorsClose', function() {
 			if (!this.room.cleared()) {
-				this.requires('Door');
+				this.requires(newThing);
 			}
 		});
 	}
 });
 
+Crafty.c('TopDoorway', {
+	init: function() {
+		this.requires('Doorway');
+		this.onCloseBecome('Door');
+	}
+});
+
 Crafty.c('RightDoorway', {
 	init: function() {
-		this.requires('Terrain');
-		this.bind('DoorsClose', function() {
-			if (!this.room.cleared()) {
-				this.requires('RightDoor');
-			}
-		});
+		this.requires('Doorway');
+		this.onCloseBecome('RightDoor');
 	}
 });
 Crafty.c('BottomDoorway', {
 	init: function() {
-		this.requires('Terrain');
-		this.bind('DoorsClose', function() {
-			if (!this.room.cleared()) {
-				this.requires('BottomDoor');
-			}
-		});
+		this.requires('Doorway');
+		this.onCloseBecome('BottomDoor');
 	}
 });
 Crafty.c('LeftDoorway', {
 	init: function() {
+		this.requires('Doorway');
+		this.onCloseBecome('LeftDoor');
+	}
+});
+
+Crafty.c('LockedDoorway', {
+	init: function() {
 		this.requires('Terrain');
+	},
+	onCloseBecome: function(newThing) {
+		//locked doors don't care if the room has been cleared
 		this.bind('DoorsClose', function() {
-			if (!this.room.cleared()) {
-				this.requires('LeftDoor');
-			}
+			this.requires(newThing);
 		});
+	}
+});
+
+Crafty.c('TopLockedDoorway', {
+	init: function() {
+		this.requires('LockedDoorway');
+		this.onCloseBecome('LockedDoor');
+	}
+});
+
+Crafty.c('RightLockedDoorway', {
+	init: function() {
+		this.requires('LockedDoorway');
+		this.onCloseBecome('RightLockedDoor');
+	}
+});
+
+Crafty.c('BottomLockedDoorway', {
+	init: function() {
+		this.requires('LockedDoorway');
+		this.onCloseBecome('BottomLockedDoor');
+	}
+});
+
+Crafty.c('LeftLockedDoorway', {
+	init: function() {
+		this.requires('LockedDoorway');
+		this.onCloseBecome('LeftLockedDoor');
 	}
 });
 
 Crafty.c('Door', {
 	init: function() {
 		this.requires('Actor, Solid, spr_door, StopsBullets, Terrain');
-		this.bind('DoorsOpen', function() {
-			this.destroy();
-		});
+		this.bind('DoorsOpen', this.destroy);
 	},
+	
 	setRotation: function(rotation) {
 		this.origin(this.w / 2, this.h / 2);
 		this.rotation = rotation;
 		return this;
 	},
+});
+
+Crafty.c('LockedDoor', {
+	init: function() {
+		this.requires('Door');
+		this.unbind('DoorsOpen', this.destroy);
+	}
 });
 
 Crafty.c('RightDoor', {
@@ -192,6 +235,22 @@ Crafty.c('LeftDoor', {
 	init: function() {
 		this.requires('Door');
 		this.setRotation(270);
+	},
+});
+
+Crafty.c('RightLockedDoor', {
+	init: function() {
+		this.requires('RightDoor, LockedDoor');
+	},
+});
+Crafty.c('BottomLockedDoor', {
+	init: function() {
+		this.requires('BottomDoor, LockedDoor');
+	},
+});
+Crafty.c('LeftLockedDoor', {
+	init: function() {
+		this.requires('LeftDoor, LockedDoor');
 	},
 });
 

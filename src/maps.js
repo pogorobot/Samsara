@@ -34,10 +34,8 @@ Crafty.c('StaticMegaMap',{
 		this.roomY = roomY;
 		room = this.contents[roomX][roomY];
 		room.display();
-		if (!room.cleared()) {
-			Game.player.doorsWillClose();
-			Game.player.triggerDoors();
-		}
+		Game.player.doorsWillClose();
+		Game.player.triggerDoors();
 	},
 });
 
@@ -78,6 +76,7 @@ Crafty.c('StaticRoom', {
 		if(Legend[symbol] === undefined){ 
 			if(symbol == 'X') return this.cornerRotation(x, y);
 			if(symbol == 'D') return this.doorRotation(x, y);
+			if(symbol == 'L') return this.lockedDoorRotation(x, y);
 			return false;
 		}
 		return Legend[symbol];
@@ -85,11 +84,18 @@ Crafty.c('StaticRoom', {
 	
 	//gotta put the right kind of door in!
 	doorRotation: function(x,y){ 
-		if(y == 0) return "Doorway";
+		if(y == 0) return "TopDoorway";
 		if(x == 0) return "LeftDoorway";
 		if(x >= this.width - 1) return "RightDoorway";
 		if(y >= this.height - 1) return "BottomDoorway";
-		return "Doorway";
+		return "TopDoorway";
+	},
+	lockedDoorRotation: function(x,y){ 
+		if(y == 0) return "TopLockedDoorway";
+		if(x == 0) return "LeftLockedDoorway";
+		if(x >= this.width - 1) return "RightLockedDoorway";
+		if(y >= this.height - 1) return "BottomLockedDoorway";
+		return "TopLockedDoorway";
 	},
 	cornerRotation: function(x, y) {
 		if (x == 0 && y == 0) return "TopLeftCorner";
