@@ -523,7 +523,7 @@ Crafty.c('Bullet', {
 
 Crafty.c('SoulOrb', {
 	init: function() {
-		this.requires('Actor, spr_soulOrb, Collision, Orbits');
+		this.requires('Actor, spr_soulOrb, Collision, Orbits, StealsLife');
 		this.orbit(Crafty('Hero'));
 		Crafty('Hero').carryOrb(this);
 		this.onHit('Bullet', function(data) {
