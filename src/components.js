@@ -142,7 +142,7 @@ Crafty.c('Enemy', {
 //FleeingEnemies are generic cowardly enemies, running away from the Hero while firing bullets.
 Crafty.c('FleeingEnemy', {
 	init: function() {
-		this.requires('Enemy, Fleeing, ShootsAtPlayer, spr_villager, DirectionalAnimation');
+		this.requires('Enemy, spr_villager, ShootsAtPlayer, DirectionalAnimation');
 		//Tell the DirectionalAnimation component where on the spritesheet to find its animations
 		this.setDirectionAnimations(
 			{x: 0, y: 0}, //up
@@ -150,13 +150,14 @@ Crafty.c('FleeingEnemy', {
 			{x: 0, y: 1}, //right
 			{x: 0, y: 3}, //left
 			2); //two frames each
+		this.requires('Fleeing');
 	},
 });
 
 //SwarmingEnemies are generic enemies that bum-rush and attempt to shiv the Hero, while also firing bullets.
 Crafty.c('SwarmingEnemy', {
 	init: function() {
-		this.requires('Enemy, Swarming, ShootsAtPlayer, SwingSwordRandomly, spr_villager, DirectionalAnimation');
+		this.requires('Enemy, spr_villager, ShootsAtPlayer, SwingsSwordRandomly, DirectionalAnimation');
 		//Tell the DirectionalAnimation component where on the spritesheet to find its animations
 		this.setDirectionAnimations(
 			{x: 0, y: 0}, //up
@@ -164,6 +165,7 @@ Crafty.c('SwarmingEnemy', {
 			{x: 0, y: 1}, //right
 			{x: 0, y: 3}, //left
 			2); //two frames each
+		this.requires('Swarming');
 	},
 });
 
@@ -559,7 +561,7 @@ Crafty.c('Explosion', {
 	},
 	fade: function() {
 		this.alpha -= 0.01;
-		if (this.alpha <= 0.25) {
+		if (this.alpha <= 0) {
 			this.destroy();
 		}
 	},
@@ -645,7 +647,7 @@ Crafty.c('ShootsAtPlayer', {
 		}
 	},
 	shootRandomly: function() {
-		var maxBullets = 5;
+		var maxBullets = 13;
 		if (Crafty("Bullet").length < maxBullets && Game.chance(0.5)) this.shoot();
 	},
 });

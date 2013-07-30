@@ -323,13 +323,15 @@ Crafty.c('SpawnPoint', {
 		this.bind('EnterFrame', this.thinkAboutSpawning);
 	},
 	thinkAboutSpawning: function() {
-		var maxCollectibles = 10;
+		var maxCollectibles = 15;
 		var chanceOfSentinel = 33;
+		var fleeNotSwarm = 50;
 		if (Crafty('Enemy').length + Crafty('SpawningVillage').length < maxCollectibles && Game.chance(this.probability)) {
 			if (Game.chance(chanceOfSentinel)) {
 				var newGuy = Crafty.e('Sentinel').at(this.tileX, this.tileY + 1);
+				if (newGuy.dy == -1) newGuy.turn(0, 1);
 			}
-			else if (Game.chance(50)) {
+			else if (Game.chance(fleeNotSwarm)) {
 				var newGuy = Crafty.e('FleeingEnemy').at(this.tileX,this.tileY+1);
 			}
 			else {

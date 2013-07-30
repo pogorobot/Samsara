@@ -36,12 +36,14 @@ Crafty.c('MovesAround', {
 	},
 	//thingToChase must have x, y, w, h
 	chase: function(thingToChase) {
+		var sigFigs = 1;
+		if (this.has('Enemy')) sigFigs = 0;
 		//aim for the center
 		var target = { x: thingToChase.x + thingToChase.w / 3, y: thingToChase.y + thingToChase.h / 3 };
 		var distance = Crafty.math.distance(this.x, this.y, target.x, target.y);
 		//how that translates to vert and horizontal speeds
-		newDy = Math.round(this.speed * (target.y - this.y) * 10 / distance) / 10;
-		newDx = Math.round(this.speed * (target.x - this.x) * 10 / distance) / 10;
+		newDy = Math.round(this.speed * (target.y - this.y) * Math.pow(10, sigFigs) / distance) / Math.pow(10, sigFigs);
+		newDx = Math.round(this.speed * (target.x - this.x) * Math.pow(10, sigFigs) / distance) / Math.pow(10, sigFigs);
 		this.turn(newDx, newDy);
 	},
 	turnAround: function() {
@@ -179,23 +181,25 @@ Crafty.c('StopsAtWalls', {
 
 Crafty.c('Swarming', {
 	init: function() {
-		this.requires('MovesAround, HurtsToTouch, StopsAtWalls');
-		this.bind('EnterFrame', this.swarm);
+		this.requires('MovesAround, HurtsToTouch, StopsAtWalls, Delay');
+		this.swarm();
 	},
 	swarm: function() {
 		this.chase(Crafty('Hero'));
+		this.delay(this.swarm, 1000);
 	},
 });
 
 
 Crafty.c('Fleeing', {
 	init: function() {
-		this.requires('MovesAround, HurtsToTouch, StopsAtWalls');
-		this.bind('EnterFrame', this.flee);
+		this.requires('MovesAround, HurtsToTouch, StopsAtWalls, Delay');
+		this.flee();
 	},
 	flee: function() {
 		this.chase(Crafty('Hero'));
 		this.turnAround();
+		this.delay(this.flee, 1000);
 	},
 });
 
