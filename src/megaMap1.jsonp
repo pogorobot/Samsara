@@ -2,7 +2,7 @@ MegaMap1 = {"mapData": {
 	"width": 4,
 	"height": 2,
 	"rooms": [
-		{"roomType": "TestRoom1", "x": 0, "y": 0},
+		{"roomType": "Statuary", "x": 0, "y": 0},
 		{"roomType": "TestRoom2", "x": 1, "y": 0},
 		{"roomType": "TestRoom3", "x": 1, "y": 1},
 		{"roomType": "TestRoom4", "x": 3, "y": 0},
