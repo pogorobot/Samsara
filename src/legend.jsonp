@@ -9,5 +9,12 @@ Legend = {
 	'B': 'Bush',
 	'T': 'Tree',
 	'R': 'Rock',
-	'A': 'Statue'
+	'A': 'Statue',
+	'^': 'UpArrow',
+	'>': 'RightArrow',
+	'<': 'LeftArrow',
+	'U': 'DownArrow',
+	's': 'SwarmingEnemy',
+	'f': 'FleeingEnemy',
+	'n': 'Sentinel',
 };

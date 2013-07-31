@@ -3,9 +3,6 @@ Crafty.c('Terrain', {
 	init: function() {
 		this.requires('Actor, StaysInRoom');
 	},
-	placeInRoom: function(room) {
-		this.room = room;
-	}
 });
 
 // A Tree is just an Actor with a certain sprite (that is solid and stops bullets)
