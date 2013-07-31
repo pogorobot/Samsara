@@ -204,10 +204,10 @@ Crafty.scene('Game', function() {
 }, function() { //Don't leave these listeners constantly waiting around for an event, for hygiene's sake
 	this.unbind('HeroDied', this.show_defeat);
 	this.unbind('Collected', this.show_victory);
-	this.unbind('WentUp', this.WentUp);
-	this.unbind('WentDown', this.WentDown);
-	this.unbind('WentLeft', this.WentLeft);
-	this.unbind('WentRight', this.WentRight);
+	this.unbind('WentUp', this.wentUp);
+	this.unbind('WentDown', this.wentDown);
+	this.unbind('WentLeft', this.wentLeft);
+	this.unbind('WentRight', this.wentRight);
 	Game.unloadThoughts();
 });
 
@@ -249,6 +249,7 @@ Crafty.scene('Victory', function() {
 //It is basically the same as what happens when you win?
 //There's something poignant in that.
 Crafty.scene('Defeat', function() {
+
 	var youLostText = Crafty.e('2D, DOM, Text')
 		.attr({ x: 0, y: Game.height()/2 - 24, w: Game.width() })
 		.text("Oh... That didn't go so well.")
