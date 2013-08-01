@@ -84,6 +84,7 @@ Crafty.c('DirectionalAnimation', {
 	},
 	animateNewDirection: function(newDirection) {
 		if (this.stillFrames) {
+			this.removeCurrentSprite();
 			if (newDirection == "Up") {
 				this.requires(this.upSprite);
 			}
@@ -100,6 +101,21 @@ Crafty.c('DirectionalAnimation', {
 		else {
 			this.animate(newDirection, this.animationDuration, -1);
 		}
+	},
+	removeCurrentSprite: function() {
+		if (this.has(this.upSprite)) {
+			this.removeComponent(this.upSprite);
+		}
+		if (this.has(this.downSprite)) {
+			this.removeComponent(this.downSprite);
+		}
+		if (this.has(this.rightSprite)) {
+			this.removeComponent(this.rightSprite);
+		}
+		if (this.has(this.leftSprite)) {
+			this.removeComponent(this.leftSprite);
+		}
+		
 	},
 });	
 
@@ -174,6 +190,7 @@ Crafty.c('StopsAtWalls', {
 					this.x -= this.dx;
 				}
 			}
+			this.trigger("Stopped");
 		}
 		return this;
 	},

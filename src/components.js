@@ -325,7 +325,7 @@ Crafty.c('ThrowsOrbs', {
 //They have four health and hurt more than other enemies when you touch them.
 Crafty.c('Sentinel', {
 	init: function() {
-		this.requires('Enemy, HurtsToTouch, Marching, MovesAround, StopsAtWalls, DirectionalAnimation');
+		this.requires('Enemy, Marching, MovesAround, HurtsToTouch, StopsAtWalls, DirectionalAnimation');
 		this.health = 4;
 		this.painfulness = 2;
 		
@@ -347,6 +347,11 @@ Crafty.c('Sentinel', {
 				this.turn(0, -1);
 			}
 		}
+		this.bind("Stopped", this.turnRight);
+	},
+	turnRight: function() {
+		if (this.dx) this.turn(0, this.dx);
+		else if (this.dy) this.turn(-this.dy, 0);
 	},
 });
 
