@@ -268,11 +268,13 @@ Crafty.c('Placeholder', {
 Crafty.c('Arrow', {
 	init: function() {
 		this.requires('Actor, spr_arrow, Collision, Terrain');
+		this.dx = 0;
+		this.dy = -1;
 		this.z = -1;
 		this.onHit('Marching', function(data) {
 			var marcher = data[0].obj;
 			if (this.at().x == marcher.at().x && this.at().y == marcher.at().y) {
-				marcher.turn(this.rotation);
+				marcher.turn(this.dx, this.dy);
 			}
 		});
 		this.origin(this.w/2, this.h/2);
@@ -280,6 +282,8 @@ Crafty.c('Arrow', {
 	},
 	setRotation: function(rotation) {
 		this.rotation = rotation;
+		this.dx = Math.cos((this.rotation - 90) * Math.PI / 180);
+		this.dy = Math.sin((this.rotation - 90) * Math.PI / 180);
 		return this;
 	},
 });
@@ -314,7 +318,7 @@ Crafty.c('LeftArrow', {
 //This component randomly spawns new enemies
 Crafty.c('SpawnPoint', {
 	probability: 0,
-	increasePerFrame: 0.005,
+	increasePerFrame: 0.0035,
 	init: function() {
 		this.requires('Terrain');
 		this.bind('EnterFrame', this.thinkAboutSpawning);

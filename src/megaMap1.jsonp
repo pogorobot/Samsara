@@ -1,14 +1,16 @@
 MegaMap1 = {"mapData": {
-	"width": 4,
+	"width": 5,
 	"height": 2,
 	"rooms": [
 		{"roomType": "Statuary", "x": 0, "y": 0},
 		{"roomType": "HedgeMaze", "x": 1, "y": 0},
+		{"roomType": "DoubleLine", "x": 2, "y": 0},
+		{"roomType": "TestRoom2", "x": 3, "y": 0},
+		{"roomType": "TestRoom4", "x": 4, "y": 0},
 		{"roomType": "TestRoom3", "x": 1, "y": 1},
-		{"roomType": "TestRoom4", "x": 3, "y": 0},
 		{"roomType": "TestRoom3", "x": 2, "y": 1},
+		{"roomType": "TestRoom3", "x": 3, "y": 1},
 		
-		{"roomType": "TestRoom2", "x": 2, "y": 0}
 	],
 	"startRoom": 0,
 	"playerStartX": 2,
