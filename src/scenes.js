@@ -29,6 +29,7 @@ Crafty.scene('Loading', function() {
 		'assets/spikes.png',
 		'assets/arrow.png',
 		'assets/deathGrip.png',
+		'assets/weaver.png',
 		'assets/door_knock_3x.mp3',			//I'm not sure why all the audio files are in three formats??
 		'assets/door_knock_3x.ogg',			//That's how they did it in the tutorial =/
 		'assets/door_knock_3x.aac',			//Seems kind of silly tbh
@@ -96,6 +97,11 @@ Crafty.scene('Loading', function() {
 			spr_sentinel_up: [1, 0],
 			spr_sentinel_right: [2, 0],
 			spr_sentinel_left: [3, 0]
+		});
+		Crafty.sprite(16, 'assets/weaver.png', {
+			spr_weaver_red: [0, 0],
+			spr_weaver_green: [1, 0],
+			spr_weaver_blue: [2, 0]
 		});
 		
 		// Define the PC's sprite to be the first sprite in the third row of the 
