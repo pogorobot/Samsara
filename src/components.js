@@ -653,7 +653,7 @@ Crafty.c('ShootsAtPlayer', {
 		}
 	},
 	shootRandomly: function() {
-		var maxBullets = 13;
+		var maxBullets = 15;
 		if (Crafty("Bullet").length < maxBullets && Game.chance(0.5)) this.shoot();
 	},
 });

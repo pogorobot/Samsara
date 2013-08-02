@@ -17,4 +17,8 @@ Legend = {
 	's': 'SwarmingEnemy',
 	'f': 'FleeingEnemy',
 	'n': 'Sentinel',
+	'/': 'TopLeftCorner',
+	'|': 'TopRightCorner',
+	'+': 'BottomLeftCorner',
+	'-': 'BottomRightCorner',
 };

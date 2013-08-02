@@ -324,7 +324,7 @@ Crafty.c('SpawnPoint', {
 		this.bind('EnterFrame', this.thinkAboutSpawning);
 	},
 	thinkAboutSpawning: function() {
-		var maxCollectibles = 15;
+		var maxCollectibles = 14;
 		var chanceOfSentinel = 33;
 		var fleeNotSwarm = 50;
 		if (Crafty('Enemy').length + Crafty('SpawningVillage').length < maxCollectibles && Game.chance(this.probability)) {
