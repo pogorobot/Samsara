@@ -28,4 +28,30 @@ TestStream = {"thoughts": [
 		"That's right."
 	],
 };
-	
+
+JadeOpening = { "thoughts": [
+		"Once I knew for sure I was dying,",
+		"I went to the shrine in the mountains.",
+		"I don't know what I was looking for.",
+		"Another chance, maybe.",
+		"Another life.",
+		"They tell stories, about this shrine.",
+		"I didn't really believe them,",
+		"but there comes a point when you'll try anything.",
+		"And I was curious, anyway.",
+		"All the stories say nobody ever comes back.",
+		"So where did the stories come from?",
+		"But it was just a ruin.",
+		"Of course it was just a ruin.",
+		"What did I expect?",
+		"Eternal life?",
+		"Freedom from all suffering?",
+		"The walls were kind of pretty.",
+		"And the broken statues had a kind of somber grace.",
+		"But I'd seen a thousand ruins.",
+		"Plenty of times it was me who did the ruining.",
+		"It was a waste of time.",
+		"I was a waste of time.",
+		"I tried not to let it bother me."
+	],
+};

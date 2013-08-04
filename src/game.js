@@ -48,7 +48,7 @@ Game = {
 	},
 	
 	loadThoughts: function() {
-		Game.trainOfThought = Crafty.e('TrainOfThought').loadThoughts(TestStream.thoughts).trigger("ThinkAgain");
+		Game.trainOfThought = Crafty.e('TrainOfThought').loadThoughts(JadeOpening.thoughts).trigger("ThinkAgain");
 	},
 	
 	unloadThoughts: function() {

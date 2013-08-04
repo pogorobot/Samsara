@@ -262,7 +262,8 @@ Crafty.scene('Defeat', function() {
 		.textFont({ size: '24px', family: 'Arial', color: 'white', align: 'center' });
 	
 	Crafty.audio.play('knock');
-	
+	Game.think("And then I died.");
+	Game.think("Again.");
 	var delay = true;
 	setTimeout(function() { 
 		delay = false; 
