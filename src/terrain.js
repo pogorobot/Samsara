@@ -348,9 +348,11 @@ Crafty.c('SpawnPoint', {
 	},
 });
 
+//A Statue is a motionless, indestructible bullet hazard.
 Crafty.c('Statue', {
 	init: function() {
 		this.requires('Actor, Solid, spr_statue, ShootsAtPlayer, Terrain');
+		//Stop shooting once the doors open
 		this.bind('DoorsOpen', function() {
 			this.unbind('EnterFrame', this.shootRandomly);
 			this.removeComponent('ShootsAtPlayer');

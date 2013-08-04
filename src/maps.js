@@ -1,5 +1,5 @@
-//Awwww yeah new map overhaul! Shit yeah!
-Crafty.c('StaticMegaMap',{
+//A StaticMegaMap uses JSON to keep track of all the rooms on a given level.
+Crafty.c('StaticMegaMap', {
 	init: function(){
 		this.contents = [];
 		this.blueprint = MegaMap1.mapData; //grab the data from the json object
@@ -14,6 +14,7 @@ Crafty.c('StaticMegaMap',{
 		this.makeRooms();
 	},
 	
+	//Pull data from the JSON object and load into our contents array.
 	makeRooms: function() {
 		for (var roomNum = 0; roomNum < this.blueprint.rooms.length; roomNum++) { //for each room in the blueprint
 			room = this.blueprint.rooms[roomNum];
@@ -22,6 +23,8 @@ Crafty.c('StaticMegaMap',{
 		return this;
 	},
 	
+	//Put the Hero in an appropriate room.
+	//Call this to move between rooms.
 	placeHero: function(roomX, roomY) {
 		if (roomX === undefined || roomY === undefined) { //at the start of the game,
 			startRoom = this.blueprint.rooms[this.blueprint.startRoom]; //put the hero at the beginning of the MegaMap
@@ -46,9 +49,10 @@ Crafty.c('StaticRoom', {
 		this.contents = [];
 		this.requires('Room');
 	},
+	//Load contents from the given room
 	staticPopulate: function(roomType) {
 		this.blueprint = Rooms[roomType];
-		if(this.blueprint === undefined) return;
+		if (this.blueprint === undefined) return;
 		this.setSize();
 		this.fill();
 		return this;
@@ -90,6 +94,7 @@ Crafty.c('StaticRoom', {
 		if(y >= this.height - 1) return "BottomDoorway";
 		return "TopDoorway";
 	},
+	//This has got to be redundant.
 	lockedDoorRotation: function(x,y){ 
 		if(y == 0) return "TopLockedDoorway";
 		if(x == 0) return "LeftLockedDoorway";
