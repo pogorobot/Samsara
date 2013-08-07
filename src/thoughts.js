@@ -11,7 +11,14 @@ Crafty.c('TrainOfThought', {
 	think: function() {
 		//If we've thought all the thoughts, start over
 		if (this.bookmark >= this.thoughts.length) {
-			this.bookmark = 0;
+			this.stopThinking();
+			if (this.thoughtStream.nextStream) {
+				Game.contemplate(this.thoughtStream.nextStream);
+			}
+			else {
+				Game.contemplate(this.thoughtStream);
+			}
+			this.destroy();
 		}
 		//Game.think uses jQuery to post the string we're on
 		Game.think(this.thoughts[this.bookmark]);
@@ -31,8 +38,10 @@ Crafty.c('TrainOfThought', {
 		this.thoughts.push(newThought);
 		return this;
 	},
-	//takes an array of strings
-	loadThoughts: function(newThoughts) {
+	//takes a JSON object (see thoughts.jsonp)
+	loadThoughts: function(thoughtStream) {
+		this.thoughtStream = thoughtStream;
+		newThoughts = thoughtStream.thoughts;
 		for (var i = 0; i < newThoughts.length; i++) {
 			this.thoughts.push(newThoughts[i]);
 		}

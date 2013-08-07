@@ -54,4 +54,15 @@ JadeOpening = { "thoughts": [
 		"I was a waste of time.",
 		"I tried not to let it bother me."
 	],
+	"nextStream": TestStream,
+};
+
+JadeGauntlet = { "thoughts": [
+		"They put me through it one more time.",
+	],
+};
+
+JadeShotByStatue = { "thoughts": [
+		"Ow.",
+	],
 };
