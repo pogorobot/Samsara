@@ -62,7 +62,14 @@ Crafty.c('Slowed', {
 			this.movementSpeed /= 2;
 			this.fourway(this.movementSpeed);
 		}
-		this.delay(this.unSlow, this.slowedTime);
+		this.awaitUnslowing();
+	},
+	awaitUnslowing: function(slowedTime) {
+		if (slowedTime === undefined) slowedTime = this.slowedTime;
+		this.delay(function() {
+			this.trigger("SlowTimeRanOut");
+		}, slowedTime);
+		this.bind("SlowTimeRanOut", this.unSlow);
 	},
 	unSlow: function() {
 		if (this.has('Fourway')) {
@@ -71,11 +78,18 @@ Crafty.c('Slowed', {
 		}
 		this.removeComponent('Slowed');
 	},
+	addSlowTime: function() {
+		this.unbind("SlowTimeRanOut");
+		this.bind("SlowTimeRanOut", this.awaitUnslowing);
+	},
 });
 
 Crafty.c('CausesSlowed', {
 	init: function() {
 		this.onHit('Alive', function(data) {
+			if (data[0].obj.has('Slowed')) {
+				data[0].obj.addSlowTime();
+			}
 			data[0].obj.requires('Slowed');
 		});
 	},
