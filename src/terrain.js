@@ -58,7 +58,7 @@ Crafty.c('TopRightCorner', {
 	},
 });
 
-//Stepping on a spike trap will cause you to be hurt.
+//Stepping on a spike trap will cause you to be hurt. And poisoned.
 Crafty.c('SpikeTrap', {
 	init: function() {
 		this.requires('Actor, Collision, spr_spikeTrap, Trap, Terrain');
@@ -68,9 +68,6 @@ Crafty.c('SpikeTrap', {
 	spring: function() {
 		this.removeComponent('spr_spikeTrap');
 		this.requires('HurtsToTouch, HurtsMonsters, spr_spikes, PoisonTouch');
-		//Would like to make them Solid, but can't find a good way to do that without either
-		//A) keeping them from ever springing
-		//or B) making the hero pass through walls as soon as he springs a trap
 	},
 });
 

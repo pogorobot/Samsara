@@ -433,7 +433,6 @@ Crafty.c('HurtsMonsters', {
 	{
 		collectable = data[0].obj;
 		collectable.loseHealth(this.attackPower);
-		if (this.has('PoisonTouch')) collectable.requires('Poisoned');
 		collectable.requires('Stunned');
 		//If we destroyed 'em
 		if(collectable.health <= 0){
@@ -445,8 +444,7 @@ Crafty.c('HurtsMonsters', {
 				}
 			}
 		}
-		//For Soul Orbs, which destroy themselves once they've hurt an enemy
-		this.trigger("HurtSomething");
+		this.trigger("HurtSomething", collectable);
 	},
 });
 
@@ -475,8 +473,9 @@ Crafty.c('Bullet', {
 	bounced: 0,
 	init: function() {
 		this.requires('Actor, Collision, spr_bullet, HurtsToTouch, StaysInRoom, MovesAround, CausesSlowed');
-		this.onHit('StopsBullets', function() { this.destroy(); });
 		this.speed = 3;
+		this.onHit('StopsBullets', this.destroy);
+		this.bind('HurtSomething', this.destroy);
 	},
 	setPos: function (x, y) {
 		this.x = x;
@@ -700,8 +699,8 @@ Crafty.c('HurtsToTouch', {
 	touch: function(data) {
 		if (this.has("Grabbed")) return;
 		target = data[0].obj; //the target in this case should always be Hero.
-		target.setHealthBar(target.health-this.painfulness);
-		if (this.has('PoisonTouch')) target.requires('Poisoned');
+		target.loseHealth(this.painfulness);
+		this.trigger("HurtSomething", target);
 	},
 });
 

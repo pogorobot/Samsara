@@ -86,11 +86,19 @@ Crafty.c('Slowed', {
 
 Crafty.c('CausesSlowed', {
 	init: function() {
-		this.onHit('Alive', function(data) {
-			if (data[0].obj.has('Slowed')) {
-				data[0].obj.addSlowTime();
+		this.bind('HurtSomething', function(data) {
+			if (data.has('Slowed')) {
+				data.addSlowTime();
 			}
-			data[0].obj.requires('Slowed');
+			else data.requires('Slowed');
+		});
+	},
+});
+
+Crafty.c('PoisonTouch', {
+	init: function() {
+		this.bind("HurtSomething", function(victim) {
+			victim.requires("Poisoned");
 		});
 	},
 });
