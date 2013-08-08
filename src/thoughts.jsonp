@@ -54,6 +54,7 @@ JadeOpening = { "thoughts": [
 		"I was a waste of time.",
 		"I tried not to let it bother me."
 	],
+	"timeBetweenThoughts": 2700,
 	"nextStream": TestStream,
 };
 

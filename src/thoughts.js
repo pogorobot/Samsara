@@ -33,11 +33,6 @@ Crafty.c('TrainOfThought', {
 	stopThinking: function() {
 		this.unbind("ThinkAgain", this.keepThinking);
 	},
-	//takes one string
-	loadThought: function(newThought) {
-		this.thoughts.push(newThought);
-		return this;
-	},
 	//takes a JSON object (see thoughts.jsonp)
 	loadThoughts: function(thoughtStream) {
 		this.thoughtStream = thoughtStream;
@@ -46,6 +41,9 @@ Crafty.c('TrainOfThought', {
 			this.thoughts.push(newThoughts[i]);
 		}
 		this.bind("ThinkAgain", this.keepThinking);
+		if (thoughtStream.timeBetweenThoughts) {
+			this.timeToNextThought = thoughtStream.timeBetweenThoughts;
+		}
 		return this;
 	},
 });
