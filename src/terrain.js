@@ -352,6 +352,23 @@ Crafty.c('SpawnPoint', {
 Crafty.c('Statue', {
 	init: function() {
 		this.requires('Actor, Solid, spr_statue, ShootsAtPlayer, Terrain');
+		//Randomly assign a sprite, because why not
+		if (Game.chance(50)) {
+			if (Game.chance(50)) {
+				this.requires('spr_wolf');
+			}
+			else {
+				if (Game.chance(33)) {
+					this.requires('spr_weaver_red');
+				}
+				else if (Game.chance(50)) {
+					this.requires('spr_weaver_blue');
+				}
+				else {
+					this.requires('spr_weaver_green');
+				}
+			}
+		}
 		//Stop shooting once the doors open
 		this.bind('DoorsOpen', function() {
 			this.unbind('EnterFrame', this.shootRandomly);
