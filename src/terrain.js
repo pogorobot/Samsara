@@ -354,7 +354,7 @@ Crafty.c('Statue', {
 			if (Game.chance(50)) {
 				this.requires('spr_wolf');
 			}
-			else {
+			else if (Game.chance(50)) {
 				if (Game.chance(33)) {
 					this.requires('spr_weaver_red');
 				}
@@ -364,6 +364,9 @@ Crafty.c('Statue', {
 				else {
 					this.requires('spr_weaver_green');
 				}
+			}
+			else {
+				this.requires('spr_paperman');
 			}
 		}
 		//Stop shooting once the doors open
