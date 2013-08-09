@@ -85,6 +85,17 @@ Crafty.c('Hero', {
 		return this.x >= this.w && this.y >= this.h && this.x <= Game.width() - (2*this.w) && this.y <= Game.height() - (2 * this.h);
 	},
 	
+	fall: function() {
+		this.removeComponent('Fourway');
+		this.unbind("EnterFrame");
+		this.unbind("KeyDown");
+		this.unbind("NewDirection");
+		this.origin(this.w / 2, this. h / 2);
+		this.bind('EnterFrame', function() {
+			this.rotation += 5;
+		});
+	},
+	
 	//Gets called when you touch something solid
 	//These _properties are part of the Fourway component
 	stopMovement: function() {
