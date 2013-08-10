@@ -41,6 +41,9 @@ Crafty.c('Hero', {
 			if (this.sword) this.sword.rotation = this.swordRotation; //If we already have a sword onscreen, rotate it (otherwise does nothing)
 		});
 		this.bind('EnterFrame', this.changeRoomsIfOutside);
+		this.bind('GrabbedSomeone', function() {
+			Game.interruptThoughts(JadeGrabbedSomeone);
+		});
 	},
 	
 	//Called every frame
@@ -267,6 +270,7 @@ Crafty.c('DeathGrip', {
 			}
 		}, this.grabTime);
 		this.boomerang();
+		if (Game.chance(10)) hero.trigger("GrabbedSomeone");
 	},
 	//Turn around and return to the hero
 	boomerang: function() {

@@ -55,6 +55,19 @@ Game = {
 		Game.trainOfThought = Crafty.e('TrainOfThought').loadThoughts(thoughtStream).trigger("ThinkAgain");
 	},
 	
+	interruptThoughts: function(thoughtStream) {
+		Game.trainOfThought.stopThinking();
+		Game.previousTrainOfThought = Game.trainOfThought;
+		Game.contemplate(thoughtStream);
+	},
+	
+	resumeThinking: function(previousTrainOfThought) {
+		Game.trainOfThought = previousTrainOfThought;
+		Game.previousTrainOfThought = undefined;
+		Game.trainOfThought.resumeThinking();
+		Game.think("Anyway...");
+	},
+	
 	unloadThoughts: function() {
 		Game.trainOfThought.stopThinking();
 	},

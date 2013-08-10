@@ -15,6 +15,9 @@ Crafty.c('TrainOfThought', {
 			if (this.thoughtStream.nextStream) {
 				Game.contemplate(this.thoughtStream.nextStream);
 			}
+			else if (Game.previousTrainOfThought) {
+				Game.resumeThinking(Game.previousTrainOfThought);
+			}
 			else {
 				Game.contemplate(this.thoughtStream);
 			}
@@ -32,6 +35,13 @@ Crafty.c('TrainOfThought', {
 	},
 	stopThinking: function() {
 		this.unbind("ThinkAgain", this.keepThinking);
+		this.bookmark--;
+	},
+	resumeThinking: function() {
+		this.bind("ThinkAgain", this.keepThinking);
+		this.delay(function() {
+			this.trigger("ThinkAgain");
+		}, this.timeToNextThought);
 	},
 	//takes a JSON object (see thoughts.jsonp)
 	loadThoughts: function(thoughtStream) {

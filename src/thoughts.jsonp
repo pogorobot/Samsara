@@ -58,6 +58,17 @@ JadeOpening = { "thoughts": [
 	"nextStream": TestStream,
 };
 
+JadeGrabbedSomeone = { "thoughts": [
+		"Got him.",
+		"All alike.",
+		"Does he know he's about to die?",
+		"Can he smell it?",
+		"Does he know what I am?",
+		"I am Death.",
+	],
+	"timeBetweenThoughts": 1100
+};
+
 JadeGauntlet = { "thoughts": [
 		"They put me through it one more time.",
 	],
