@@ -22,6 +22,7 @@ Crafty.c('TrainOfThought', {
 				});
 			}
 			else this.loadNextStream();
+			return;
 		}
 		Game.think(this.thoughts[this.bookmark]);
 		this.bookmark++;

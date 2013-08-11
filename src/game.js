@@ -48,7 +48,7 @@ Game = {
 	},
 	
 	loadThoughts: function() {
-		Game.trainOfThought = Crafty.e('TrainOfThought').loadThoughts(MauriceMemory).trigger("ThinkAgain");
+		Game.trainOfThought = Crafty.e('TrainOfThought').loadThoughts(MauriceTestMonologue).trigger("ThinkAgain");
 	},
 	
 	contemplate: function(thoughtStream) {
