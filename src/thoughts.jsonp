@@ -58,6 +58,47 @@ JadeOpening = { "thoughts": [
 	"nextStream": TestStream,
 };
 
+MauriceConscience = { "thoughts": [
+		"Good, good.",
+		"You're paying attention.",
+		"I appreciate that, Jade.",
+	],
+};
+
+MauriceMemory = { "thoughts": [
+		"What were you thinking about, when you killed me?",
+		"I'd look it up myself, but I don't have access.",
+		"You got me down in the hole, Jade.",
+		"That part of your brain you don't want to think about.",
+		"Lucky for me I'm strong enough to keep talkin'.",
+		"Lucky for you, too, in the long run.",
+		"See, from down here in the basement of your mind,",
+		"I can see bits of you you don't even know about.",
+		"Long story short, I know you better than you do.",
+		"So if I were you,",
+		"I'd pay attention.",
+		"Are you listening to me, Jade?",
+		"If you're listening, go swing your sword into a wall.",
+		"I'll wait here.",
+	],
+	"nextStream": MauriceConscience,
+	"waitUntil": "WallStab",
+};
+
+MauriceTestMonologue = { "thoughts": [
+		"They say all murder is an act of conscience.",
+		"Someone offends your sensibilities,",
+		"Or stirs a part of yourself you can't control.",
+		"You don't see a whole lot of folks killing strangers,",
+		"Unless it's for money, or pride, or protection.",
+		"Which all boils down to the same thing:",
+		"Making the world a better place,",
+		"One body at a time.",
+	],
+	"timeBetweenThoughts": 4000,
+	"nextStream": MauriceMemory,
+};
+
 JadeGrabbedSomeone = { "thoughts": [
 		"Got him.",
 		"All alike.",

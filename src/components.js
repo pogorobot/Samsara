@@ -416,6 +416,9 @@ Crafty.c('Sword', {
 		if (this.wielder.has('Hero')) {
 			//The Hero's sword hurts enemies and creates Soul Orbs
 			this.requires('HurtsMonsters, DeflectsBullets, StealsLife');
+			//this.onHit('Wall', function() {
+				//this.wielder.trigger("WallStab");
+			//});
 		}
 		else {
 			//Enemies' swords hurt the Hero.
