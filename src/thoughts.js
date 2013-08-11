@@ -12,13 +12,9 @@ Crafty.c('TrainOfThought', {
 		//If we've thought all the thoughts, start over
 		if (this.bookmark >= this.thoughts.length) {
 			if (this.thoughtStream.waitUntil) {
+				Game.player.thinking = this;
 				Game.player.bind(this.thoughtStream.waitUntil, function () {
-					if (this === undefined) {
-						return;
-					}
-					else {
-						this.loadNextStream();
-					}
+					this.thinking.loadNextStream();
 				});
 			}
 			else this.loadNextStream();
@@ -29,7 +25,7 @@ Crafty.c('TrainOfThought', {
 	},
 	loadNextStream: function() {
 		if (this.thoughtStream.waitUntil) {
-			Game.player.unbind(this.thoughtStream.waitUntil, this.loadNextStream);
+			Game.player.unbind(this.thoughtStream.waitUntil);
 		}
 		this.stopThinking();
 		if (this.thoughtStream.nextStream) {
@@ -41,7 +37,7 @@ Crafty.c('TrainOfThought', {
 		else {
 			Game.contemplate(this.thoughtStream);
 		}
-		this.destroy();
+		//this.destroy();
 	},
 	keepThinking: function() {
 		this.think(); //think the next thought, wait a given amount of time, then think again.

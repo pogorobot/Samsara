@@ -63,6 +63,7 @@ MauriceConscience = { "thoughts": [
 		"You're paying attention.",
 		"I appreciate that, Jade.",
 	],
+	"waitUntil": "Doomsday",
 };
 
 MauriceMemory = { "thoughts": [
@@ -86,7 +87,7 @@ MauriceMemory = { "thoughts": [
 };
 
 MauriceTestMonologue = { "thoughts": [
-		"They say all murder is an act of conscience.",
+		"They say murder is an act of conscience.",
 		"Someone offends your sensibilities,",
 		"Or stirs a part of yourself you can't control.",
 		"You don't see a whole lot of folks killing strangers,",
