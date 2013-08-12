@@ -645,17 +645,21 @@ Crafty.c('ShootsAtPlayer', {
 		var hero = Crafty('Hero');
 		var shootX = this.x + this.w / 3;
 		var shootY = this.y + this.h / 3;
-		if (hero.x > this.x) {
-			shootX += this.w;
-		}
-		else if (hero.x < this.x) {
-			shootX -= this.w;
-		}
-		else if (hero.y > this.y) {
-			shootY += this.h;
+		if (Math.abs(hero.x - shootX) > Math.abs(hero.y - shootY)) {
+			if (hero.x > this.x) {
+				shootX += this.w;
+			}
+			else if (hero.x < this.x) {
+				shootX -= this.w;
+			}
 		}
 		else {
-			shootY -= this.h;
+			if (hero.y > this.y) {
+				shootY += this.h;
+			}
+			else {
+				shootY -= this.h;
+			}
 		}
 		//now that we have our position and direction, spawn a bullet
 		this.attach(Crafty.e('ChargingBullet').setPos(shootX, shootY));
