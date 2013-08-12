@@ -17,8 +17,13 @@ Crafty.c('Hero', {
 			.animate('PlayerMovingLeft',  10, 0, 12);
 			
 		this.onHit('HurtsToTouch', this.getHurt);
-		this.onHit('Solid', this.stopMovement);		//If I walk into a wall, do I not stop moving?
-													//Note: Do not reverse the order of those.
+		this.bind('Moved', function(data) {
+			if (this.hit('Solid')) {
+				this.x = data.x;
+				this.y = data.y;
+			}
+		});
+		
 		//Define what happens when we change direction
 		//(i.e., change our animation and rotate our sword)
 		//NewDirection is an event triggered by the Fourway component
@@ -97,31 +102,6 @@ Crafty.c('Hero', {
 		this.bind('EnterFrame', function() {
 			this.rotation += 5;
 		});
-	},
-	
-	//Gets called when you touch something solid
-	//These _properties are part of the Fourway component
-	stopMovement: function() {
-		this._speed = 0;
-		//Here we try to not get stuck in a wall.
-		if (this._movement) {
-			//try reverting only the x motion
-			this.x -= this._movement.x;
-			if (this.hit('Solid') != false) {
-				//That didn't work, so try reverting only the y motion
-				this.x += this._movement.x;
-				this.y -= this._movement.y;
-				if (this.hit('Solid') != false) {
-					//That also didn't work, so revert all motion
-					this.x -= this._movement.x;
-					if (this.hit('Solid') != false) {
-						//Wait, we must have been stuck beforehand. Fuck it. Just keep walking through walls.
-						this.x += this._movement.x;
-						this.y += this._movement.y;
-					}
-				}
-			}
-		}
 	},
 });
 
