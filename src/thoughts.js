@@ -14,6 +14,7 @@ Crafty.c('TrainOfThought', {
 			if (this.thoughtStream.waitUntil) {
 				Game.player.thinking = this;
 				Game.player.bind(this.thoughtStream.waitUntil, function () {
+					this.unbind(this.thinking.thoughtStream.waitUntil);
 					this.thinking.loadNextStream();
 				});
 			}
@@ -24,9 +25,6 @@ Crafty.c('TrainOfThought', {
 		this.bookmark++;
 	},
 	loadNextStream: function() {
-		if (this.thoughtStream.waitUntil) {
-			Game.player.unbind(this.thoughtStream.waitUntil);
-		}
 		this.stopThinking();
 		if (this.thoughtStream.nextStream) {
 			Game.contemplate(this.thoughtStream.nextStream);
