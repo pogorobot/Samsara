@@ -399,6 +399,10 @@ Crafty.c('Sword', {
 			this.onHit('Wall', function() {
 				this.wielder.trigger("WallStab");
 			});
+			this.onHit('Potion', function(data) {
+				var potion = data[0].obj;
+				potion.quaffedBy(this.wielder);
+			});
 		}
 		else {
 			//Enemies' swords hurt the Hero.

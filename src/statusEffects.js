@@ -149,13 +149,16 @@ Crafty.c('Antidote', {
 		this.requires('Potion, spr_antidote');
 		this.onHit('Hero', function(data) {
 			var drinker = data[0].obj;
-			if (drinker.has('Poisoned')) {
-				drinker.curePoison();
-			}
-			this.destroy();
+			this.quaffedBy(drinker);
 		});
 		return this;
 	},
+	quaffedBy: function(drinker) {
+		if (drinker.has('Poisoned')) {
+			drinker.curePoison();
+		}
+		this.destroy();
+	}
 });
 
 
@@ -165,10 +168,13 @@ Crafty.c('HealingPotion', {
 		this.requires('Potion, spr_healthPotion');
 		this.onHit('Hero', function(data) {
 			var drinker = data[0].obj;
-			drinker.gainHealth(this.potency);
-			this.destroy();
+			this.quaffedBy(drinker);
 		});
 		return this;
+	},
+	quaffedBy: function(drinker) {
+		drinker.gainHealth(this.potency);
+		this.destroy();
 	},
 });
 
@@ -177,9 +183,12 @@ Crafty.c('RegenPotion', {
 		this.requires('Potion, spr_regenPotion');
 		this.onHit('Hero', function(data) {
 			var drinker = data[0].obj;
-			drinker.requires('Regenerating');
-			this.destroy();
+			this.quaffedBy(drinker);
 		});
 		return this;
+	},
+	quaffedBy: function(drinker) {
+		drinker.requires('Regenerating');
+		this.destroy();
 	},
 });
