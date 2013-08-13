@@ -449,10 +449,11 @@ Crafty.c('HurtsMonsters', {
 //This is here so the enemies who shoot at you will display a little charging-up animation before shooting
 Crafty.c('ChargingBullet', {
 	init: function() {
-		this.requires('Actor, spr_bullet, SpriteAnimation');
+		this.requires('Actor, spr_bullet, SpriteAnimation, Collision');
 		this.animate('Charging', 2, 0, 6);
 		this.animate('Charging', 35, 0);
 		this.bind('AnimationEnd', this.finishCharging);
+		this.onHit('StopsBullets', this.destroy);
 		return this;
 	},
 	setPos: function(x, y) {
