@@ -624,8 +624,8 @@ Crafty.c('ShootsAtPlayer', {
 		if (this.has("Stunned")) return;
 		if (this.has("Disarmed")) return;
 		var hero = Crafty('Hero');
-		var shootX = this.x + this.w / 3;
-		var shootY = this.y + this.h / 3;
+		var shootX = this.x + this.w / 4;
+		var shootY = this.y + this.h / 4;
 		if (Math.abs(hero.x - shootX) > Math.abs(hero.y - shootY)) {
 			if (hero.x > this.x) {
 				shootX += this.w;

@@ -28,6 +28,7 @@ Crafty.c('MovesAround', {
 			this.animateNewDirection(this.xyToDirection(newDx, newDy));
 		}
 		else {
+			this.origin(this.w/2, this.h/2);
 			this.rotation = Math.atan2(this.dy, this.dx) * 180 / Math.PI;
 		}
 		if (this.has('CanSwingASword')) {
@@ -36,10 +37,10 @@ Crafty.c('MovesAround', {
 	},
 	//thingToChase must have x, y, w, h
 	chase: function(thingToChase) {
-		var sigFigs = 1;
+		var sigFigs = 3;
 		if (this.has('Enemy')) sigFigs = 0;
 		//aim for the center
-		var target = { x: thingToChase.x + thingToChase.w / 3, y: thingToChase.y + thingToChase.h / 3 };
+		var target = { x: thingToChase.x + thingToChase.w / 4, y: thingToChase.y + thingToChase.h / 4 };
 		var distance = Crafty.math.distance(this.x, this.y, target.x, target.y);
 		//how that translates to vert and horizontal speeds
 		newDy = Math.round(this.speed * (target.y - this.y) * Math.pow(10, sigFigs) / distance) / Math.pow(10, sigFigs);
