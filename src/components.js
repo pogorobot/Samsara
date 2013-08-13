@@ -471,7 +471,7 @@ Crafty.c('ChargingBullet', {
 Crafty.c('Bullet', {
 	bounced: 0,
 	init: function() {
-		this.requires('Actor, Collision, spr_bullet, HurtsToTouch, StaysInRoom, MovesAround, CausesSlowed');
+		this.requires('Actor, spr_bullet, Collision, HurtsToTouch, StaysInRoom, MovesAround, CausesSlowed');
 		this.speed = 3;
 		this.onHit('StopsBullets', this.destroy);
 		this.bind('HurtSomething', this.destroy);
