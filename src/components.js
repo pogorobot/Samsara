@@ -466,6 +466,9 @@ Crafty.c('ChargingBullet', {
 		return this;
 	},
 	finishCharging: function(data) {
+		if (this._parent) {
+			this._parent.chargingBullet = false;
+		}
 		Crafty.e('Bullet').setPos(this.x, this.y).chase(Crafty('Hero'));
 		this.destroy();
 	},
@@ -619,6 +622,7 @@ Crafty.c('SpawningVillage', {
 // (Which define various behaviors)
 
 Crafty.c('ShootsAtPlayer', {
+	chargingBullet: false,
 	init: function() {
 		this.requires('Actor');
 		this.bind('EnterFrame', this.shootRandomly);
@@ -627,6 +631,7 @@ Crafty.c('ShootsAtPlayer', {
 		if (this.has("Grabbed")) return;
 		if (this.has("Stunned")) return;
 		if (this.has("Disarmed")) return;
+		if (this.chargingBullet) return;
 		var hero = Crafty('Hero');
 		var shootX = this.x + this.w / 4;
 		var shootY = this.y + this.h / 4;
@@ -647,7 +652,9 @@ Crafty.c('ShootsAtPlayer', {
 			}
 		}
 		//now that we have our position and direction, spawn a bullet
-		this.attach(Crafty.e('ChargingBullet').setPos(shootX, shootY));
+		this.chargingBullet = true;
+		var bullet = Crafty.e('ChargingBullet').setPos(shootX, shootY);
+		this.attach(bullet);
 	},
 	interruptShooting: function() {
 		for (var i = 1; i < this._children.length; ) {
@@ -657,6 +664,7 @@ Crafty.c('ShootsAtPlayer', {
 			}
 			i++;
 		}
+		this.chargingBullet = false;
 	},
 	shootRandomly: function() {
 		var maxBullets = 15;
