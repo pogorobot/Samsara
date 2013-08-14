@@ -163,6 +163,7 @@ Crafty.c('Orbits', {
 			this.chase(this.target);
 			this.unbind('EnterFrame', this.straightenUp);
 		}
+		this.collision(); //update hitbox
 	}
 });
 
