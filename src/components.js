@@ -560,7 +560,9 @@ Crafty.c('SoulOrb', {
 		this.onHit('StopsBullets', this.explode);
 	},
 	explode: function() {
-		Crafty.e('Explosion').setCenter(this.x + this.w / 2, this.y + this.h / 2);
+		newExplosion = Crafty.e('Explosion').setCenter(this.x + this.w / 2, this.y + this.h / 2);
+		newExplosion.origin(newExplosion.w / 2, newExplosion.h / 2 - this.radius).rotation = this.rotation;
+		newExplosion.collision();
 		this.destroy();
 	},
 });
@@ -579,6 +581,7 @@ Crafty.c('Explosion', {
 	setCenter: function(x, y) {
 		this.x = x - this.w / 2;
 		this.y = y - this.h / 2;
+		return this;
 	},
 });
 
